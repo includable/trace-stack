@@ -11,7 +11,7 @@ only pay for AWS usage related to tracing and storage.
 ## Batteries included
 
 - **Auto-tracing**: deploy the stack, and a Lambda Layer for tracing will 
-  automatically be added to all your Lambda functions.
+  automatically be added to all your Node.js Lambda functions.
 - **Self-managed trace DB**: traces are saved in a DynamoDB table within your
   AWS account, so they never leave your organization.
 - **Private dashboard**: your self-hosted dashboard makes it easy to browse
@@ -33,3 +33,4 @@ aws cloudformation create-stack \
 
 // TODO: use describe-stacks to get back the UI URL (https://stackoverflow.com/questions/41628487/getting-outputs-from-aws-cloudformation-describe-stacks - `--query 'Stacks[0].Outputs[?OutputKey==`DbUrl`].OutputValue' --output text`)
 
+// https://github.com/lumigo-io/lumigo-node/blob/master/scripts/prepare_layer_files.sh
