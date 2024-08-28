@@ -1,0 +1,1 @@
+'{"claims": {"cognito:groups": "[group1 admins]","cognito:username": "c2dddd0e-fcb1-47ea-b232-cd24d05d8442","email": "test@example.com","email_verified": "true","exp": "1595242643","iat": "1595239043","iss": "https://cognito-idp.eu-west-1.amazonaws.com/eu-west-1_CVou3oRiZ","name": "Test User","sub": "c2dddd0e-fcb1-47ea-b232-cd24d05d8442"}}'

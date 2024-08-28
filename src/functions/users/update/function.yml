@@ -1,0 +1,13 @@
+users-update:
+  handler: src/functions/users/update/handler.handler
+  events:
+    - httpApi:
+        path: /users/{userId}
+        method: post
+        authorizer:
+          name: WebAuthorizer
+    - httpApi:
+        path: /me
+        method: post
+        authorizer:
+          name: WebAuthorizer

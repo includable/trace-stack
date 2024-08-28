@@ -1,0 +1,13 @@
+users-get:
+  handler: src/functions/users/get/handler.handler
+  events:
+    - httpApi:
+        path: /users/{userId}
+        method: get
+        authorizer:
+          name: WebAuthorizer
+    - httpApi:
+        path: /me
+        method: get
+        authorizer:
+          name: WebAuthorizer

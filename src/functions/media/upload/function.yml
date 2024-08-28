@@ -1,0 +1,8 @@
+media-upload:
+  handler: src/functions/media/upload/handler.handler
+  events:
+    - httpApi:
+        path: /media/upload
+        method: get
+        authorizer:
+          name: WebAuthorizer

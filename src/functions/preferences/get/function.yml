@@ -1,0 +1,8 @@
+preferences-get:
+  handler: src/functions/preferences/get/handler.handler
+  events:
+    - httpApi:
+        path: /preferences
+        method: get
+        authorizer:
+          name: WebAuthorizer

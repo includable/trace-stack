@@ -1,0 +1,90 @@
+service: trace-stack
+
+plugins:
+  - serverless-esbuild
+  - serverless-offline
+  # - serverless-domain-manager
+
+custom:
+  # baseDomain: my-app.com
+  # domain:
+  #   production: api.${self:custom.baseDomain}
+  #   default: api-${sls:stage}.${self:custom.baseDomain}
+  # customDomain:
+  #   domainName: ${self:custom.domain.${sls:stage}, self:custom.domain.default}
+  #   stage: ${sls:stage}
+  #   certificateName: ${self:custom.baseDomain}
+  #   createRoute53Record: true
+  #   endpointType: regional
+  #   apiType: http
+  #   autoDomain: true
+  esbuild:
+    exclude: []
+
+package:
+  individually: true
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  timeout: 25
+  region: eu-west-1
+  deploymentMethod: direct
+  versionFunctions: false
+  environment:
+    SERVICE: ${self:service}
+    STAGE: ${sls:stage}
+    NODE_ENV: ${sls:stage}
+    TABLE_NAME: ${self:service}-${sls:stage}
+    S3_BUCKET: ${self:service}-${sls:stage}
+    CLOUDFRONT_DOMAIN: !GetAtt UserMediaDistribution.DomainName
+    USER_POOL_ID:
+      Ref: CognitoUserPool
+  httpApi:
+    payload: "2.0"
+    cors: true
+    authorizers:
+      WebAuthorizer:
+        identitySource: $request.header.Authorization
+        issuerUrl:
+          Fn::Join:
+            - ""
+            - - "https://cognito-idp."
+              - "${opt:region, self:provider.region}"
+              - ".amazonaws.com/"
+              - Ref: CognitoUserPool
+        audience:
+          Ref: CognitoUserPoolClient
+  lambdaHashingVersion: 20201221
+  iam:
+    role:
+      statements: # TODO: define IAMs per function
+        - Effect: Allow
+          Action:
+            - dynamodb:*
+          Resource:
+            - "*"
+        - Effect: Allow
+          Action:
+            - cognito-idp:*
+          Resource:
+            - "*"
+        - Effect: Allow
+          Action:
+            - events:PutEvents
+          Resource:
+            - "*"
+
+functions:
+  - ${file(./src/functions/users/get/function.yml)}
+  - ${file(./src/functions/users/update/function.yml)}
+  - ${file(./src/functions/preferences/get/function.yml)}
+  - ${file(./src/functions/preferences/update/function.yml)}
+  - ${file(./src/functions/media/upload/function.yml)}
+
+resources:
+  - ${file(./src/infrastructure/database/table.yml)}
+  - ${file(./src/infrastructure/storage/bucket.yml)}
+  - ${file(./src/infrastructure/auth/auth-role.yml)}
+  - ${file(./src/infrastructure/auth/user-pool.yml)}
+  - ${file(./src/infrastructure/auth/identity-pool.yml)}

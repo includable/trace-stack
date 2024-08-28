@@ -1,0 +1,8 @@
+preferences-update:
+  handler: src/functions/preferences/update/handler.handler
+  events:
+    - httpApi:
+        path: /preferences
+        method: post
+        authorizer:
+          name: WebAuthorizer
