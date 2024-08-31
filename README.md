@@ -37,7 +37,7 @@ Once installed, all Lambda functions in your AWS account will automatically be t
 by adding a Lambda layer to them. You'll also notice a new environment variable called `AUTO_TRACE_HOST`.
 
 If you wish to disable tracing for a specific function, you can add the environment variable `AUTO_TRACE_EXCLUDE`
-with a value of `1`. This will keep the Lambda layer from being added, and removes and logging and tracing.
+with a value of `1`. This will keep the Lambda layer from being added.
 
 Note that it might take up to 20 minutes for the application to detect any newly added Lambda functions and
 start adding the tracing layer to them.
