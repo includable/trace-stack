@@ -16,7 +16,6 @@
   },
   "workspaces": {
     "packages": [
-      "packages/lambda-layer/nodejs",
       "packages/*"
     ]
   },

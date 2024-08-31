@@ -4834,9 +4834,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@trace-stack/lambda-layer@workspace:packages/lambda-layer/nodejs":
+"@trace-stack/lambda-layer@workspace:packages/lambda-layer":
   version: 0.0.0-use.local
-  resolution: "@trace-stack/lambda-layer@workspace:packages/lambda-layer/nodejs"
+  resolution: "@trace-stack/lambda-layer@workspace:packages/lambda-layer"
   dependencies:
     "@lumigo/tracer": "npm:^1.99.3"
     "@types/jest": "npm:^29.5.12"

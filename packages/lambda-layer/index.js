@@ -2,6 +2,7 @@ const tracer = require("@lumigo/tracer")({
   token: "t_0000000000000000",
   edgeHost: process.env.AUTO_TRACE_HOST,
 });
+
 const { load } = require("./aws/aws-user-function.js");
 const initLogger = require("./logger.js");
 

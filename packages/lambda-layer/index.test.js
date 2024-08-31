@@ -1,4 +1,4 @@
-const index = require("./dist/auto_tracer_wrapper.js");
+const index = require("./artifact/nodejs/dist/auto_tracer_wrapper.js");
 
 describe("tracer", () => {
   beforeEach(() => {

@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "yarn build && jest",
-    "build": "esbuild index.js --bundle --platform=node --minify --target=node16 --outfile=dist/auto_tracer_wrapper.js"
+    "build": "esbuild index.js --bundle --platform=node --minify --target=node16 --outfile=artifact/nodejs/dist/auto_tracer_wrapper.js"
   },
   "files": [
-    "dist/index.js"
+    "nodejs/dist/index.js"
   ],
   "devDependencies": {
     "@types/jest": "^29.5.12",

@@ -90,7 +90,7 @@ provider:
 
 layers:
   tracer:
-    path: ../lambda-layer
+    path: ../lambda-layer/artifact
     name: ${self:service}-layer
     description: Auto-tracing layer for your functions
     compatibleRuntimes:
@@ -99,17 +99,12 @@ layers:
       - nodejs20.x
 
 functions:
-  hello-world: # TODO: remove me
-    handler: src/functions/hello-world/handler.handler
-    # layers:
-    #   - !Ref TracerLambdaLayer
-    # environment:
-    #   AUTO_TRACE_HOST: qislq0r597.execute-api.eu-west-1.amazonaws.com
-    #   AWS_LAMBDA_EXEC_WRAPPER: /opt/nodejs/tracer_wrapper
-    events:
-      - httpApi:
-          path: /hello
-          method: get
+  # hello-world:
+  #   handler: src/functions/hello-world/handler.handler
+  #   events:
+  #     - httpApi:
+  #         path: /hello
+  #         method: get
   main:
     handler: src/index.handler
     events:
