@@ -1,6 +1,6 @@
 {
   "name": "deploy-trace-stack",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Self-hosted serverless tracing (deploy script).",
   "type": "module",
   "main": "index.js",
