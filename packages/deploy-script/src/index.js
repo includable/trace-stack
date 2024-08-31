@@ -48,8 +48,6 @@ const questions = [
 ];
 const answers = await inquirer.prompt(questions);
 
-console.log(answers);
-
 // Clone repo
 console.log(chalk.blue("Cloning TraceStack repo..."));
 const cloner = degit("includable/trace-stack", {
