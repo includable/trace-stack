@@ -94,17 +94,23 @@ layers:
       - nodejs20.x
 
 functions:
-  - ${file(./src/functions/hello-world/function.yml)}
-  - ${file(./src/functions/collector/function.yml)}
-#   - ${file(./src/functions/users/get/function.yml)}
-#   - ${file(./src/functions/users/update/function.yml)}
-#   - ${file(./src/functions/preferences/get/function.yml)}
-#   - ${file(./src/functions/preferences/update/function.yml)}
-#   - ${file(./src/functions/media/upload/function.yml)}
+  hello-world: # TODO: remove me
+    handler: src/functions/hello-world/handler.handler
+    layers:
+      - !Ref TracerLambdaLayer
+    environment:
+      AUTO_TRACE_HOST: qislq0r597.execute-api.eu-west-1.amazonaws.com
+      AWS_LAMBDA_EXEC_WRAPPER: /opt/nodejs/tracer_wrapper
+    events:
+      - httpApi:
+          path: /hello
+          method: get
+  main:
+    handler: src/index.handler
+    events:
+      - httpApi:
+          path: /{proxy+}
+          method: any
 
 resources:
   - ${file(./src/infrastructure/database/table.yml)}
-#   - ${file(./src/infrastructure/storage/bucket.yml)}
-#   - ${file(./src/infrastructure/auth/auth-role.yml)}
-#   - ${file(./src/infrastructure/auth/user-pool.yml)}
-#   - ${file(./src/infrastructure/auth/identity-pool.yml)}

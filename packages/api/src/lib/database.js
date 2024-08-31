@@ -1,5 +1,10 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
+import {
+  DynamoDBDocumentClient,
+  PutCommand,
+  QueryCommand,
+  UpdateCommand,
+} from "@aws-sdk/lib-dynamodb";
 
 const translateConfig = {
   marshallOptions: {
@@ -14,18 +19,19 @@ export const dynamo = DynamoDBDocumentClient.from(
 
 export const time = () => Math.floor(Date.now() / 1000);
 
+export const getExpiryTime = () =>
+  time() + 86400 * Number(process.env.DATA_RETENTION_DAYS);
+
 export const put = async (item, expires = false) => {
   item = {
     ...item,
     _created: time(),
     ...(expires
       ? {
-          _expires: time() + 86400 * Number(process.env.DATA_RETENTION_DAYS),
+          _expires: getExpiryTime(),
         }
       : {}),
   };
-
-  console.log(item);
 
   return await dynamo.send(
     new PutCommand({
@@ -33,4 +39,36 @@ export const put = async (item, expires = false) => {
       Item: item,
     }),
   );
+};
+
+export const query = async (params) => {
+  return await dynamo.send(
+    new QueryCommand({
+      TableName: process.env.TABLE_NAME,
+      ...params,
+    }),
+  );
+};
+
+export const update = async (
+  /** @type {Omit<import("@aws-sdk/lib-dynamodb").UpdateCommandInput, "TableName">} */ params,
+) => {
+  return await dynamo.send(
+    new UpdateCommand({
+      TableName: process.env.TABLE_NAME,
+      ...params,
+    }),
+  );
+};
+
+export const queryAll = async (params) => {
+  let allItems = [];
+  while (true) {
+    const { Items, LastEvaluatedKey } = await query(params);
+    allItems = allItems.concat(Items);
+    if (!LastEvaluatedKey) {
+      break;
+    }
+  }
+  return allItems;
 };

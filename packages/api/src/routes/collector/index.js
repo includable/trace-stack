@@ -1,7 +1,12 @@
-import middleware from "@includable/serverless-middleware";
+import { Hono } from "hono";
 import { put } from "../../lib/database";
+import { saveHourlyStat } from "../../lib/stats";
 
-export const app = async ({ body }) => {
+const app = new Hono();
+
+app.post("/", async (c) => {
+  const body = await c.req.json();
+
   for (const span of body) {
     console.log(span);
 
@@ -10,6 +15,7 @@ export const app = async ({ body }) => {
       await put(
         {
           ...span,
+          transactionId: span.transactionId || span.transaction_id,
           pk: `transaction#${span.transactionId || span.transaction_id}`,
           sk: `log#${span.started}#${span.id}`,
           type: "log",
@@ -31,12 +37,16 @@ export const app = async ({ body }) => {
       true,
     );
 
-    if (span.type === "function" && span.ended) {
+    if (
+      span.type === "function" &&
+      span.ended &&
+      !span.id.includes("_started")
+    ) {
       // save function invocation details
       await put(
         {
           ...span,
-          pk: `function#${span.name}`,
+          pk: `function#${span.region}#${span.name}`,
           sk: `invocation#${span.started}#${span.id}`,
           type: "invocation",
         },
@@ -46,21 +56,34 @@ export const app = async ({ body }) => {
       // save function meta data
       await put(
         {
-          pk: `function#${span.name}`,
-          sk: `function`,
+          pk: `function#${span.region}#${span.name}`,
+          sk: `function#${span.region}`,
+          name: span.name,
           type: "function",
           lastInvocation: span.started,
           runtime: span.runtime,
           account: span.account,
           region: span.region,
           arn: span.invokedArn,
-          memoryAllocation: span.memoryAllocation,
+          memoryAllocated: span.memoryAllocated,
           timeout: span.maxFinishTime - span.started,
         },
         true,
       );
+
+      // save stats
+      const duration = span.ended - span.started;
+      const memory = span.memoryAllocated;
+      await saveHourlyStat(span.region, span.name + ".invocations", 1);
+      await saveHourlyStat(span.region, span.name + ".duration", duration);
+      await saveHourlyStat(span.region, span.name + ".memory", Number(memory));
+      if (span.error) {
+        await saveHourlyStat(span.region, span.name + ".errors", 1);
+      }
     }
   }
-};
 
-export const handler = middleware(app);
+  return c.json({ success: true });
+});
+
+export default app;

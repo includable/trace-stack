@@ -1,6 +1,0 @@
-collector:
-  handler: src/functions/collector/handler.handler
-  events:
-    - httpApi:
-        path: /api/spans
-        method: post
