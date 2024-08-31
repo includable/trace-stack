@@ -5,7 +5,6 @@ import { useData } from "@/lib/api";
 
 const Functions = () => {
   const { data: functions } = useData(`functions`, { suspense: true });
-  const region = "eu-west-1"; // TODO: get region from context
 
   return (
     <div>

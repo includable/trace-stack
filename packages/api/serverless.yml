@@ -77,16 +77,6 @@ provider:
             - dynamodb:*
           Resource:
             - "*"
-        - Effect: Allow
-          Action:
-            - cognito-idp:*
-          Resource:
-            - "*"
-        - Effect: Allow
-          Action:
-            - events:PutEvents
-          Resource:
-            - "*"
 
 layers:
   tracer:
