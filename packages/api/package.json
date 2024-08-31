@@ -6,7 +6,7 @@
   "scripts": {
     "start": "AUTHORIZER=$(cat tests/local-auth.txt | xargs) serverless offline start --noAuth",
     "prepare": "husky",
-    "deploy": "serverless deploy",
+    "deploy": "serverless deploy --verbose",
     "test": "jest --coverage"
   },
   "dependencies": {

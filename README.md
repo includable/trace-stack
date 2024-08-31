@@ -23,21 +23,20 @@ only pay for AWS usage related to tracing and storage.
 Simply run the command below to deploy the stack:
 
 ```bash
-aws cloudformation create-stack \
-  --stack-name trace-stack \
-  --capabilities CAPABILITY_NAMED_IAM \
-  --template-url https://trace-stack-templates.s3.amazonaws.com/latest.yml \
-  --parameters Region=eu-west-1
+npx deploy-trace-stack
 ```
 
-// TODO: use describe-stacks to get back the UI URL (https://stackoverflow.com/questions/41628487/getting-outputs-from-aws-cloudformation-describe-stacks - `--query 'Stacks[0].Outputs[?OutputKey==`DbUrl`].OutputValue' --output text`)
+This command will clone the repo, prompt you with some questions to set configuration options,
+and then use your current AWS credentials to deploy the stack.
+
+Once you're done, it will display the URL for your new dashboard.
 
 ## Auto-tracing
 
 Once installed, all Lambda functions in your AWS account will automatically be traced,
 by adding a Lambda layer to them. You'll also notice a new environment variable called `AUTO_TRACE_HOST`.
 
-If you wish to disable tracing for a specific function, you can add the environment variable `AUTO_TRACE_EXCLUDE` 
+If you wish to disable tracing for a specific function, you can add the environment variable `AUTO_TRACE_EXCLUDE`
 with a value of `1`. This will keep the Lambda layer from being added, and removes and logging and tracing.
 
 Note that it might take up to 20 minutes for the application to detect any newly added Lambda functions and

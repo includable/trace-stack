@@ -1,7 +1,7 @@
 {
   "name": "trace-stack",
   "version": "1.0.0",
-  "description": "Self-hosted tracing and monitoring for serverless apps.",
+  "description": "Self-hosted serverless tracing.",
   "main": "index.js",
   "repository": "git@github.com:includable/trace-stack.git",
   "author": "Thomas Schoffelen <thomas@schof.co>",
@@ -9,7 +9,7 @@
   "private": true,
   "packageManager": "yarn@4.4.1",
   "scripts": {
-    "deploy": "bash ./packages/deploy-script/deploy.sh"
+    "deploy": "yarn workspace @trace-stack/api deploy"
   },
   "workspaces": {
     "packages": [
