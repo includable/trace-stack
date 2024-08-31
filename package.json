@@ -10,6 +10,8 @@
   "packageManager": "yarn@4.4.1",
   "scripts": {
     "deploy": "yarn turbo deploy",
+    "build": "yarn turbo build",
+    "test": "yarn turbo test",
     "start": "turbo dev"
   },
   "workspaces": {

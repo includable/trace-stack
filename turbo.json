@@ -11,6 +11,10 @@
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": ["dist/**", ".serverless/**", ".esbuild/**"]
     },
+    "test": {
+      "dependsOn": ["build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"]
+    },
     "dev": {
       "cache": false,
       "persistent": true
