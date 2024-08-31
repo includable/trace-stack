@@ -43,6 +43,7 @@ provider:
     NODE_ENV: ${sls:stage}
     TABLE_NAME: ${self:service}-${sls:stage}
     CUSTOM_DOMAIN: ${param:CUSTOM_DOMAIN}
+    EDGE_ENDPOINT: !GetAtt HttpApi.ApiEndpoint
     # S3_BUCKET: ${self:service}-${sls:stage}
     # CLOUDFRONT_DOMAIN: !GetAtt UserMediaDistribution.DomainName
     # USER_POOL_ID:

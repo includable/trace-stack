@@ -16,5 +16,8 @@
       "packages/lambda-layer/nodejs",
       "packages/*"
     ]
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3"
   }
 }
