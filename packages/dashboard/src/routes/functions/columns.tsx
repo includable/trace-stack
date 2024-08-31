@@ -1,5 +1,6 @@
 "use client";
 
+import { MiniFunctionSummary } from "@/components/stats/function-summary";
 import { ColumnDef } from "@tanstack/react-table";
 import { Link } from "react-router-dom";
 
@@ -17,12 +18,9 @@ export const columns: ColumnDef<FunctionItem>[] = [
     cell: ({ row }) => {
       const name = row.getValue("name") as string;
       return (
-        <Link to={`/functions/${name}`} className="block text-primary">
+        <Link to={`/functions/${row.original.region}/${name}/invocations`} className="block text-primary">
           <span className="font-semibold block mb-1">{name}</span>
-          <span className="text-sm text-muted-foreground">
-            {row.original.region},{" "}
-            {row.original.runtime?.replace("AWS_Lambda_", "")}
-          </span>
+          <MiniFunctionSummary data={row.original} short />
         </Link>
       );
     },
@@ -32,7 +30,7 @@ export const columns: ColumnDef<FunctionItem>[] = [
     header: "Timeout",
     cell: ({ row }) => {
       const timeout = Math.round(row.getValue("timeout") / 1000);
-      return <span>{timeout}s</span>;
+      return <span>{timeout} s</span>;
     },
   },
   {

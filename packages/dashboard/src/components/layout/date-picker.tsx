@@ -14,18 +14,14 @@ import {
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 
-const store = createContext({
-  startDate: subDays(new Date(), 7),
-  endDate: new Date(),
-  label: "Last 7 days",
-});
+const store = createContext({});
 export const useDateRange = () => useContext(store);
 const { Provider } = store;
 
 export const DateRangeProvider = ({ children }) => {
-  const [startDate, setStartDate] = useState(subDays(new Date(), 7));
+  const [startDate, setStartDate] = useState(subDays(new Date(), 1));
   const [endDate, setEndDate] = useState(new Date());
-  const [label, setLabel] = useState("Last 7 days");
+  const [label, setLabel] = useState("Last 24 hours");
 
   return (
     <Provider
@@ -106,8 +102,12 @@ const DatePicker = ({}) => {
   return (
     <Popover open={open} onOpenChange={(open) => setOpen(open)}>
       <PopoverTrigger asChild>
-        <Button variant="outline" onClick={() => setOpen(true)}>
-          <Calendar className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 mr-2" />
+        <Button
+          variant="outline"
+          onClick={() => setOpen(true)}
+          className="px-3"
+        >
+          <Calendar className="h-[1.1rem] w-[1.1rem] mr-2" />
           {label}
         </Button>
       </PopoverTrigger>

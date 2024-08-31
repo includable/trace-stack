@@ -1,5 +1,6 @@
 import DatePicker from "@/components/layout/date-picker";
 import { ModeToggle } from "@/components/layout/mode-toggle";
+import { Suspense } from "react";
 import { Link, Outlet } from "react-router-dom";
 
 export default function Root() {
@@ -44,7 +45,7 @@ export default function Root() {
               >
                 Traces
               </Link>
-              {/* <Link
+              <Link
                 to="/users"
                 className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
               >
@@ -55,20 +56,18 @@ export default function Root() {
                 className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
               >
                 Settings
-              </Link> */}
+              </Link>
             </nav>
-            {/* <TeamSwitcher /> */}
-            {/* <MainNav className="mx-6" /> */}
             <div className="ml-auto flex items-center space-x-4">
               <DatePicker />
               <ModeToggle />
-              {/* <Search /> */}
-              {/* <UserNav /> */}
             </div>
           </div>
         </div>
         <div className="flex-1 space-y-4 p-8 pt-6">
-          <Outlet />
+          <Suspense fallback={<div>Loading...</div>}>
+            <Outlet />
+          </Suspense>
         </div>
       </div>
     </>

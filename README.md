@@ -6,7 +6,7 @@ Deploy a CloudFormation stack to your own AWS account for instant Lambda tracing
 Complete with a self-hosted UI, so you stay in full control of your data, and you
 only pay for AWS usage related to tracing and storage.
 
-[ IMAGE ]
+![.github/docs/screenshot.jpg]
 
 ## Batteries included
 
@@ -23,7 +23,7 @@ only pay for AWS usage related to tracing and storage.
 Simply run the command below to deploy the stack:
 
 ```bash
-npx deploy-trace-stack
+npx deploy-trace-stack@latest
 ```
 
 This command will clone the repo, prompt you with some questions to set configuration options,

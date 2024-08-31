@@ -13,7 +13,13 @@ module.exports.handler = async () => {
     warning: "yes",
   });
 
-  // throw new Error("Tantrum");
+  if (Math.random() > 0.6) {
+    throw new Error("Tantrum");
+  }
+
+  if (Math.random() > 0.5) {
+    throw new SyntaxError("Syntax Error");
+  }
 
   return {
     statusCode: 200,

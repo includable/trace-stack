@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { put, query, queryAll } from "../../lib/database";
+import { query, queryAll } from "../../lib/database";
 import { getHourlyValues } from "../../lib/stats";
 import {
   differenceInDays,
@@ -47,26 +47,47 @@ app.get("/functions/:region", async (c) => {
   return c.json(items);
 });
 
-app.get("/functions/:region/:name/invocations", async (c) => {
-  const [start, end] = getDates(c);
-  const startTs = start.getTime();
-  const endTs = end.getTime();
-
-  const items = await queryAll({
-    KeyConditionExpression: "#pk = :pk AND #sk BETWEEN :skStart AND :skEnd",
+app.get("/functions/:region/:name", async (c) => {
+  const { Items } = await query({
+    KeyConditionExpression: "#pk = :pk AND #sk = :sk",
     ExpressionAttributeNames: {
       "#pk": "pk",
       "#sk": "sk",
     },
     ExpressionAttributeValues: {
       ":pk": `function#${c.req.param("region")}#${c.req.param("name")}`,
+      ":sk": `function#${c.req.param("region")}`,
+    },
+  });
+
+  return c.json(Items?.[0]);
+});
+app.get("/functions/:region/:name/invocations", async (c) => {
+  const [start, end] = getDates(c);
+  const startTs = start.getTime();
+  const endTs = end.getTime();
+
+  const {Items} = await query({
+    KeyConditionExpression: "#pk = :pk AND #sk BETWEEN :skStart AND :skEnd",
+    ExpressionAttributeNames: {
+      "#pk": "pk",
+      "#sk": "sk",
+      "#type": "type",
+      "#error": "error",
+      "#id": "id",
+    },
+    ExpressionAttributeValues: {
+      ":pk": `function#${c.req.param("region")}#${c.req.param("name")}`,
       ":skStart": `invocation#${startTs}`,
       ":skEnd": `invocation#${endTs}`,
     },
-    IndexName: "type-sk",
+    ProjectionExpression:
+      "#pk, #sk, #type, #error, #id, started, ended, memoryAllocated",
+      Limit: 1000,
+      ScanIndexForward: false
   });
 
-  return c.json(items);
+  return c.json(Items);
 });
 
 app.get("/stats/:region/:name", async (c) => {

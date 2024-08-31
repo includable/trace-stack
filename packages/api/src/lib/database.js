@@ -41,7 +41,9 @@ export const put = async (item, expires = false) => {
   );
 };
 
-export const query = async (params) => {
+export const query = async (
+  /** @type {Omit<import("@aws-sdk/lib-dynamodb").QueryCommandInput, "TableName">} */ params,
+) => {
   return await dynamo.send(
     new QueryCommand({
       TableName: process.env.TABLE_NAME,
@@ -61,7 +63,9 @@ export const update = async (
   );
 };
 
-export const queryAll = async (params) => {
+export const queryAll = async (
+  /** @type {Omit<import("@aws-sdk/lib-dynamodb").QueryCommandInput, "TableName">} */ params,
+) => {
   let allItems = [];
   while (true) {
     const { Items, LastEvaluatedKey } = await query(params);

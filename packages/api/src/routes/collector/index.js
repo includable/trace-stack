@@ -77,8 +77,10 @@ app.post("/", async (c) => {
       await saveHourlyStat(span.region, span.name + ".invocations", 1);
       await saveHourlyStat(span.region, span.name + ".duration", duration);
       await saveHourlyStat(span.region, span.name + ".memory", Number(memory));
+      await saveHourlyStat(span.region, "invocations", 1);
       if (span.error) {
         await saveHourlyStat(span.region, span.name + ".errors", 1);
+        await saveHourlyStat(span.region, "errors", 1);
       }
     }
   }

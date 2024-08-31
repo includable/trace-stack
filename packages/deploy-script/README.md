@@ -21,7 +21,7 @@ only pay for AWS usage related to tracing and storage.
 Simply run the command below to deploy the stack:
 
 ```bash
-npx deploy-trace-stack
+npx deploy-trace-stack@latest
 ```
 
 This command will clone the repo, prompt you with some questions to set configuration options,
