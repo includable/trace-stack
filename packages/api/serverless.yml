@@ -26,6 +26,8 @@ custom:
 
 package:
   individually: true
+  include:
+    - dist/**
 
 provider:
   name: aws

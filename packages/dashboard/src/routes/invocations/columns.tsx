@@ -5,21 +5,27 @@ import { ColumnDef } from "@tanstack/react-table";
 import { formatRelative } from "date-fns";
 import { Link } from "react-router-dom";
 
-export type FunctionItem = {
+export type InvocationItem = {
+  id: string;
   name: string;
-  amount: number;
-  status: "pending" | "processing" | "success" | "failed";
-  email: string;
+  region: string;
+  error: any;
+  started: number;
+  ended: number;
 };
 
-export const columns: ColumnDef<FunctionItem>[] = [
+export const columns: ColumnDef<InvocationItem>[] = [
   {
     accessorKey: "id",
     header: "Invocations",
     cell: ({ row }) => {
       const id = row.getValue("id") as string;
+      const { region, name, started } = row.original;
       return (
-        <Link to={`/invocations/${id}`} className="text-primary">
+        <Link
+          to={`/functions/${region}/${name}/invocations/${started}/${id}`}
+          className="text-primary"
+        >
           <pre className="font-semibold text-xs block mb-1">{id}</pre>
         </Link>
       );

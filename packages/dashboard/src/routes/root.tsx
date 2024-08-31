@@ -6,13 +6,13 @@ import { Link, Outlet } from "react-router-dom";
 export default function Root() {
   return (
     <>
-      <div className="hidden flex-col md:flex">
+      <div className="flex-col md:flex">
         <div className="border-b">
           <div className="flex h-16 items-center px-4">
             <nav className="flex items-center space-x-4 lg:space-x-6">
               <Link to="/">
                 <svg
-                  className="size-6 mr-2"
+                  className="size-6 mr-2 ml-1"
                   viewBox="0 0 48 48"
                   xmlns="http://www.w3.org/2000/svg"
                 >
@@ -38,6 +38,12 @@ export default function Root() {
                 className="text-sm font-medium transition-colors hover:text-primary"
               >
                 Functions
+              </Link>
+              <Link
+                to="/issues"
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+              >
+                Issues
               </Link>
               <Link
                 to="/traces"

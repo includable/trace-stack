@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && mkdir -p ../api/dist && cp -r dist/* ../api/dist/",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -23,6 +23,7 @@
     "react": "^18.3.1",
     "react-date-range": "^2.0.1",
     "react-dom": "^18.3.1",
+    "react-json-tree": "^0.19.0",
     "react-router-dom": "^6.26.1",
     "recharts": "^2.12.7",
     "swr": "^2.2.5",

@@ -30,6 +30,7 @@ app.get("/functions", async (c) => {
 
   return c.json(items);
 });
+
 app.get("/functions/:region", async (c) => {
   const items = await queryAll({
     KeyConditionExpression: "#type = :type AND #sk = :sk",
@@ -62,12 +63,13 @@ app.get("/functions/:region/:name", async (c) => {
 
   return c.json(Items?.[0]);
 });
+
 app.get("/functions/:region/:name/invocations", async (c) => {
   const [start, end] = getDates(c);
   const startTs = start.getTime();
   const endTs = end.getTime();
 
-  const {Items} = await query({
+  const { Items } = await query({
     KeyConditionExpression: "#pk = :pk AND #sk BETWEEN :skStart AND :skEnd",
     ExpressionAttributeNames: {
       "#pk": "pk",
@@ -75,6 +77,8 @@ app.get("/functions/:region/:name/invocations", async (c) => {
       "#type": "type",
       "#error": "error",
       "#id": "id",
+      "#region": "region",
+      "#name": "name",
     },
     ExpressionAttributeValues: {
       ":pk": `function#${c.req.param("region")}#${c.req.param("name")}`,
@@ -82,12 +86,42 @@ app.get("/functions/:region/:name/invocations", async (c) => {
       ":skEnd": `invocation#${endTs}`,
     },
     ProjectionExpression:
-      "#pk, #sk, #type, #error, #id, started, ended, memoryAllocated",
-      Limit: 1000,
-      ScanIndexForward: false
+      "#pk, #sk, #type, #error, #id, #region, #name, transactionId, started, ended, memoryAllocated",
+    Limit: 1000,
+    ScanIndexForward: false,
   });
 
   return c.json(Items);
+});
+
+app.get("/functions/:region/:name/invocations/:ts/:id", async (c) => {
+  const { Items } = await query({
+    KeyConditionExpression: "#pk = :pk AND #sk = :sk",
+    ExpressionAttributeNames: {
+      "#pk": "pk",
+      "#sk": "sk",
+    },
+    ExpressionAttributeValues: {
+      ":pk": `function#${c.req.param("region")}#${c.req.param("name")}`,
+      ":sk": `invocation#${c.req.param("ts")}#${c.req.param("id")}`,
+    },
+  });
+
+  return c.json(Items?.[0]);
+});
+
+app.get("/transactions/:id", async (c) => {
+  const items = await queryAll({
+    KeyConditionExpression: "#pk = :pk",
+    ExpressionAttributeNames: {
+      "#pk": "pk",
+    },
+    ExpressionAttributeValues: {
+      ":pk": `transaction#${c.req.param("id")}`,
+    },
+  });
+
+  return c.json(items);
 });
 
 app.get("/stats/:region/:name", async (c) => {

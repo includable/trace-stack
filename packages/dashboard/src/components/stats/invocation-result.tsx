@@ -28,7 +28,7 @@ const InvocationResult = ({ error }) => {
         </TooltipTrigger>
         <TooltipContent>
           <pre className="max-w-xl">
-            <b>{error.message}</b>
+            <b>{error.message}</b><br />
             {error.stacktrace}
           </pre>
         </TooltipContent>

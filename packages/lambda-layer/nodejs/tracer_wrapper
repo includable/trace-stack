@@ -4,5 +4,7 @@ export TRACER_ORIGINAL_HANDLER=$_HANDLER
 export _HANDLER="/opt/nodejs/dist/auto_tracer_wrapper.handler"
 
 export LUMIGO_ANALYTICS="off"
+export MAX_EVENT_ENTITY_SIZE=10240
+export LUMIGO_MAX_ENTRY_SIZE_ON_ERROR=20480
 
 exec "$@"
