@@ -6,7 +6,7 @@ Deploy a CloudFormation stack to your own AWS account for instant Lambda tracing
 Complete with a self-hosted UI, so you stay in full control of your data, and you
 only pay for AWS usage related to tracing and storage.
 
-![.github/docs/screenshot.jpg]
+![Screenshot](.github/docs/screenshot.jpg)
 
 ## Batteries included
 
