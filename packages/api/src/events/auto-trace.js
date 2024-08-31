@@ -48,8 +48,8 @@ const getApiEndpoint = async () => {
 export const handler = async () => {
   // Check if we know our Lambda Layer ARN
   const arn = process.env.LAMBDA_LAYER_ARN;
-  const layerArnBase = arn?.substring(0, arn?.lastIndexOf(":") + 1);
-  if (!arn || !layerArnBase) {
+  const arnBase = arn?.substring(0, arn?.lastIndexOf(":") + 1);
+  if (!arn || !arnBase) {
     throw new Error("LAMBDA_LAYER_ARN is not defined");
   }
 
@@ -62,19 +62,22 @@ export const handler = async () => {
   // Find all lambdas that need a layer added
   let lambdasWithoutLayer = lambdas.filter((lambda) => {
     const layers = lambda.Layers || [];
+    const envVars = lambda.Environment?.Variables || {};
 
-    const hasLayer = layers.find(({ Arn }) => Arn.startsWith(layerArnBase));
-    const hasLayerUpdate = layers.find(
-      ({ Arn }) => Arn.startsWith(layerArnBase) && Arn !== arn,
-    );
-    const hasDisableEnvVar = lambda.Environment?.Variables?.AUTO_TRACE_EXCLUDE;
-    const hasSupportedRuntime = supportedRuntimes.includes(lambda.Runtime);
+    const isTraceStack = envVars.LAMBDA_LAYER_ARN === arn;
     const isUpdating = lambda.LastUpdateStatus === "InProgress";
+    const hasDisableEnvVar = envVars.AUTO_TRACE_EXCLUDE;
+    const hasSupportedRuntime = supportedRuntimes.includes(lambda.Runtime);
+    const hasLayer = layers.find(({ Arn }) => Arn.startsWith(arnBase));
+    const hasUpdate = layers.find(
+      ({ Arn }) => Arn.startsWith(arnBase) && Arn !== arn,
+    );
 
     return (
-      (!hasLayer || hasLayerUpdate) &&
+      (!hasLayer || hasUpdate) &&
       !hasDisableEnvVar &&
       !isUpdating &&
+      !isTraceStack &&
       hasSupportedRuntime
     );
   });
@@ -88,7 +91,7 @@ export const handler = async () => {
         Layers: [
           ...(lambda.Layers || [])
             .map((layer) => layer.Arn)
-            .filter((arn) => !arn.startsWith(layerArnBase)),
+            .filter((arn) => !arn.startsWith(arnBase)),
           process.env.LAMBDA_LAYER_ARN,
         ],
         Environment: {
