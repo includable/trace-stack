@@ -10,10 +10,10 @@ import { mkdir, writeFile } from "fs/promises";
 const exec = (command, options = {}) => {
   const child = child_process.exec(command, options);
   child.stdout.on("data", function (data) {
-    console.log(data.trim());
+    console.log(data?.trim());
   });
   child.stderr.on("data", function (data) {
-    console.error(data);
+    console.error(data?.trim());
   });
 
   return new Promise((resolve, reject) => {
@@ -45,11 +45,22 @@ const questions = [
     },
     filter: Number,
   },
+  {
+    type: "input",
+    name: "CUSTOM_DOMAIN",
+    message: "Do you want to use a custom domain (optional)?",
+    validate: (value) => {
+      const valid = !value || !!value.match(/^[a-z0-9-.]+$/);
+      return valid || "Please enter a valid domain";
+    },
+  },
 ];
 const answers = await inquirer.prompt(questions);
 
+// TODO: validate custom domain
+
 // Clone repo
-console.log(chalk.blue("Cloning TraceStack repo..."));
+console.log(chalk.blue("\nCloning TraceStack repo..."));
 const cloner = degit("includable/trace-stack", {
   cache: false,
   verbose: true,
@@ -66,9 +77,24 @@ await exec("yarn install", { cwd: "/tmp/trace-stack" });
 console.log(chalk.blue("Writing .env file..."));
 await writeFile(
   "/tmp/trace-stack/packages/api/.env",
-  `RETENTION_DAYS=${answers.RETENTION_DAYS}\n`,
+  `RETENTION_DAYS=${answers.RETENTION_DAYS}\nCUSTOM_DOMAIN=${answers.CUSTOM_DOMAIN}\n`,
 );
 
 // Deploy
 console.log(chalk.blue("Deploying..."));
 await exec("yarn deploy", { cwd: "/tmp/trace-stack" });
+
+// Create user
+console.log(chalk.blue("Creating user..."));
+// TODO: create user in Cognito
+
+// Done
+// TODO: find real domain
+const domain = "trace-stack.yourdomain.com";
+console.log(
+  "\n\n" +
+    boxen(
+      `${chalk.green("Done!")} You can now access your TraceStack instance at \n${chalk.underline(chalk.bold(`https://${domain}`))}`,
+      { padding: 1, borderStyle: "round" },
+    ),
+);

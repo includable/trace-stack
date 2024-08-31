@@ -7,7 +7,8 @@ plugins:
 
 params:
   default:
-    DATA_RETENTION_DAYS: 30
+    DATA_RETENTION_DAYS: ${env:DATA_RETENTION_DAYS, 30}
+    CUSTOM_DOMAIN: ${env:CUSTOM_DOMAIN, ""}
 
 custom:
   # baseDomain: my-app.com
@@ -41,6 +42,7 @@ provider:
     DATA_RETENTION_DAYS: ${param:DATA_RETENTION_DAYS}
     NODE_ENV: ${sls:stage}
     TABLE_NAME: ${self:service}-${sls:stage}
+    CUSTOM_DOMAIN: ${param:CUSTOM_DOMAIN}
     # S3_BUCKET: ${self:service}-${sls:stage}
     # CLOUDFRONT_DOMAIN: !GetAtt UserMediaDistribution.DomainName
     # USER_POOL_ID:
