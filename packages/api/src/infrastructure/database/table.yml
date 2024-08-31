@@ -17,7 +17,7 @@ Resources:
         - AttributeName: sk
           KeyType: RANGE
       TimeToLiveSpecification:
-        AttributeName: expiresAt
+        AttributeName: _expires
         Enabled: true
       GlobalSecondaryIndexes:
         - IndexName: type-sk

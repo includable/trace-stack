@@ -1,0 +1,24 @@
+{
+  "name": "@trace-stack/lambda-layer",
+  "version": "1.0.0",
+  "description": "Special handler for auto-wrapping tracer.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "files": [
+    "index.js",
+    "aws/aws-user-function.js",
+    "aws/Errors.js"
+  ],
+  "devDependencies": {
+    "jest": "^24.9.0"
+  },
+  "dependencies": {
+    "@lumigo/tracer": "^1.99.3",
+    "axios": "^1.7.6"
+  },
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  }
+}

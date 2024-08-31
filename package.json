@@ -1,48 +1,20 @@
 {
   "name": "trace-stack",
   "version": "1.0.0",
-  "license": "proprietary",
+  "description": "Self-hosted tracing and monitoring for serverless apps.",
+  "main": "index.js",
+  "repository": "git@github.com:includable/trace-stack.git",
+  "author": "Thomas Schoffelen <thomas@schof.co>",
+  "license": "MIT",
   "private": true,
+  "packageManager": "yarn@4.4.1",
   "scripts": {
-    "start": "AUTHORIZER=$(cat tests/local-auth.txt | xargs) serverless offline start --noAuth",
-    "prepare": "husky",
-    "deploy": "serverless deploy",
-    "test": "jest --coverage"
+    "deploy": "bash ./packages/deploy-script/deploy.sh"
   },
-  "dependencies": {
-    "@aws-sdk/client-cognito-identity-provider": "^3.521.0",
-    "@aws-sdk/client-dynamodb": "^3.521.0",
-    "@aws-sdk/client-eventbridge": "^3.521.0",
-    "@aws-sdk/client-s3": "^3.521.0",
-    "@aws-sdk/lib-dynamodb": "^3.521.0",
-    "@aws-sdk/s3-request-presigner": "^3.521.0",
-    "@includable/serverless-middleware": "^2.1.0",
-    "dynamodb-toolbox": "^0.9.2",
-    "joi": "^17.12.2",
-    "uuid": "^9.0.1"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.23.9",
-    "@babel/preset-env": "^7.23.9",
-    "@types/jest": "^29.5.12",
-    "babel-jest": "^29.7.0",
-    "esbuild": "^0.20.1",
-    "husky": "^9.0.11",
-    "jest": "^29.7.0",
-    "jest-junit": "^16.0.0",
-    "lint-staged": "^15.2.2",
-    "prettier": "^3.2.5",
-    "serverless": "^3.38.0",
-    "serverless-domain-manager": "^7.3.6",
-    "serverless-esbuild": "^1.51.0",
-    "serverless-offline": "^13.3.3"
-  },
-  "jest": {
-    "setupFiles": [
-      "./tests/set-env.js"
+  "workspaces": {
+    "packages": [
+      "packages/lambda-layer/nodejs",
+      "packages/*"
     ]
-  },
-  "lint-staged": {
-    "**/*": "prettier --write --ignore-unknown"
   }
 }

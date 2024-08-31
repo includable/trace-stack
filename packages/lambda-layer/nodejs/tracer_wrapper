@@ -1,0 +1,8 @@
+#!/bin/bash
+
+export TRACER_ORIGINAL_HANDLER=$_HANDLER
+export _HANDLER="/opt/nodejs/index.handler"
+
+export LUMIGO_ANALYTICS="off"
+
+exec "$@"
