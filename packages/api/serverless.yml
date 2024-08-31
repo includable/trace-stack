@@ -38,12 +38,15 @@ provider:
     service: ${self:service}
   environment:
     SERVICE: ${self:service}
+    API_GATEWAY_NAME: ${sls:stage}-${self:service}
     # STAGE: ${sls:stage}
     DATA_RETENTION_DAYS: ${param:DATA_RETENTION_DAYS}
     NODE_ENV: ${sls:stage}
     TABLE_NAME: ${self:service}-${sls:stage}
     CUSTOM_DOMAIN: ${param:CUSTOM_DOMAIN}
-    EDGE_ENDPOINT: !GetAtt HttpApi.ApiEndpoint
+    LAMBDA_LAYER_ARN: !Ref TracerLambdaLayer
+    # EDGE_ENDPOINT:
+    #   Fn::Sub: 'https://${HttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${StageName}/'
     # S3_BUCKET: ${self:service}-${sls:stage}
     # CLOUDFRONT_DOMAIN: !GetAtt UserMediaDistribution.DomainName
     # USER_POOL_ID:
@@ -96,11 +99,11 @@ layers:
 functions:
   hello-world: # TODO: remove me
     handler: src/functions/hello-world/handler.handler
-    layers:
-      - !Ref TracerLambdaLayer
-    environment:
-      AUTO_TRACE_HOST: qislq0r597.execute-api.eu-west-1.amazonaws.com
-      AWS_LAMBDA_EXEC_WRAPPER: /opt/nodejs/tracer_wrapper
+    # layers:
+    #   - !Ref TracerLambdaLayer
+    # environment:
+    #   AUTO_TRACE_HOST: qislq0r597.execute-api.eu-west-1.amazonaws.com
+    #   AWS_LAMBDA_EXEC_WRAPPER: /opt/nodejs/tracer_wrapper
     events:
       - httpApi:
           path: /hello
@@ -111,6 +114,12 @@ functions:
       - httpApi:
           path: /{proxy+}
           method: any
+  auto-trace:
+    handler: src/events/auto-trace.handler
+    timeout: 900
+    memorySize: 2048
+    events:
+      - schedule: rate(1 day)
 
 resources:
   - ${file(./src/infrastructure/database/table.yml)}

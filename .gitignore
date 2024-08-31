@@ -4,3 +4,4 @@ node_modules
 .esbuild
 .husky
 .turbo
+dist

@@ -5,12 +5,15 @@ const tracer = require("@lumigo/tracer")({
 const { load } = require("./aws/aws-user-function.js");
 const initLogger = require("./logger.js");
 
-const ORIGINAL_HANDLER_KEY = "TRACER_ORIGINAL_HANDLER";
-
 const getHandlerAsync = async () => {
-  if (process.env[ORIGINAL_HANDLER_KEY] === undefined)
-    throw Error("Could not load the original handler.");
-  return load(process.env.LAMBDA_TASK_ROOT, process.env[ORIGINAL_HANDLER_KEY]);
+  if (!process.env.TRACER_ORIGINAL_HANDLER) {
+    throw new Error("Could not load the original handler.");
+  }
+
+  return load(
+    process.env.LAMBDA_TASK_ROOT,
+    process.env.TRACER_ORIGINAL_HANDLER,
+  );
 };
 
 const removeTracerFromStacktrace = (err) => {
@@ -22,7 +25,11 @@ const removeTracerFromStacktrace = (err) => {
     const { stack } = err;
     const stackArr = stack.split("\n");
 
-    const patterns = ["/dist/lumigo.js:", "auto-instrument"];
+    const patterns = [
+      "/dist/lumigo.js:",
+      "auto_tracer_wrapper",
+      "auto-instrument",
+    ];
     const cleanedStack = stackArr.filter(
       (v) => !patterns.some((p) => v.includes(p)),
     );
@@ -53,9 +60,13 @@ const handler = async (event, context, callback) => {
   return tracer.trace(userHandler)(event, context, callback);
 };
 
-module.exports = { ORIGINAL_HANDLER_KEY, handler: handler };
+module.exports = { handler };
+
+// pre-load our handler to speed up cold starts
 try {
   (async () => {
-    await getHandlerAsync();
+    if (process.env.LAMBDA_TASK_ROOT) {
+      await getHandlerAsync();
+    }
   })();
 } catch (e) {}

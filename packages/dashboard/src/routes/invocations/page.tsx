@@ -48,7 +48,7 @@ const Invocations = () => {
           />
         </div>
       </div>
-      <DataTable columns={columns} data={invocations} />
+      <DataTable key={invocations.length} columns={columns} data={invocations} />
     </div>
   );
 };

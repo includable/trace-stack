@@ -9,7 +9,9 @@
     "test": "jest --coverage"
   },
   "dependencies": {
+    "@aws-sdk/client-api-gateway": "^3.637.0",
     "@aws-sdk/client-dynamodb": "^3.637.0",
+    "@aws-sdk/client-lambda": "^3.637.0",
     "@aws-sdk/lib-dynamodb": "^3.637.0",
     "@includable/serverless-middleware": "^2.2.0",
     "date-fns": "^3.6.0",

@@ -1,4 +1,5 @@
 const { getTraceId } = require("@lumigo/tracer/dist/utils");
+const { default: axios } = require("axios");
 
 /**
  * Initialise log catcher and forwarder.
@@ -11,12 +12,9 @@ const initLogger = (externalLogger = undefined) => {
     }
     try {
       const trace = getTraceId(process.env._X_AMZN_TRACE_ID);
-      return fetch(`https://${process.env.AUTO_TRACE_HOST}/api/spans`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify([
+      return axios.post(
+        `https://${process.env.AUTO_TRACE_HOST}/api/spans`,
+        [
           {
             info: {
               traceId: trace,
@@ -31,10 +29,15 @@ const initLogger = (externalLogger = undefined) => {
             log: JSON.stringify(args),
             started: Date.now(),
           },
-        ]),
-      });
+        ],
+        {
+          headers: {
+            Authorization: "t_0000000000000000",
+          },
+        },
+      );
     } catch (e) {
-      global.console._originalConsole.error(
+      global.console._originalConsoleError(
         `Failed sending log to remote server: ${e.message}`,
       );
     }
@@ -42,7 +45,7 @@ const initLogger = (externalLogger = undefined) => {
 
   global.console = (function (console) {
     return {
-      _originalConsole: console,
+      _originalConsoleError: (error) => console.error.apply(console, error),
       log: function () {
         console.log.apply(console, arguments);
         remoteLogger("log", arguments);

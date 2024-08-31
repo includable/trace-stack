@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export TRACER_ORIGINAL_HANDLER=$_HANDLER
-export _HANDLER="/opt/nodejs/index.handler"
+export _HANDLER="/opt/nodejs/dist/auto_tracer_wrapper.handler"
 
 export LUMIGO_ANALYTICS="off"
 

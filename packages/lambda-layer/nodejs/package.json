@@ -4,14 +4,15 @@
   "description": "Special handler for auto-wrapping tracer.",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "yarn build && jest",
+    "build": "esbuild index.js --bundle --platform=node --minify --target=node16 --outfile=dist/auto_tracer_wrapper.js"
   },
   "files": [
-    "index.js",
-    "aws/aws-user-function.js",
-    "aws/Errors.js"
+    "dist/index.js"
   ],
   "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "esbuild": "^0.23.1",
     "jest": "^24.9.0"
   },
   "dependencies": {
