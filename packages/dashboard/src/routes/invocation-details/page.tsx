@@ -6,6 +6,8 @@ import InvocationSummary from "@/components/stats/invocation-summary";
 import { Suspense } from "react";
 import TransactionDetails from "@/components/stats/transaction-details";
 import PayloadPreview from "@/components/stats/payload-preview";
+import TransactionGraph from "@/components/stats/transaction-graph";
+import { Loader } from "lucide-react";
 
 const Invocations = () => {
   const { region, name, id, ts } = useParams();
@@ -14,8 +16,6 @@ const Invocations = () => {
     { suspense: true },
   );
 
-  console.log(invocation);
-
   return (
     <div>
       <Button variant="link" className="p-0" asChild>
@@ -23,8 +23,23 @@ const Invocations = () => {
       </Button>
       <h1 className="text-2xl font-bold">{id}</h1>
       <InvocationSummary data={invocation} />
-      <hr className="my-5" />
-      <div className="flex flex-col lg:flex-row gap-10 my-8">
+      <div className="min-h-[160px] max-h-[240px] w-full rounded-md border mt-6">
+        <Suspense
+          fallback={
+            <div className="flex h-full w-full items-center justify-center">
+              <Loader className="size-5 text-gray-500 animate-spin" />
+            </div>
+          }
+        >
+          <TransactionGraph
+            id={invocation.transactionId}
+            onNodeClick={() => {
+              /* TODO */
+            }}
+          />
+        </Suspense>
+      </div>
+      <div className="flex flex-col lg:flex-row gap-10 my-10">
         <div className="flex-1 md:w-1/2 flex flex-col gap-10">
           {invocation.error && (
             <div>

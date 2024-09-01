@@ -18,11 +18,11 @@ export default function Root() {
                 >
                   <g
                     stroke="none"
-                    stroke-width="1"
+                    strokeWidth="1"
                     fill="none"
-                    fill-rule="evenodd"
+                    fillRule="evenodd"
                   >
-                    <g stroke="currentColor" stroke-width="5">
+                    <g stroke="currentColor" strokeWidth="5">
                       <polyline
                         id="Path"
                         points="8.57 37.77 24 24 39.72 37.77"

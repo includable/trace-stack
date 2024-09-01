@@ -42,7 +42,7 @@ const PayloadPreview = ({ title, value }) => {
     } catch (e) {
       return value;
     }
-  }, value);
+  }, [value]);
 
   if (
     displayValue === "" ||
