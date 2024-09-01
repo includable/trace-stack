@@ -1,5 +1,6 @@
 const { getTraceId } = require("@lumigo/tracer/dist/utils");
 const { default: axios } = require("axios");
+const { v4: uuid } = require("uuid");
 
 /**
  * Initialise log catcher and forwarder.
@@ -16,6 +17,7 @@ const initLogger = (externalLogger = undefined) => {
         `https://${process.env.AUTO_TRACE_HOST}/api/spans`,
         [
           {
+            id: uuid(),
             info: {
               traceId: trace,
               tracer: {
