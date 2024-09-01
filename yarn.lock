@@ -4786,6 +4786,7 @@ __metadata:
     "@aws-sdk/lib-dynamodb": "npm:^3.637.0"
     "@hono/node-server": "npm:^1.12.2"
     "@includable/serverless-middleware": "npm:^2.2.0"
+    "@trace-stack/lambda-layer": "workspace:^"
     date-fns: "npm:^3.6.0"
     dynamodb-toolbox: "npm:^1.3.8"
     esbuild: "npm:^0.20.1"
@@ -4839,7 +4840,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@trace-stack/lambda-layer@workspace:packages/lambda-layer":
+"@trace-stack/lambda-layer@workspace:^, @trace-stack/lambda-layer@workspace:packages/lambda-layer":
   version: 0.0.0-use.local
   resolution: "@trace-stack/lambda-layer@workspace:packages/lambda-layer"
   dependencies:
