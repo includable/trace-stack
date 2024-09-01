@@ -43,7 +43,7 @@ const PayloadPreviewValue = ({ value }) => {
   if (typeof value === "string") {
     return (
       <div className="group relative">
-        <div className="absolute top-3 right-3 gap-2 hidden group-hover:flex">
+        <div className="absolute top-3 right-3 gap-2 z-20 hidden group-hover:flex">
           <Button variant="outline" size="miniIcon" onClick={() => copy()}>
             {copied ? (
               <ClipboardCheck className="size-3" />
@@ -59,7 +59,7 @@ const PayloadPreviewValue = ({ value }) => {
 
   return (
     <div className="mt-4 mr-5 ml-3 pb-5 font-mono text-sm group relative">
-      <div className="absolute -top-1 -right-2 gap-2 hidden group-hover:flex">
+      <div className="absolute -top-1 -right-2 gap-2 z-20 hidden group-hover:flex">
         <Button variant="outline" size="miniIcon" onClick={() => copy()}>
           {copied ? (
             <ClipboardCheck className="size-3" />
