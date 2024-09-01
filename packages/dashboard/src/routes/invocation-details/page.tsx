@@ -23,7 +23,7 @@ const Invocations = () => {
       </Button>
       <h1 className="text-2xl font-bold">{id}</h1>
       <InvocationSummary data={invocation} />
-      <div className="h-[200px] w-full rounded-md border mt-6 overflow-hidden">
+      <div className="h-[300px] w-full rounded-md border mt-6 overflow-hidden">
         <Suspense
           fallback={
             <div className="flex h-full w-full items-center justify-center">

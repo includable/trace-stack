@@ -4,7 +4,8 @@ import useSWR from "swr";
 const BASE_URL = window.location.href.includes("localhost:")
   ? "http://localhost:3000"
   : "";
-const API_URL = `${BASE_URL}/api/explore`;
+
+export const API_URL = `${BASE_URL}/api/explore`;
 
 export const dataLoader =
   (path: string, key: string = path) =>

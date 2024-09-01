@@ -2,9 +2,14 @@ import Cytoscape from "cytoscape";
 import CytoscapeComponent from "react-cytoscapejs";
 import klay from "cytoscape-klay";
 
-import { useData } from "@/lib/api";
 import { createRoot } from "react-dom/client";
 import { useTheme } from "@/components/layout/theme-provider";
+
+import {
+  getGroupingKey,
+  getTransactionLabel,
+  useTransaction,
+} from "@/lib/transaction";
 
 Cytoscape.use(klay);
 
@@ -21,7 +26,7 @@ const GraphNode = ({ data }) => {
           {data.spans.length}
         </div>
       ) : null}
-      <div className="absolute top-full pointer-events-none -left-20 -right-20 mt-2 text-foreground truncate text-center text-xs">
+      <div className="absolute top-full pointer-events-none -left-12 -right-12 mt-2 text-foreground truncate text-center text-xs">
         {data.label}
       </div>
     </div>
@@ -126,12 +131,10 @@ const buildTransactionGraph = (transaction) => {
 
     const id = addNode({
       id: item.id,
-      label: item.info.resourceName || item.service || item.spanType,
+      label: getTransactionLabel(item),
       transaction: item,
       service: item.service || item.spanType,
-      groupingKey: [item.spanType, item.service, item.info.resourceName].join(
-        ",",
-      ),
+      groupingKey: getGroupingKey(item),
     });
 
     if (item.parentId) {
@@ -169,10 +172,12 @@ const buildTransactionGraph = (transaction) => {
 };
 
 const TransactionGraph = ({ id, onNodeClick }) => {
-  const { data } = useData(`transactions/${id}`, { suspense: true });
+  const {
+    data: { spans },
+  } = useTransaction(id, { suspense: true });
   const { value: theme } = useTheme();
 
-  const [elements, roots] = buildTransactionGraph(data);
+  const [elements, roots] = buildTransactionGraph(spans);
 
   return (
     <CytoscapeComponent
@@ -181,8 +186,8 @@ const TransactionGraph = ({ id, onNodeClick }) => {
         {
           selector: "node",
           style: {
-            width: 36,
-            height: 36,
+            width: 48,
+            height: 48,
             content: "data(label)",
             "text-valign": "bottom",
             "text-margin-y": 13,
@@ -201,20 +206,14 @@ const TransactionGraph = ({ id, onNodeClick }) => {
       layout={{
         name: "klay",
         fit: false,
-        animate: false,
+        nodeDimensionsIncludeLabels: true,
         padding: 30,
-        roots,
-        stop: (event: any) => {
-          event.cy.center();
-          event.cy.nodes().renderHTMLNodes({ hideOriginal: true });
-        },
+        stop: (event: any) => event.cy.center(),
         klay: {
-          direction: "RIGHT",
-          edgeSpacingFactor: 5,
-          spacing: window.innerWidth / 10,
+          spacing: 80,
         },
       }}
-      style={{ width: "100%", height: "212px" }}
+      style={{ width: "100%", height: "300px" }}
       cy={(cy) => {
         cy.center();
         cy.nodes().renderHTMLNodes({ hideOriginal: true });
