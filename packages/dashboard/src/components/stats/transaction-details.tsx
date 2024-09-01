@@ -1,13 +1,19 @@
 import { useMemo } from "react";
+import { CaretDownIcon } from "@radix-ui/react-icons";
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import PayloadPreview from "@/components/stats/payload-preview";
 import {
   getTransactionService,
   groupSpans,
   useTransaction,
 } from "@/lib/transaction";
-import { CaretDownIcon } from "@radix-ui/react-icons";
 import { cn } from "@/lib/utils";
-import PayloadPreview from "@/components/stats/payload-preview";
 
 const TransactionTitle = ({ transaction }) => {
   if (transaction.info?.dynamodbMethod) {
@@ -85,12 +91,22 @@ const TransactionTitle = ({ transaction }) => {
 const ServiceIcon = ({ transaction }) => {
   const service = getTransactionService(transaction);
   return (
-    <div
-      className="size-4 rounded-sm bg-gray-400 bg-cover bg-center"
-      style={{
-        backgroundImage: `url(/images/service-icons-mini/${service}.svg)`,
-      }}
-    />
+    <TooltipProvider>
+      <Tooltip delayDuration={100}>
+        <TooltipTrigger>
+          <div
+            className="size-4 rounded-sm bg-gray-400 bg-cover bg-center"
+            title={service}
+            style={{
+              backgroundImage: `url(/images/service-icons-mini/${service}.svg)`,
+            }}
+          />
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{service}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 };
 
@@ -120,7 +136,20 @@ const SpanDetails = ({ span }) => {
     return <PayloadPreview value={log} />;
   }
 
-  // TODO: show more detail for DynamoDB spans
+  if (span.info?.dynamodbMethod) {
+    return (
+      <div className="flex flex-col gap-4">
+        <PayloadPreview
+          title="Request"
+          value={span.info.httpInfo.request.body}
+        />
+        <PayloadPreview
+          title="Response"
+          value={span.info.httpInfo.response.body}
+        />
+      </div>
+    );
+  }
 
   if (span.spanType === "http" && span.info?.httpInfo) {
     return (
@@ -162,7 +191,7 @@ const SpanItem = ({ spans, nested = false }) => {
     <details key={`${transaction.id}${transaction.started}`}>
       <summary
         className={cn(
-          "text-sm flex items-center justify-between gap-2",
+          "text-sm flex items-center justify-between gap-2 cursor-pointer",
           nested ? "p-2" : "p-4",
         )}
       >
