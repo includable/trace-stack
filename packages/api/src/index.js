@@ -12,6 +12,7 @@ app.route("/api/explore", explore);
 
 let html = "";
 app.use("/assets/*", serveStatic({ root: "./dist" }));
+app.use("/images/*", serveStatic({ root: "./dist" }));
 app.use("/icon.svg", serveStatic({ root: "./dist" }));
 app.get("/*", async (c) => {
   if (!html) html = fs.readFileSync("./dist/index.html", "utf8");
