@@ -170,7 +170,7 @@ const buildTransactionGraph = (transaction) => {
 
 const TransactionGraph = ({ id, onNodeClick }) => {
   const { data } = useData(`transactions/${id}`, { suspense: true });
-  const { theme } = useTheme();
+  const { value: theme } = useTheme();
 
   const [elements, roots] = buildTransactionGraph(data);
 

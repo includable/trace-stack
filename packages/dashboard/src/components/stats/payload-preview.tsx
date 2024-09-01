@@ -1,3 +1,4 @@
+import { useTheme } from "@/components/layout/theme-provider";
 import { useMemo } from "react";
 import { JSONTree } from "react-json-tree";
 
@@ -22,13 +23,15 @@ const theme = {
 };
 
 const PayloadPreviewValue = ({ value }) => {
+  const { value: themeValue } = useTheme();
+  
   if (typeof value === "string") {
     return <pre className="font-mono text-sm p-4 px-5">{value}</pre>;
   }
 
   return (
     <div className="mt-4 mr-5 ml-3 pb-5 font-mono text-sm">
-      <JSONTree data={value} theme={theme} hideRoot />
+      <JSONTree data={value} theme={theme} hideRoot invertTheme={themeValue === 'light'} />
     </div>
   );
 };
