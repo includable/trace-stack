@@ -202,7 +202,6 @@ const TransactionGraph = ({ id, onNodeClick }) => {
         name: "klay",
         fit: false,
         animate: false,
-        nodeDimensionsIncludeLabels: true,
         padding: 30,
         roots,
         stop: (event: any) => {
@@ -215,7 +214,7 @@ const TransactionGraph = ({ id, onNodeClick }) => {
           spacing: window.innerWidth / 10,
         },
       }}
-      style={{ width: "100%", height: "200px" }}
+      style={{ width: "100%", height: "212px" }}
       cy={(cy) => {
         cy.center();
         cy.nodes().renderHTMLNodes({ hideOriginal: true });
