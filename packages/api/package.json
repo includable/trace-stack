@@ -14,6 +14,7 @@
     "@aws-sdk/lib-dynamodb": "^3.637.0",
     "@hono/node-server": "^1.12.2",
     "@includable/serverless-middleware": "^2.2.0",
+    "@trace-stack/dashboard": "workspace:^",
     "@trace-stack/lambda-layer": "workspace:^",
     "date-fns": "^3.6.0",
     "dynamodb-toolbox": "^1.3.8",
