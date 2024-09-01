@@ -8,6 +8,7 @@ import { useTheme } from "@/components/layout/theme-provider";
 import {
   getGroupingKey,
   getTransactionLabel,
+  getTransactionService,
   useTransaction,
 } from "@/lib/transaction";
 
@@ -133,7 +134,7 @@ const buildTransactionGraph = (transaction) => {
       id: item.id,
       label: getTransactionLabel(item),
       transaction: item,
-      service: item.service || item.spanType,
+      service: getTransactionService(item),
       groupingKey: getGroupingKey(item),
     });
 

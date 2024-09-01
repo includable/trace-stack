@@ -24,20 +24,25 @@ const theme = {
 
 const PayloadPreviewValue = ({ value }) => {
   const { value: themeValue } = useTheme();
-  
+
   if (typeof value === "string") {
     return <pre className="font-mono text-sm p-4 px-5">{value}</pre>;
   }
 
   return (
     <div className="mt-4 mr-5 ml-3 pb-5 font-mono text-sm">
-      <JSONTree data={value} theme={theme} hideRoot invertTheme={themeValue === 'light'} />
+      <JSONTree
+        data={value}
+        theme={theme}
+        hideRoot
+        invertTheme={themeValue === "light"}
+      />
     </div>
   );
 };
 
-const PayloadPreview = ({ title, value }) => {
-  const truncated = value?.includes("...[too long]");
+const PayloadPreview = ({ title = "", value }) => {
+  const truncated = typeof value === 'string' && value?.includes("...[too long]");
 
   const displayValue = useMemo(() => {
     try {
@@ -57,12 +62,14 @@ const PayloadPreview = ({ title, value }) => {
 
   return (
     <div>
-      <h4 className="text-sm font-medium mb-3">
-        {title}
-        {truncated ? (
-          <span className="text-muted-foreground"> (truncated)</span>
-        ) : null}
-      </h4>
+      {title && (
+        <h4 className="text-sm font-medium mb-3">
+          {title}
+          {truncated ? (
+            <span className="text-muted-foreground"> (truncated)</span>
+          ) : null}
+        </h4>
+      )}
       <div className="rounded-md border overflow-auto max-h-[30rem]">
         <PayloadPreviewValue value={displayValue} />
       </div>

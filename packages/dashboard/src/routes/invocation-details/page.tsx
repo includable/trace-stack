@@ -39,8 +39,8 @@ const Invocations = () => {
           />
         </Suspense>
       </div>
-      <div className="flex flex-col lg:flex-row gap-10 my-10">
-        <div className="flex-1 md:w-1/2 flex flex-col gap-10">
+      <div className="grid lg:grid-cols-3 gap-10 my-10">
+        <div className="flex flex-col gap-10">
           {invocation.error && (
             <div>
               <h4 className="text-sm font-medium mb-3">Error</h4>
@@ -60,7 +60,7 @@ const Invocations = () => {
           />
           <PayloadPreview title="Environment" value={invocation.envs} />
         </div>
-        <div className="flex-1 md:w-1/2 flex flex-col">
+        <div className="col-span-2 flex flex-col">
           <h4 className="text-sm font-medium mb-3">Transaction details</h4>
           <div className="flex-1 rounded-md border">
             <Suspense fallback={<div>Loading...</div>}>

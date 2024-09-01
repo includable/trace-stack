@@ -53,6 +53,7 @@
     --ring: 216 12.2% 83.9%;
   }
 }
+
 @layer base {
   * {
     @apply border-border;
@@ -60,4 +61,8 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+details summary::-webkit-details-marker {
+  display: none;
 }
