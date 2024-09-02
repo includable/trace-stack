@@ -3,7 +3,7 @@ const tracer = require("@lumigo/tracer")({
   edgeHost: process.env.AUTO_TRACE_HOST,
 });
 
-const { load } = require("./aws/aws-user-function.js");
+const { load } = require("./lib/aws/aws-user-function.js");
 
 const initLogger = require("./lib/logger");
 const logger = initLogger();
