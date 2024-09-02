@@ -9,6 +9,7 @@ const uuid = require("../utils/uuid");
  */
 const initLogger = (externalLogger = undefined) => {
   let queue = [];
+  let logSequenceNumber = 0;
 
   const flushQueue = async () => {
     if (!queue.length) return;
@@ -44,6 +45,10 @@ const initLogger = (externalLogger = undefined) => {
 
     try {
       const trace = getTraceId(process.env._X_AMZN_TRACE_ID);
+      logSequenceNumber++;
+      if (logSequenceNumber > 10000) {
+        logSequenceNumber = 0;
+      }
 
       queue.push({
         id: uuid(),
@@ -58,7 +63,8 @@ const initLogger = (externalLogger = undefined) => {
         type: "log",
         logType: type,
         log: JSON.stringify(args),
-        started: Date.now(),
+        logSequenceNumber: logSequenceNumber,
+        started: Number(`${Date.now()}.${logSequenceNumber}`),
       });
 
       if (needsFlush()) {
