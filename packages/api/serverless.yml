@@ -40,19 +40,14 @@ provider:
     service: ${self:service}
   environment:
     SERVICE: ${self:service}
-    API_GATEWAY_NAME: ${sls:stage}-${self:service}
-    # STAGE: ${sls:stage}
+    STAGE: ${sls:stage}
     DATA_RETENTION_DAYS: ${param:DATA_RETENTION_DAYS}
+    API_GATEWAY_NAME: ${sls:stage}-${self:service}
     NODE_ENV: ${sls:stage}
     TABLE_NAME: ${self:service}-${sls:stage}
     CUSTOM_DOMAIN: ${param:CUSTOM_DOMAIN}
     LAMBDA_LAYER_ARN: !Ref TracerLambdaLayer
-    # EDGE_ENDPOINT:
-    #   Fn::Sub: 'https://${HttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${StageName}/'
-    # S3_BUCKET: ${self:service}-${sls:stage}
-    # CLOUDFRONT_DOMAIN: !GetAtt UserMediaDistribution.DomainName
-    # USER_POOL_ID:
-    #   Ref: CognitoUserPool
+    AUTO_TRACE_EXCLUDE: 1
   httpApi:
     payload: "2.0"
     cors: true
@@ -89,12 +84,6 @@ layers:
       - nodejs20.x
 
 functions:
-  # hello-world:
-  #   handler: src/functions/hello-world/handler.handler
-  #   events:
-  #     - httpApi:
-  #         path: /hello
-  #         method: get
   main:
     handler: src/index.handler
     events:
