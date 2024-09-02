@@ -158,6 +158,10 @@ export function DataTable<TData, TValue>({
       </div>
 
       {paginate && (
+        <div className="flex items-center justify-between">
+        <div className="text-xs text-muted-foreground">
+          Page {pagination.pageIndex + 1} of {table.getPageCount()} ({table.getRowCount()} total)
+        </div>
         <div className="flex items-center justify-end space-x-2 py-4">
           <Button
             variant="outline"
@@ -175,6 +179,7 @@ export function DataTable<TData, TValue>({
           >
             Next
           </Button>
+        </div>
         </div>
       )}
     </div>

@@ -70,10 +70,11 @@ const Invocations = () => {
         pageSize={50}
         columns={columns}
         data={invocations}
+        defaultSorting={[{ id: "started", desc: true }]}
       />
       <div className="flex items-center justify-between">
         <div className="text-xs text-muted-foreground">
-          Page {previousKeys.length + 1} ({invocations.length} invocations)
+          Page {previousKeys.length + 1} ({invocations.length} items)
         </div>
         <div className="flex items-center justify-end space-x-2 py-4">
           <Button
