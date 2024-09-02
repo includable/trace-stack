@@ -4,7 +4,9 @@ const tracer = require("@lumigo/tracer")({
 });
 
 const { load } = require("./aws/aws-user-function.js");
+
 const initLogger = require("./logger.js");
+const logger = initLogger();
 
 const getHandlerAsync = async () => {
   if (!process.env.TRACER_ORIGINAL_HANDLER) {
@@ -57,8 +59,9 @@ const handler = async (event, context, callback) => {
     return userHandler(event, context, callback);
   }
 
-  initLogger();
-  return tracer.trace(userHandler)(event, context, callback);
+  const resultValue = await tracer.trace(userHandler)(event, context, callback);
+  logger.flushQueue();
+  return resultValue;
 };
 
 module.exports = { handler };
