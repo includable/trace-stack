@@ -5,7 +5,7 @@ const tracer = require("@lumigo/tracer")({
 
 const { load } = require("./aws/aws-user-function.js");
 
-const initLogger = require("./logger.js");
+const initLogger = require("./lib/logger");
 const logger = initLogger();
 
 const getHandlerAsync = async () => {
@@ -60,7 +60,7 @@ const handler = async (event, context, callback) => {
   }
 
   const resultValue = await tracer.trace(userHandler)(event, context, callback);
-  logger.flushQueue();
+  await logger.flushQueue();
   return resultValue;
 };
 

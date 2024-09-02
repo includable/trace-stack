@@ -18,7 +18,7 @@
   "dependencies": {
     "@lumigo/tracer": "^1.99.3",
     "axios": "^1.7.6",
-    "uuid": "^10.0.0"
+    "node-fetch": "^2"
   },
   "installConfig": {
     "hoistingLimits": "workspaces"
