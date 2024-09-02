@@ -15,7 +15,7 @@ export type FunctionItem = {
 export const columns: ColumnDef<FunctionItem>[] = [
   {
     accessorKey: "name",
-    header: "Name",
+    header: "Function",
     cell: ({ row }) => {
       const name = row.getValue("name") as string;
       return (
@@ -32,6 +32,7 @@ export const columns: ColumnDef<FunctionItem>[] = [
   {
     accessorKey: "invocations",
     header: "Invocations",
+    enableSorting: false,
     cell: ({ row }) => {
       return (
         <MiniStatsChart
@@ -45,14 +46,17 @@ export const columns: ColumnDef<FunctionItem>[] = [
   {
     accessorKey: "errors",
     header: "Errors",
+    enableSorting: false,
     cell: ({ row }) => {
       return (
+        <div className="lg:mr-10">
         <MiniStatsChart
         title="Traced errors"
         color="var(--chart-2)"
         region={row.original.region}
         name={row.original.name + ".errors"}
         />
+        </div>
       );
     },
   },

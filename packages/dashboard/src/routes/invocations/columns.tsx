@@ -17,7 +17,7 @@ export type InvocationItem = {
 export const columns: ColumnDef<InvocationItem>[] = [
   {
     accessorKey: "id",
-    header: "Invocations",
+    header: "Invocation",
     cell: ({ row }) => {
       const id = row.getValue("id") as string;
       const { region, name, started } = row.original;

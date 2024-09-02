@@ -15,12 +15,14 @@ export const dataLoader =
     }));
   };
 
-export const useData = (path, swrOptions = {}) => {
+export const useData = (path: string, swrOptions = {}) => {
   const { startDate, endDate } = useDateRange();
-  const fetcher = (path) =>
-    fetch(
-      `${API_URL}/${path}?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
-    ).then((res) => res.json());
+
+  const fetcher = (path: string) => {
+    path += path.includes("?") ? "&" : "?";
+    path += `startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`;
+    return fetch(`${API_URL}/${path}`).then((res) => res.json());
+  };
 
   return useSWR(
     `${path}-${startDate}-${endDate}`,

@@ -1,18 +1,35 @@
 import { Link, useParams } from "react-router-dom";
 
-import { DataTable } from "./data-table";
-import { columns } from "./columns";
-import { useData } from "@/lib/api";
 import { Button } from "@/components/ui/button";
+import { DataTable } from "@/components/tables/data-table";
 import { StatsChart } from "@/components/stats/stats-chart";
 import FunctionSummary from "@/components/stats/function-summary";
+import { columns } from "./columns";
+import { useData } from "@/lib/api";
+import { useState } from "react";
 
 const Invocations = () => {
   const { region, name } = useParams();
-  const { data: invocations } = useData(
-    `functions/${region}/${name}/invocations`,
-    { suspense: true },
+  const [startKey, setStartKey] = useState("");
+  const [previousKeys, setPreviousKeys] = useState<string[]>([]);
+
+  const {
+    data: { invocations, nextStartKey },
+  } = useData(
+    `functions/${region}/${name}/invocations?startKey=${encodeURIComponent(startKey)}`,
+    {
+      suspense: true,
+    },
   );
+
+  const goBack = () => {
+    setStartKey(previousKeys.pop());
+    setPreviousKeys(previousKeys);
+  };
+  const goNext = () => {
+    setPreviousKeys([...previousKeys, startKey]);
+    setStartKey(nextStartKey);
+  };
 
   return (
     <div>
@@ -48,7 +65,35 @@ const Invocations = () => {
           />
         </div>
       </div>
-      <DataTable key={invocations.length} columns={columns} data={invocations} />
+      <DataTable
+        id="invocations"
+        pageSize={50}
+        columns={columns}
+        data={invocations}
+      />
+      <div className="flex items-center justify-between">
+        <div className="text-xs text-muted-foreground">
+          Page {previousKeys.length + 1} ({invocations.length} invocations)
+        </div>
+        <div className="flex items-center justify-end space-x-2 py-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => goBack()}
+            disabled={!previousKeys.length}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => goNext()}
+            disabled={!nextStartKey}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };

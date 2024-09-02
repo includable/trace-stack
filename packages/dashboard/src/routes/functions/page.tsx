@@ -1,6 +1,7 @@
-import { DataTable } from "./data-table";
-import { columns } from "./columns";
+import { DataTable } from "@/components/tables/data-table";
 import { StatsChart } from "@/components/stats/stats-chart";
+
+import { columns } from "./columns";
 import { useData } from "@/lib/api";
 
 const Functions = () => {
@@ -12,7 +13,7 @@ const Functions = () => {
       <p className="prose prose-sm mb-4">
         Functions start appearing after the first traced invocation.
       </p>
-      <div className="flex flex-col md:flex-row gap-5 my-5">
+      <div className="flex flex-col md:flex-row gap-5 my-5 mb-8">
         <div className="rounded-md border flex-1">
           <StatsChart
             title="Traced invocations"
@@ -29,7 +30,13 @@ const Functions = () => {
           />
         </div>
       </div>
-      <DataTable columns={columns} data={functions} />
+      <DataTable
+        id="functions"
+        defaultSorting={[{ id: "name", desc: false }]}
+        columns={columns}
+        data={functions}
+        paginate
+      />
     </div>
   );
 };

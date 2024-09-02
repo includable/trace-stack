@@ -45,7 +45,9 @@ export function StatsChart({
     <div className="p-7 pt-6 px-6 pb-4">
       <h3 className="text-sm pl-1 pb-3">
         <span className="font-semibold">{title}</span>{" "}
-        {total?.toLocaleString("en", { maximumFractionDigits: 1 })} {suffix}
+        <span className="text-muted-foreground">
+          {total?.toLocaleString("en", { maximumFractionDigits: 1 })} {suffix}
+        </span>
       </h3>
       <ChartContainer
         config={{

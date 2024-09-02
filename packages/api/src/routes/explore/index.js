@@ -69,8 +69,10 @@ app.get("/functions/:region/:name/invocations", async (c) => {
   const startTs = start.getTime();
   const endTs = end.getTime();
 
-  const { Items } = await query({
+  const startKey = c.req.query("startKey");
+  const { Items, LastEvaluatedKey } = await query({
     KeyConditionExpression: "#pk = :pk AND #sk BETWEEN :skStart AND :skEnd",
+    ExclusiveStartKey: startKey ? JSON.parse(startKey) : undefined,
     ExpressionAttributeNames: {
       "#pk": "pk",
       "#sk": "sk",
@@ -87,11 +89,14 @@ app.get("/functions/:region/:name/invocations", async (c) => {
     },
     ProjectionExpression:
       "#pk, #sk, #type, #error, #id, #region, #name, transactionId, started, ended, memoryAllocated",
-    Limit: 1000,
+    Limit: 50,
     ScanIndexForward: false,
   });
 
-  return c.json(Items);
+  return c.json({
+    invocations: Items,
+    nextStartKey: LastEvaluatedKey ? JSON.stringify(LastEvaluatedKey) : false,
+  });
 });
 
 app.get("/functions/:region/:name/invocations/:ts/:id", async (c) => {
