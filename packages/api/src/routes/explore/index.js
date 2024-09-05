@@ -133,7 +133,7 @@ app.get("/stats/:region/:name", async (c) => {
   const [start, end] = getDates(c);
 
   const ticks =
-    differenceInDays(start, end) > 7
+    differenceInDays(start, end) > 3
       ? eachDayOfInterval({ start, end })
       : eachHourOfInterval({ start, end });
 
