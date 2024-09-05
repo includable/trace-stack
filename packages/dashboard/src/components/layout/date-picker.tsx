@@ -1,7 +1,7 @@
 import { createContext, useContext, useState } from "react";
-import { Calendar } from "lucide-react";
 import { DateRangePicker, createStaticRanges } from "react-date-range";
-import { subDays, format, differenceInDays, subMonths } from "date-fns";
+import { Calendar } from "lucide-react";
+import { subDays, format, subHours } from "date-fns";
 import { enGB } from "date-fns/locale";
 
 import { Button } from "@/components/ui/button";
@@ -77,6 +77,20 @@ const DatePicker = ({}) => {
 
   const ranges = createStaticRanges([
     {
+      label: "Last hours",
+      range: () => ({
+        startDate: subHours(new Date(), 1),
+        endDate: new Date(),
+      }),
+    },
+    {
+      label: "Last 4 hours",
+      range: () => ({
+        startDate: subHours(new Date(), 4),
+        endDate: new Date(),
+      }),
+    },
+    {
       label: "Last 24 hours",
       range: () => ({
         startDate: subDays(new Date(), 1),
@@ -84,9 +98,9 @@ const DatePicker = ({}) => {
       }),
     },
     {
-      label: "Last 4 days",
+      label: "Last 3 days",
       range: () => ({
-        startDate: subDays(new Date(), 4),
+        startDate: subDays(new Date(), 3),
         endDate: new Date(),
       }),
     },

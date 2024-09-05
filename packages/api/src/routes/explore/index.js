@@ -2,6 +2,8 @@ import { Hono } from "hono";
 import { query, queryAll } from "../../lib/database";
 import { getHourlyValues } from "../../lib/stats";
 import {
+  addDays,
+  addHours,
   differenceInDays,
   eachDayOfInterval,
   eachHourOfInterval,
@@ -132,10 +134,12 @@ app.get("/transactions/:id", async (c) => {
 app.get("/stats/:region/:name", async (c) => {
   const [start, end] = getDates(c);
 
-  const ticks =
-    differenceInDays(end, start) > 3
-      ? eachDayOfInterval({ start, end })
-      : eachHourOfInterval({ start, end });
+  const useDaily = differenceInDays(end, start) > 3;
+  const ticks = useDaily
+    ? eachDayOfInterval({ start, end })
+    : eachHourOfInterval({ start, end });
+
+  const duration = useDaily ? "1d" : "1h";
 
   const values = await getHourlyValues(
     c.req.param("region"),
@@ -151,6 +155,9 @@ app.get("/stats/:region/:name", async (c) => {
 
     return {
       date: tick,
+      startDate: tick,
+      endDate: useDaily ? addDays(tick, 1) : addHours(tick, 1),
+      duration,
       average: denominator ? numerator / denominator : 0,
       sum: numerator,
     };
