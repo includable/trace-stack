@@ -17,7 +17,7 @@ const { Provider } = store;
 
 const ranges = [
   {
-    label: "Last hours",
+    label: "Last hour",
     startDate: subHours(new Date(), 1),
     endDate: new Date(),
   },
