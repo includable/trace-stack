@@ -14,7 +14,7 @@ import {
 } from "@aws-sdk/client-apigatewayv2";
 
 // TODO: use previous token if it exists
-const tracerToken = crypto.randomBytes(16).toString("hex");
+const tracerToken = `t_${crypto.randomBytes(16).toString("hex")}`;
 
 const exec = (command, options = {}) => {
   const child = child_process.exec(command, {
@@ -121,8 +121,9 @@ console.log(chalk.blue("Deploying..."));
 await exec("yarn deploy", { cwd: "/tmp/trace-stack" });
 
 // Run auto-trace
+console.log(chalk.blue("Auto tracing lambdas..."));
 const endpoint = await getApiEndpoint();
-await fetch(`https://${endpoint}/api/auto-trace`, {
+fetch(`https://${endpoint}/api/auto-trace`, {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({ token: tracerToken }),
