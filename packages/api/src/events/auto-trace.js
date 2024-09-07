@@ -98,33 +98,37 @@ export const autoTrace = async () => {
   console.log(`Found ${lambdasWithoutLayer.length} lambdas to update`);
 
   for (const lambda of lambdasWithoutLayer) {
-    const updateFunctionConfigurationCommand =
-      new UpdateFunctionConfigurationCommand({
-        FunctionName: lambda.FunctionName,
-        Layers: [
-          ...(lambda.Layers || [])
-            .map((layer) => layer.Arn)
-            .filter((arn) => !arn.startsWith(arnBase)),
-          process.env.LAMBDA_LAYER_ARN,
-        ],
-        Environment: {
-          ...(lambda.Environment || {}),
-          Variables: {
-            ...(lambda.Environment?.Variables || {}),
-            AUTO_TRACE_HOST: edgeEndpoint,
-            AWS_LAMBDA_EXEC_WRAPPER: lambdaExecWrapper,
+    try {
+      const updateFunctionConfigurationCommand =
+        new UpdateFunctionConfigurationCommand({
+          FunctionName: lambda.FunctionName,
+          Layers: [
+            ...(lambda.Layers || [])
+              .map((layer) => layer.Arn)
+              .filter((arn) => !arn.startsWith(arnBase)),
+            process.env.LAMBDA_LAYER_ARN,
+          ],
+          Environment: {
+            ...(lambda.Environment || {}),
+            Variables: {
+              ...(lambda.Environment?.Variables || {}),
+              AUTO_TRACE_HOST: edgeEndpoint,
+              AWS_LAMBDA_EXEC_WRAPPER: lambdaExecWrapper,
+            },
           },
-        },
-      });
+        });
 
-    const res = await new LambdaClient().send(
-      updateFunctionConfigurationCommand,
-    );
-    console.log(res);
+      const res = await new LambdaClient().send(
+        updateFunctionConfigurationCommand,
+      );
+      console.log(res);
 
-    console.log(`✓ Updated ${lambda.FunctionName}`);
-
-    // TODO: save function info in DynamoDB
+      console.log(`✓ Updated ${lambda.FunctionName}`);
+      // TODO: save function info in DynamoDB
+    } catch (e) {
+      console.log(`✗ Failed to update ${lambda.FunctionName}`);
+      console.error(e);
+    }
   }
 
   await releaseLock("auto-trace");
