@@ -8,6 +8,7 @@ app.post("/", async (c) => {
   const body = await c.req.json();
 
   if (process.env.TRACER_TOKEN && body.token !== process.env.TRACER_TOKEN) {
+    console.log(`Invalid token: ${body.token}`);
     return c.json({ error: "Invalid token" }, 401);
   }
 
