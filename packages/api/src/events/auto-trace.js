@@ -8,9 +8,12 @@ import {
   GetApisCommand,
 } from "@aws-sdk/client-apigatewayv2";
 import { acquireLock, releaseLock } from "../lib/locks";
+import Logger from "../lib/logger";
 
 const supportedRuntimes = ["nodejs16.x", "nodejs18.x", "nodejs20.x"];
 const lambdaExecWrapper = "/opt/nodejs/tracer_wrapper";
+
+const logger = new Logger("auto-trace");
 
 const getAccountLambdas = async () => {
   const lambdaClient = new LambdaClient();
@@ -21,7 +24,7 @@ const getAccountLambdas = async () => {
   do {
     const listFunctionsCommand = new ListFunctionsCommand({
       Marker: nextToken,
-      MaxItems: 50
+      MaxItems: 50,
     });
     const { Functions, NextMarker } =
       await lambdaClient.send(listFunctionsCommand);
@@ -62,7 +65,7 @@ export const autoTrace = async () => {
   // Make sure we lock so that only one process is updating lambdas
   const lockAcquired = await acquireLock("auto-trace");
   if (!lockAcquired) {
-    console.log("Lock not acquired, skipping");
+    logger.info("Lock not acquired, skipping");
     return;
   }
 
@@ -96,7 +99,7 @@ export const autoTrace = async () => {
     );
   });
 
-  console.log(`Found ${lambdasWithoutLayer.length} lambdas to update`);
+  logger.info(`Found ${lambdasWithoutLayer.length} lambdas to update`);
 
   for (const lambda of lambdasWithoutLayer) {
     try {
@@ -122,13 +125,13 @@ export const autoTrace = async () => {
       const res = await new LambdaClient().send(
         updateFunctionConfigurationCommand,
       );
-      console.log(res);
+      logger.info(res);
 
-      console.log(`✓ Updated ${lambda.FunctionName}`);
+      logger.info(`✓ Updated ${lambda.FunctionName}`);
       // TODO: save function info in DynamoDB
     } catch (e) {
-      console.log(`✗ Failed to update ${lambda.FunctionName}`);
-      console.error(e);
+      logger.warn(`✗ Failed to update ${lambda.FunctionName}`);
+      logger.warn(e);
     }
   }
 
