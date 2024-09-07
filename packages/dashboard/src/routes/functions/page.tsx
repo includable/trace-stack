@@ -3,6 +3,7 @@ import { StatsChart } from "@/components/stats/stats-chart";
 
 import { columns } from "./columns";
 import { useData } from "@/lib/api";
+import { DataTableFilter } from "@/components/tables/data-table-filter";
 
 const Functions = () => {
   const { data: functions } = useData(`functions`, { suspense: true });
@@ -36,7 +37,19 @@ const Functions = () => {
         columns={columns}
         data={functions}
         paginate
-      />
+      >
+        {(table) => {
+          console.log(table.getColumn("traceStatus").getFacetedUniqueValues())
+          return (
+            <>
+              <DataTableFilter
+                column={table.getColumn("traceStatus")}
+                title="Tracing"
+              />
+            </>
+          );
+        }}
+      </DataTable>
     </div>
   );
 };

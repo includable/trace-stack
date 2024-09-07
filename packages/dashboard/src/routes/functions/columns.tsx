@@ -30,6 +30,8 @@ export const columns: ColumnDef<FunctionItem>[] = [
         </Link>
       );
     },
+    filterFn: (row, id, value) =>
+      row.getValue("name")?.toLowerCase().includes(value.toLowerCase()),
   },
   {
     accessorKey: "invocations",

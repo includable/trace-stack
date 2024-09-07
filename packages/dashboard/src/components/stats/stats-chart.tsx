@@ -39,7 +39,7 @@ export function StatsChart({
 
     const sum = nonZeroData.reduce((acc, curr) => acc + curr[metric], 0);
     return metric === "sum" ? sum : sum / nonZeroData.length;
-  }, data);
+  }, [data]);
 
   return (
     <div className="p-7 pt-6 px-6 pb-4">

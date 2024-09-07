@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  Table,
   ColumnDef,
   SortingState,
   flexRender,
@@ -7,13 +8,13 @@ import {
   getSortedRowModel,
   getPaginationRowModel,
   getFilteredRowModel,
+  getFacetedUniqueValues,
   useReactTable,
   PaginationState,
-  ColumnFiltersState,
 } from "@tanstack/react-table";
 
 import {
-  Table,
+  Table as TableRoot,
   TableBody,
   TableCell,
   TableHead,
@@ -34,6 +35,7 @@ interface DataTableProps<TData, TValue> {
   defaultSorting?: SortingState;
   paginate?: boolean;
   pageSize?: number;
+  children?: (table: Table<TData>) => React.ReactNode;
 }
 
 export function DataTable<TData, TValue>({
@@ -43,17 +45,26 @@ export function DataTable<TData, TValue>({
   defaultSorting = [],
   paginate = false,
   pageSize = 20,
+  children,
 }: DataTableProps<TData, TValue>) {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize,
   });
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
+  const [columnFilters, setColumnFilters] = useUserState(
+    `table/${id}/filters`,
+    [],
+  );
   const [sorting, setSorting] = useUserState(
     `table/${id}/sorting`,
     defaultSorting,
   );
+  const [columnVisibility, setColumnVisibility] = useUserState(
+    `table/${id}/visibility`,
+    [],
+  );
+
   const table = useReactTable({
     data,
     columns,
@@ -61,12 +72,15 @@ export function DataTable<TData, TValue>({
     onSortingChange: setSorting,
     onPaginationChange: setPagination,
     onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
     getSortedRowModel: getSortedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
     getPaginationRowModel: paginate ? getPaginationRowModel() : undefined,
     getFilteredRowModel: getFilteredRowModel(),
     state: {
       sorting,
       columnFilters,
+      columnVisibility,
       ...(paginate ? { pagination } : {}),
     },
   });
@@ -75,10 +89,10 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="flex items-center justify-between">
-        <div className="flex flex-1 items-center py-4">
+      <div className="flex items-center justify-between py-4 gap-3">
+        <div className="flex flex-1 items-center gap-3">
           {table.getColumn("name") && (
-            <div className="relative flex flex-1">
+            <div className="relative flex">
               <Input
                 placeholder="Filter functions..."
                 value={
@@ -87,17 +101,18 @@ export function DataTable<TData, TValue>({
                 onChange={(event) =>
                   table.getColumn("name")?.setFilterValue(event.target.value)
                 }
-                className="w-full max-w-sm h-8 pl-9"
+                className="w-72 h-8 pl-9"
               />
               <Search className="absolute left-3 top-2 h-4 w-4 text-muted-foreground pointer-events-none" />
             </div>
           )}
-          <DataTableViewOptions table={table} />
+          {children && children(table)}
         </div>
+        <DataTableViewOptions table={table} />
       </div>
 
       <div className="rounded-md border">
-        <Table>
+        <TableRoot>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -154,32 +169,33 @@ export function DataTable<TData, TValue>({
               </TableRow>
             )}
           </TableBody>
-        </Table>
+        </TableRoot>
       </div>
 
       {paginate && (
         <div className="flex items-center justify-between">
-        <div className="text-xs text-muted-foreground">
-          Page {pagination.pageIndex + 1} of {table.getPageCount()} ({table.getRowCount()} total)
-        </div>
-        <div className="flex items-center justify-end space-x-2 py-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
+          <div className="text-xs text-muted-foreground">
+            Page {pagination.pageIndex + 1} of {table.getPageCount()} (
+            {table.getRowCount()} total)
+          </div>
+          <div className="flex items-center justify-end space-x-2 py-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              Next
+            </Button>
+          </div>
         </div>
       )}
     </div>

@@ -35,7 +35,7 @@ export function MiniStatsChart({
 
     const sum = nonZeroData.reduce((acc, curr) => acc + curr[metric], 0);
     return metric === "sum" ? sum : sum / nonZeroData.length;
-  }, data);
+  }, [data]);
 
   return (
     <div className="relative">

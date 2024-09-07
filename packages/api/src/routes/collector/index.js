@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { put } from "../../lib/database";
+import { getExpiryTime, put, update } from "../../lib/database";
 import { saveHourlyStat } from "../../lib/stats";
 
 const app = new Hono();
@@ -59,23 +59,28 @@ app.post("/", async (c) => {
       );
 
       // save function meta data
-      await put(
-        {
-          pk: `function#${span.region}#${span.name}`,
-          sk: `function#${span.region}`,
-          name: span.name,
-          type: "function",
-          lastInvocation: span.started,
-          runtime: span.runtime,
-          account: span.account,
-          region: span.region,
-          arn: span.invokedArn,
-          memoryAllocated: span.memoryAllocated,
-          timeout: span.maxFinishTime - span.started,
-          traceStatus: 'enabled',
-        },
-        true,
-      );
+      try {
+        await update({
+          Key: {
+            pk: `function#${span.region}#${span.name}`,
+            sk: `function#${span.region}`,
+          },
+          UpdateExpression: `SET lastInvocation = :lastInvocation, memoryAllocated = :memoryAllocated, #timeout = :timeout, traceStatus = :traceStatus, #expires = :expires`,
+          ExpressionAttributeValues: {
+            ":lastInvocation": span.started,
+            ":memoryAllocated": span.memoryAllocated,
+            ":timeout": span.maxFinishTime - span.started,
+            ":traceStatus": "enabled",
+            ":expires": getExpiryTime(),
+          },
+          ExpressionAttributeNames: {
+            "#timeout": "timeout",
+            "#expires": "_expires",
+          },
+        });
+      } catch (e) {
+        console.log(e);
+      }
 
       // save stats
       const duration = span.ended - span.started;
