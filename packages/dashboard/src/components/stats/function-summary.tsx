@@ -12,7 +12,7 @@ import {
 
 export const MiniFunctionSummary = ({ data, short = false }) => {
   return (
-    <dl className="flex gap-2 text-sm text-muted-foreground mt-2">
+    <dl className="flex gap-2 text-sm text-muted-foreground mt-1">
       <dt>Region</dt>
       <dd className="mr-4 font-semibold">{data.region}</dd>
       <dt>Runtime</dt>
@@ -27,10 +27,14 @@ export const MiniFunctionSummary = ({ data, short = false }) => {
           <dd className="mr-4 font-semibold">
             {Math.round(data.timeout / 1000)} s
           </dd>
-          <dt>Last invocation</dt>
-          <dd className="mr-4 font-semibold">
-            {formatRelative(new Date(data.lastInvocation), new Date())}
-          </dd>
+          {data.lastInvocation && (
+            <>
+              <dt>Last invocation</dt>
+              <dd className="mr-4 font-semibold">
+                {formatRelative(new Date(data.lastInvocation), new Date())}
+              </dd>
+            </>
+          )}
         </>
       )}
     </dl>

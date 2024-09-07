@@ -50,7 +50,7 @@ export function MiniStatsChart({
             color: color,
           },
         }}
-        className="h-12 w-full border px-2 pt-5 rounded-md"
+        className="h-11 w-full border px-2 pt-5 rounded-md"
       >
         {data ? (
           <BarChart accessibilityLayer data={data} margin={0}>

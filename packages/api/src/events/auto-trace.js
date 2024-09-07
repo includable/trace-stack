@@ -88,7 +88,7 @@ const saveFunctionInfo = async (lambda, traceStatus) => {
       region: process.env.AWS_REGION,
       arn: lambda.FunctionArn,
       memoryAllocated: lambda.MemorySize,
-      timeout: lambda.Timeout,
+      timeout: lambda.Timeout * 1000,
       traceStatus,
     },
     true,
