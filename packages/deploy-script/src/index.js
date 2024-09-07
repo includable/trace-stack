@@ -13,8 +13,17 @@ import {
   GetApisCommand,
 } from "@aws-sdk/client-apigatewayv2";
 
+const tmpPath = "/tmp/trace-stack";
+let previousConfig = {};
+try {
+  previousConfig = require(`${tmpPath}/packages/lambda-layer/config.json`);
+} catch (e) {
+  console.log(e);
+}
+
 // TODO: use previous token if it exists
-const tracerToken = `t_${crypto.randomBytes(16).toString("hex")}`;
+const tracerToken =
+  previousConfig.token || `t_${crypto.randomBytes(16).toString("hex")}`;
 
 const exec = (command, options = {}) => {
   const child = child_process.exec(command, {
@@ -67,7 +76,7 @@ const questions = [
     type: "input",
     name: "RETENTION_DAYS",
     message: "How many days do you want to retain data for?",
-    default: 30,
+    default: previousConfig.retentionDays || 30,
     validate: (value) => {
       const valid = !Number.isNaN(Number.parseFloat(value));
       return valid || "Please enter a number";
@@ -78,6 +87,7 @@ const questions = [
     type: "input",
     name: "CUSTOM_DOMAIN",
     message: "Do you want to use a custom domain (optional)?",
+    default: previousConfig.customDomain || "",
     validate: (value) => {
       const valid = !value || !!value.match(/^[a-z0-9-.]+$/);
       return valid || "Please enter a valid domain";
@@ -93,23 +103,27 @@ const cloner = degit("includable/trace-stack", {
   verbose: true,
   force: true,
 });
-await mkdir("/tmp/trace-stack", { recursive: true });
-await cloner.clone("/tmp/trace-stack");
+await mkdir(tmpPath, { recursive: true });
+await cloner.clone(tmpPath);
 
 // Install yarn dependencies
 console.log(chalk.blue("Installing dependencies..."));
-await exec("yarn install", { cwd: "/tmp/trace-stack" });
+await exec("yarn install", { cwd: tmpPath });
 
 // Write config files
 console.log(chalk.blue("Writing tracer config file..."));
 await writeFile(
-  "/tmp/trace-stack/packages/lambda-layer/config.json",
-  JSON.stringify({ token: tracerToken }),
+  `${tmpPath}/packages/lambda-layer/config.json`,
+  JSON.stringify({
+    token: tracerToken,
+    retentionDays: answers.RETENTION_DAYS,
+    customDomain: answers.CUSTOM_DOMAIN,
+  }),
 );
 
 console.log(chalk.blue("Writing .env file..."));
 await writeFile(
-  "/tmp/trace-stack/packages/api/.env",
+  `${tmpPath}/packages/api/.env`,
   `RETENTION_DAYS=${answers.RETENTION_DAYS}\n` +
     `CUSTOM_DOMAIN=${answers.CUSTOM_DOMAIN}\n` +
     `TRACER_TOKEN=${tracerToken}\n` +
@@ -118,7 +132,7 @@ await writeFile(
 
 // Deploy
 console.log(chalk.blue("Deploying..."));
-await exec("yarn deploy", { cwd: "/tmp/trace-stack" });
+await exec("yarn deploy", { cwd: tmpPath });
 
 // Run auto-trace
 console.log(chalk.blue("Auto tracing lambdas..."));
