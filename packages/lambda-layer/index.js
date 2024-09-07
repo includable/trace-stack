@@ -1,6 +1,16 @@
+let config;
+try {
+  config = require("./config.json");
+} catch (e) {
+  config = {
+    token: "t_0000000000000000",
+    edgeHost: process.env.AUTO_TRACE_HOST,
+  };
+}
+
 const tracer = require("@lumigo/tracer")({
-  token: "t_0000000000000000",
-  edgeHost: process.env.AUTO_TRACE_HOST,
+  token: config.token,
+  edgeHost: process.env.AUTO_TRACE_HOST || config.edgeHost,
 });
 
 const { load } = require("./lib/aws/aws-user-function.js");

@@ -7,6 +7,10 @@ const app = new Hono();
 app.post("/", async (c) => {
   const body = await c.req.json();
 
+  if (process.env.TRACER_TOKEN && body.token !== process.env.TRACER_TOKEN) {
+    return c.json({ error: "Invalid token" }, 401);
+  }
+
   for (const span of body) {
     console.log(span);
 

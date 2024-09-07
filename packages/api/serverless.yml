@@ -10,6 +10,7 @@ params:
     DATA_RETENTION_DAYS: ${env:DATA_RETENTION_DAYS, 30}
     CUSTOM_DOMAIN: ${env:CUSTOM_DOMAIN, ""}
     HAS_CUSTOM_DOMAIN: ${strToBool(${env:HAS_CUSTOM_DOMAIN, "false"})}
+    TRACER_TOKEN: ${env:TRACER_TOKEN, ""}
 
 custom:
   customDomain:
@@ -45,6 +46,7 @@ provider:
     NODE_ENV: ${sls:stage}
     TABLE_NAME: ${self:service}-${sls:stage}
     CUSTOM_DOMAIN: ${param:CUSTOM_DOMAIN}
+    TRACER_TOKEN: ${param:TRACER_TOKEN}
     LAMBDA_LAYER_ARN: !Ref TracerLambdaLayer
     AUTO_TRACE_EXCLUDE: 1
   httpApi:

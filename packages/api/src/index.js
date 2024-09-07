@@ -5,11 +5,13 @@ import fs from "fs";
 
 import collector from "./routes/collector";
 import explore from "./routes/explore";
+import autoTraceRoute from "./routes/auto-trace";
 import { autoTrace } from "./events/auto-trace";
 
 const app = new Hono();
 app.route("/api/spans", collector);
 app.route("/api/explore", explore);
+app.route("/api/auto-trace", autoTraceRoute);
 
 let html = "";
 app.use("/assets/*", serveStatic({ root: "./dist" }));

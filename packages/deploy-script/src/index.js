@@ -2,6 +2,7 @@
 
 import chalk from "chalk";
 import boxen from "boxen";
+import crypto from "crypto";
 import inquirer from "inquirer";
 import degit from "degit";
 import child_process from "child_process";
@@ -11,6 +12,9 @@ import {
   ApiGatewayV2Client,
   GetApisCommand,
 } from "@aws-sdk/client-apigatewayv2";
+
+// TODO: use previous token if it exists
+const tracerToken = crypto.randomBytes(16).toString("hex");
 
 const exec = (command, options = {}) => {
   const child = child_process.exec(command, {
@@ -96,12 +100,19 @@ await cloner.clone("/tmp/trace-stack");
 console.log(chalk.blue("Installing dependencies..."));
 await exec("yarn install", { cwd: "/tmp/trace-stack" });
 
-// Write .env file
+// Write config files
+console.log(chalk.blue("Writing tracer config file..."));
+await writeFile(
+  "/tmp/trace-stack/packages/lambda-layer/config.json",
+  JSON.stringify({ token: tracerToken }),
+);
+
 console.log(chalk.blue("Writing .env file..."));
 await writeFile(
   "/tmp/trace-stack/packages/api/.env",
   `RETENTION_DAYS=${answers.RETENTION_DAYS}\n` +
     `CUSTOM_DOMAIN=${answers.CUSTOM_DOMAIN}\n` +
+    `TRACER_TOKEN=${tracerToken}\n` +
     `HAS_CUSTOM_DOMAIN=${answers.CUSTOM_DOMAIN ? "true" : "false"}\n`,
 );
 
@@ -109,12 +120,20 @@ await writeFile(
 console.log(chalk.blue("Deploying..."));
 await exec("yarn deploy", { cwd: "/tmp/trace-stack" });
 
+// Run auto-trace
+const endpoint = await getApiEndpoint();
+await fetch(`https://${endpoint}/api/auto-trace`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ token: tracerToken }),
+});
+
 // Create user
 console.log(chalk.blue("Creating user..."));
 // TODO: create user account in DDB
 
 // Done
-const domain = answers.CUSTOM_DOMAIN || (await getApiEndpoint());
+const domain = answers.CUSTOM_DOMAIN || endpoint;
 console.log(
   "\n\n" +
     boxen(

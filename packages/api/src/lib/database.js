@@ -1,5 +1,6 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
+  DeleteCommand,
   DynamoDBDocumentClient,
   PutCommand,
   QueryCommand,
@@ -22,7 +23,7 @@ export const time = () => Math.floor(Date.now() / 1000);
 export const getExpiryTime = () =>
   time() + 86400 * Number(process.env.DATA_RETENTION_DAYS);
 
-export const put = async (item, expires = false) => {
+export const put = async (item, expires = false, options = {}) => {
   item = {
     ...item,
     _created: time(),
@@ -37,6 +38,7 @@ export const put = async (item, expires = false) => {
     new PutCommand({
       TableName: process.env.TABLE_NAME,
       Item: item,
+      ...options
     }),
   );
 };
@@ -62,6 +64,15 @@ export const update = async (
     }),
   );
 };
+
+export const deleteItem = async (Key) => {
+  return await dynamo.send(
+    new DeleteCommand({
+      TableName: process.env.TABLE_NAME,
+      Key,
+    }),
+  );
+}
 
 export const queryAll = async (
   /** @type {Omit<import("@aws-sdk/lib-dynamodb").QueryCommandInput, "TableName">} */ params,

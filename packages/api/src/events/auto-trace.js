@@ -7,6 +7,7 @@ import {
   ApiGatewayV2Client,
   GetApisCommand,
 } from "@aws-sdk/client-apigatewayv2";
+import { acquireLock, releaseLock } from "../lib/locks";
 
 const supportedRuntimes = ["nodejs16.x", "nodejs18.x", "nodejs20.x"];
 const lambdaExecWrapper = "/opt/nodejs/tracer_wrapper";
@@ -56,6 +57,13 @@ export const autoTrace = async () => {
 
   // Get our API Gateway endpoint for the collector
   const edgeEndpoint = await getApiEndpoint();
+
+  // Make sure we lock so that only one process is updating lambdas
+  const lockAcquired = await acquireLock("auto-trace");
+  if (!lockAcquired) {
+    console.log("Lock not acquired, skipping");
+    return;
+  }
 
   // List all the lambda functions in the AWS account
   const lambdas = await getAccountLambdas();
@@ -118,4 +126,6 @@ export const autoTrace = async () => {
 
     // TODO: save function info in DynamoDB
   }
+
+  await releaseLock("auto-trace");
 };
