@@ -3,6 +3,7 @@ import { deleteItem, put } from "./database";
 export const acquireLock = async (key, ttl = 900) => {
   const lockKey = `lock#${key}`;
   const expires = Math.floor(Date.now() / 1000) + ttl;
+
   try {
     await put(
       {
@@ -12,7 +13,12 @@ export const acquireLock = async (key, ttl = 900) => {
       },
       true,
       {
-        ConditionExpression: "attribute_not_exists(pk)",
+        ConditionExpression: "attribute_not_exists(pk) OR _expires < :now",
+        AttributeValues: {
+          ":now": {
+            N: `${Math.floor(Date.now() / 1000)}`,
+          },
+        },
       },
     );
     return true;
