@@ -9,6 +9,7 @@ import {
 } from "@aws-sdk/client-apigatewayv2";
 
 const supportedRuntimes = ["nodejs16.x", "nodejs18.x", "nodejs20.x"];
+const lambdaExecWrapper = "/opt/nodejs/tracer_wrapper";
 
 const getAccountLambdas = async () => {
   const lambdaClient = new LambdaClient();
@@ -67,6 +68,9 @@ export const autoTrace = async () => {
     const isTraceStack = envVars.LAMBDA_LAYER_ARN === arn;
     const isUpdating = lambda.LastUpdateStatus === "InProgress";
     const hasDisableEnvVar = envVars.AUTO_TRACE_EXCLUDE;
+    const hasOtherWrapper =
+      envVars.AWS_LAMBDA_EXEC_WRAPPER &&
+      envVars.AWS_LAMBDA_EXEC_WRAPPER !== lambdaExecWrapper;
     const hasSupportedRuntime = supportedRuntimes.includes(lambda.Runtime);
     const hasLayer = layers.find(({ Arn }) => Arn.startsWith(arnBase));
     const hasUpdate = layers.find(
@@ -76,6 +80,7 @@ export const autoTrace = async () => {
     return (
       (!hasLayer || hasUpdate) &&
       !hasDisableEnvVar &&
+      !hasOtherWrapper &&
       !isUpdating &&
       !isTraceStack &&
       hasSupportedRuntime
@@ -99,7 +104,7 @@ export const autoTrace = async () => {
           Variables: {
             ...(lambda.Environment?.Variables || {}),
             AUTO_TRACE_HOST: edgeEndpoint,
-            AWS_LAMBDA_EXEC_WRAPPER: "/opt/nodejs/tracer_wrapper",
+            AWS_LAMBDA_EXEC_WRAPPER: lambdaExecWrapper,
           },
         },
       });
