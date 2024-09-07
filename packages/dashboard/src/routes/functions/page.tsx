@@ -1,10 +1,10 @@
+import { useMemo } from "react";
+
 import { DataTable } from "@/components/tables/data-table";
 import { StatsChart } from "@/components/stats/stats-chart";
-
+import { DataTableFilter } from "@/components/tables/data-table-filter";
 import { columns } from "./columns";
 import { useData } from "@/lib/api";
-import { DataTableFilter } from "@/components/tables/data-table-filter";
-import { useMemo } from "react";
 
 const Functions = () => {
   const { data: functions } = useData(`functions`, { suspense: true });

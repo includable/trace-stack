@@ -112,7 +112,7 @@ export const columns: ColumnDef<FunctionItem>[] = [
         }
       }
 
-      return tags.keys().map((tag) => ({ value: tag, label: tag }));
+      return tags?.keys?.()?.map((tag) => ({ value: tag, label: tag }));
     },
     filterFn: (row, id, value) => {
       return value.every((v) => row.getValue(id)?.includes(v));
