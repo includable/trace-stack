@@ -34,8 +34,8 @@ jobs:
       - name: Install dependencies
         run: yarn --frozen-lockfile
 
-      - name: Build
-        run: yarn build
+      - name: Build & test
+        run: yarn build && yarn test
 
       - name: Install latest npm
         run: npm install -g npm@latest
@@ -45,4 +45,4 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           NPM_TOKEN: ${{secrets.NPM_TOKEN}}
           NPM_CONFIG_PROVENANCE: true
-        run: cd packages/deploy-script && yarn release
+        run: yarn release

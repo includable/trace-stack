@@ -1,6 +1,7 @@
 {
   "name": "@trace-stack/lambda-layer",
   "version": "1.0.0",
+  "private": true,
   "description": "Special handler for auto-wrapping tracer.",
   "main": "index.js",
   "scripts": {

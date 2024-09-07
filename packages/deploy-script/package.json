@@ -6,17 +6,11 @@
   "main": "index.js",
   "packageManager": "yarn@4.4.1",
   "bin": "./src/index.js",
-  "scripts": {
-    "release": "semantic-release"
-  },
   "dependencies": {
     "@aws-sdk/client-apigatewayv2": "^3.645.0",
     "boxen": "^8.0.1",
     "chalk": "^5.3.0",
     "degit": "^2.8.4",
     "inquirer": "^10.1.8"
-  },
-  "devDependencies": {
-    "semantic-release": "^24.1.0"
   }
 }
