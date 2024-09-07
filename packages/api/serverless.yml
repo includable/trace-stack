@@ -80,9 +80,9 @@ provider:
             - "*"
         - Effect: Allow
           Action:
-            - apigateway:GetRestApis
+            - apigateway:GET
           Resource:
-            - "*"
+            - "arn:aws:apigateway:${aws:region}::/apis"
 
 layers:
   tracer:
