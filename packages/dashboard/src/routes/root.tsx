@@ -1,4 +1,5 @@
 import DatePicker from "@/components/layout/date-picker";
+import { MenuLink } from "@/components/layout/menu-link";
 import { ModeToggle } from "@/components/layout/mode-toggle";
 import { Suspense } from "react";
 import { Link, Outlet } from "react-router-dom";
@@ -33,19 +34,17 @@ export default function Root() {
                 </svg>
               </Link>
 
-              <Link
-                to="/"
-                className="text-sm font-medium transition-colors hover:text-primary"
+              <MenuLink
+                to="/functions"
               >
                 Functions
-              </Link>
-              {/* <Link
-                to="/issues"
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+              </MenuLink>
+              <MenuLink
+                to="/errors"
               >
-                Issues
-              </Link>
-              <Link
+                Errors
+              </MenuLink>
+              {/* <Link
                 to="/traces"
                 className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
               >

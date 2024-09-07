@@ -33,6 +33,7 @@ provider:
   runtime: nodejs20.x
   timeout: 25
   region: eu-west-1
+  architecture: arm64
   deploymentMethod: direct
   versionFunctions: false
   stage: ${opt:stage, 'dev'}

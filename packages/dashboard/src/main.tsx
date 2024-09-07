@@ -10,9 +10,9 @@ import Root from "@/routes/root";
 import Functions from "@/routes/functions/page";
 import Invocations from "@/routes/invocations/page";
 import InvocationDetails from "@/routes/invocation-details/page";
+import Errors from "@/routes/errors/page";
 
 import { ThemeProvider } from "@/components/layout/theme-provider";
-import { dataLoader } from "@/lib/api";
 import { DateRangeProvider } from "@/components/layout/date-picker";
 
 const router = createBrowserRouter([
@@ -23,7 +23,10 @@ const router = createBrowserRouter([
       {
         path: "/functions",
         element: <Functions />,
-        loader: dataLoader("functions"),
+      },
+      {
+        path: "/errors",
+        element: <Errors />,
       },
       {
         path: "/functions/:region/:name/invocations",

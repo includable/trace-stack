@@ -117,6 +117,37 @@ app.get("/functions/:region/:name/invocations/:ts/:id", async (c) => {
   return c.json(Items?.[0]);
 });
 
+app.get("/errors", async (c) => {
+  const [start, end] = getDates(c);
+  const startTs = start.toISOString();
+  const endTs = end.toISOString();
+
+  const startKey = c.req.query("startKey");
+
+  const { Items, LastEvaluatedKey } = await query({
+    KeyConditionExpression:
+      "#type = :type AND #lastSeen BETWEEN :skStart AND :skEnd",
+    ExclusiveStartKey: startKey ? JSON.parse(startKey) : undefined,
+    ExpressionAttributeNames: {
+      "#type": "type",
+      "#lastSeen": "lastSeen",
+    },
+    ExpressionAttributeValues: {
+      ":type": "error",
+      ":skStart": startTs,
+      ":skEnd": endTs,
+    },
+    IndexName: "type-lastSeen",
+    Limit: 50,
+    ScanIndexForward: false,
+  });
+
+  return c.json({
+    errors: Items,
+    nextStartKey: LastEvaluatedKey ? JSON.stringify(LastEvaluatedKey) : false,
+  });
+});
+
 app.get("/transactions/:id", async (c) => {
   const items = await queryAll({
     KeyConditionExpression: "#pk = :pk",

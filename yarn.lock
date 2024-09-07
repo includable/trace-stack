@@ -5958,6 +5958,7 @@ __metadata:
     serverless-domain-manager: "npm:^7.3.6"
     serverless-esbuild: "npm:^1.51.0"
     serverless-offline: "npm:^13.3.3"
+    slug: "npm:^9.1.0"
   languageName: unknown
   linkType: soft
 
@@ -16539,6 +16540,15 @@ __metadata:
   version: 5.1.0
   resolution: "slash@npm:5.1.0"
   checksum: 10c0/eb48b815caf0bdc390d0519d41b9e0556a14380f6799c72ba35caf03544d501d18befdeeef074bc9c052acf69654bc9e0d79d7f1de0866284137a40805299eb3
+  languageName: node
+  linkType: hard
+
+"slug@npm:^9.1.0":
+  version: 9.1.0
+  resolution: "slug@npm:9.1.0"
+  bin:
+    slug: cli.js
+  checksum: 10c0/edc3e957de63e2d78d3809e0bf217da34ccb6ca313a83e2c1598ede2bd001644978d15eb69650a7b238c84adacbbab7318c4601c082aa433a3a2fd5e39523c2d
   languageName: node
   linkType: hard
 

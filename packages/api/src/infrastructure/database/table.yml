@@ -10,6 +10,8 @@ Resources:
           AttributeType: S
         - AttributeName: type
           AttributeType: S
+        - AttributeName: lastSeen
+          AttributeType: S
       BillingMode: PAY_PER_REQUEST
       KeySchema:
         - AttributeName: pk
@@ -25,6 +27,14 @@ Resources:
             - AttributeName: type
               KeyType: HASH
             - AttributeName: sk
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+        - IndexName: type-lastSeen
+          KeySchema:
+            - AttributeName: type
+              KeyType: HASH
+            - AttributeName: lastSeen
               KeyType: RANGE
           Projection:
             ProjectionType: ALL

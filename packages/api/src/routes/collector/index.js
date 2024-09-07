@@ -1,4 +1,6 @@
 import { Hono } from "hono";
+import slug from "slug";
+
 import { getExpiryTime, put, update } from "../../lib/database";
 import { saveHourlyStat } from "../../lib/stats";
 
@@ -8,8 +10,6 @@ app.post("/", async (c) => {
   const body = await c.req.json();
 
   for (const span of body) {
-    console.log(span);
-
     if (process.env.TRACER_TOKEN && span.token !== process.env.TRACER_TOKEN) {
       console.log(`Invalid token: ${span.token}`);
       continue;
@@ -57,6 +57,40 @@ app.post("/", async (c) => {
         },
         true,
       );
+
+      // save error
+      if (span.error) {
+        const errorKey = slug(
+          `${span.error.type} ${span.error.message}`.trim() || "unknown",
+        );
+        await update({
+          Key: {
+            pk: `function#${span.region}#${span.name}`,
+            sk: `error#${errorKey}`,
+          },
+          UpdateExpression: `SET #error = :error, #lastInvocation = :lastInvocation, #lastSeen = :lastSeen, #expires = :expires, #type = :type, #name = :name, #region = :region`,
+          ExpressionAttributeValues: {
+            ":error": span.error,
+            ":lastInvocation": `${span.started}/${span.id}`,
+            ":lastSeen": new Date(span.ended).toISOString(),
+            ":expires": getExpiryTime(),
+            ":type": "error",
+            ":name": span.name,
+            ":region": span.region,
+          },
+          ExpressionAttributeNames: {
+            "#error": "error",
+            "#lastInvocation": "lastInvocation",
+            "#lastSeen": "lastSeen",
+            "#expires": "_expires",
+            "#type": "type",
+            "#name": "name",
+            "#region": "region",
+          },
+        });
+        await saveHourlyStat(span.region, span.name + ".error." + errorKey, 1);
+        await saveHourlyStat(span.region, "error." + errorKey, 1);
+      }
 
       // save function meta data
       try {

@@ -17,7 +17,7 @@ const Functions = () => {
         .map(([tag, value]) => {
           return `${tag}: ${value}`;
         }),
-    }));
+    })) || [];
   }, [functions]);
 
   return (
