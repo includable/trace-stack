@@ -76,6 +76,7 @@ provider:
           Action:
             - lambda:ListFunctions
             - lambda:UpdateFunctionConfiguration
+            - lambda:GetLayerVersion
           Resource:
             - "*"
         - Effect: Allow
