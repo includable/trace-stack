@@ -44,6 +44,12 @@ export default function Root() {
               >
                 Errors
               </MenuLink>
+              <Link
+                to="/integrations"
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+              >
+                Integrations
+              </Link>
               {/* <Link
                 to="/traces"
                 className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"

@@ -11,6 +11,7 @@ import Functions from "@/routes/functions/page";
 import Invocations from "@/routes/invocations/page";
 import InvocationDetails from "@/routes/invocation-details/page";
 import Errors from "@/routes/errors/page";
+import Integrations from "@/routes/integrations/page";
 
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { DateRangeProvider } from "@/components/layout/date-picker";
@@ -25,16 +26,20 @@ const router = createBrowserRouter([
         element: <Functions />,
       },
       {
-        path: "/errors",
-        element: <Errors />,
-      },
-      {
         path: "/functions/:region/:name/invocations",
         element: <Invocations />,
       },
       {
         path: "/functions/:region/:name/invocations/:ts/:id",
         element: <InvocationDetails />,
+      },
+      {
+        path: "/errors",
+        element: <Errors />,
+      },
+      {
+        path: "/integrations",
+        element: <Integrations />,
       },
       {
         path: "/",

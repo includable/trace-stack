@@ -144,6 +144,21 @@ const SelectSeparator = React.forwardRef<
 ))
 SelectSeparator.displayName = SelectPrimitive.Separator.displayName
 
+export const SimpleSelect = ({placeholder, className, options}) => (
+  <Select>
+  <SelectTrigger className={className}>
+    <SelectValue placeholder={placeholder}/>
+  </SelectTrigger>
+  <SelectContent>
+    {options.map((option) => (
+      <SelectItem key={option.value} value={option.value}>
+        {option.label}
+      </SelectItem>
+    ))}
+  </SelectContent>
+</Select>
+)
+
 export {
   Select,
   SelectGroup,
