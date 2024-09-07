@@ -9,7 +9,6 @@
     },
     "deploy": {
       "cache": false,
-      "dependsOn": ["build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": ["dist/**", ".serverless/**", ".esbuild/**"]
     },
