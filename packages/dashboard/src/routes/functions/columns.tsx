@@ -75,4 +75,11 @@ export const columns: ColumnDef<FunctionItem>[] = [
       return <span>{row.getValue("memoryAllocated") || "-"} MB</span>;
     },
   },
+  {
+    accessorKey: "traceStatus",
+    header: "Trace status",
+    cell: ({ row }) => {
+      return <span>{row.getValue("traceStatus")}</span>;
+    },
+  },
 ];
