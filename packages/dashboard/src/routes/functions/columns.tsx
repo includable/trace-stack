@@ -2,8 +2,9 @@
 
 import { MiniFunctionSummary } from "@/components/stats/function-summary";
 import { MiniStatsChart } from "@/components/stats/mini-stats-chart";
+import { Badge } from "@/components/ui/badge";
 import { Tooltipped } from "@/components/ui/tooltipped";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, Table } from "@tanstack/react-table";
 import { CheckCircle2, CirclePause, CircleX } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -77,6 +78,32 @@ export const columns: ColumnDef<FunctionItem>[] = [
     header: "Memory allocated",
     cell: ({ row }) => {
       return <span>{row.getValue("memoryAllocated") || "-"} MB</span>;
+    },
+  },
+  {
+    accessorKey: "tags",
+    header: "Tags",
+    cell: ({ row }) => {
+      return (
+        <span className="flex flex-wrap gap-1">
+          {(row.getValue("tags") || []).map((tag) => (
+            <Badge key={tag}>{tag}</Badge>
+          ))}
+        </span>
+      );
+    },
+    getUniqueFacetValues: (column) => {
+      const tags = new Set<string>();
+      for (const { original } of column.getFacetedRowModel().flatRows) {
+        for (const tag of original.tags) {
+          tags.add(tag);
+        }
+      }
+
+      return tags.keys().map((tag) => ({ value: tag, label: tag }));
+    },
+    filterFn: (row, id, value) => {
+      return value.every((v) => row.getValue(id)?.includes(v));
     },
   },
   {

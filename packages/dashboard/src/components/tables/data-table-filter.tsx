@@ -38,11 +38,10 @@ export function DataTableFilter<TData, TValue>({
 }: DataTableFilterProps<TData, TValue>) {
   const facets = column?.getFacetedUniqueValues?.();
   const selectedValues = new Set(column?.getFilterValue() as string[]);
+
   options = Array.from(
     options || facets?.keys().map((value) => ({ value, label: value })) || [],
   );
-
-  console.log(options);
 
   return (
     <Popover>
