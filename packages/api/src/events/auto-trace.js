@@ -1,6 +1,7 @@
 import {
   LambdaClient,
   ListFunctionsCommand,
+  ListTagsCommand,
   UpdateFunctionConfigurationCommand,
 } from "@aws-sdk/client-lambda";
 import {
@@ -77,7 +78,25 @@ const updateLambda = async (lambda, arnBase, edgeEndpoint) => {
   logger.info(res);
 };
 
+const getLambdaTags = async (lambda) => {
+  const lambdaClient = new LambdaClient();
+  const { Tags } = await lambdaClient.send(
+    new ListTagsCommand({
+      Resource: lambda.FunctionArn,
+    }),
+  );
+
+  return Tags;
+};
+
 const saveFunctionInfo = async (lambda, traceStatus) => {
+  let tags;
+  try {
+    tags = await getLambdaTags(lambda);
+  } catch (e) {
+    logger.warn(`Failed to get tags for ${lambda.FunctionName}`, e);
+  }
+
   await put(
     {
       pk: `function#${process.env.AWS_REGION}#${lambda.FunctionName}`,
@@ -90,6 +109,7 @@ const saveFunctionInfo = async (lambda, traceStatus) => {
       memoryAllocated: lambda.MemorySize,
       timeout: lambda.Timeout * 1000,
       traceStatus,
+      tags: tags || {},
     },
     true,
   );
