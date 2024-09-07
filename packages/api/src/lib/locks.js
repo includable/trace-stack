@@ -11,7 +11,7 @@ export const acquireLock = async (key, ttl = 900) => {
         sk: lockKey,
         _expires: expires,
       },
-      true,
+      false,
       {
         ConditionExpression: "attribute_not_exists(pk) OR #expires < :now",
         ExpressionAttributeNames: {
