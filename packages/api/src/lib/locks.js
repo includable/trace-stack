@@ -18,9 +18,7 @@ export const acquireLock = async (key, ttl = 900) => {
           "#expires": "_expires",
         },
         ExpressionAttributeValues: {
-          ":now": {
-            N: `${Math.floor(Date.now() / 1000)}`,
-          },
+          ":now": Math.floor(Date.now() / 1000),
         },
       },
     );
