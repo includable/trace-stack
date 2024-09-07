@@ -6,7 +6,7 @@ import crypto from "crypto";
 import inquirer from "inquirer";
 import degit from "degit";
 import child_process from "child_process";
-import { mkdir, writeFile } from "fs/promises";
+import { mkdir, writeFile, readFile } from "fs/promises";
 
 import {
   ApiGatewayV2Client,
@@ -16,10 +16,12 @@ import {
 const tmpPath = "/tmp/trace-stack";
 let previousConfig = {};
 try {
-  previousConfig = require(`${tmpPath}/packages/lambda-layer/config.json`);
-} catch (e) {
-  console.log(e);
-}
+  const json = await readFile(
+    `${tmpPath}/packages/lambda-layer/config.json`,
+    "utf8",
+  );
+  previousConfig = JSON.parse(json);
+} catch (e) {}
 
 // TODO: use previous token if it exists
 const tracerToken =
