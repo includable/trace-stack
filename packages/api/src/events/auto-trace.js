@@ -21,6 +21,7 @@ const getAccountLambdas = async () => {
   do {
     const listFunctionsCommand = new ListFunctionsCommand({
       Marker: nextToken,
+      MaxItems: 50
     });
     const { Functions, NextMarker } =
       await lambdaClient.send(listFunctionsCommand);
