@@ -79,6 +79,7 @@ provider:
             - lambda:ListFunctions
             - lambda:UpdateFunctionConfiguration
             - lambda:GetLayerVersion
+            - lambda:GetFunction
             - lambda:ListTags
           Resource:
             - "*"

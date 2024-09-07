@@ -1,7 +1,7 @@
 import {
+  GetFunctionCommand,
   LambdaClient,
   ListFunctionsCommand,
-  ListTagsCommand,
   UpdateFunctionConfigurationCommand,
 } from "@aws-sdk/client-lambda";
 import {
@@ -9,6 +9,7 @@ import {
   GetApisCommand,
 } from "@aws-sdk/client-apigatewayv2";
 import pLimit from "p-limit";
+
 import { acquireLock, releaseLock } from "../lib/locks";
 import Logger from "../lib/logger";
 import { put } from "../lib/database";
@@ -79,10 +80,12 @@ const updateLambda = async (lambda, arnBase, edgeEndpoint) => {
 };
 
 const getLambdaTags = async (lambda) => {
+  // try not to run into the 100 requests per second limit
+  await new Promise((resolve) => setTimeout(resolve, 250));
   const lambdaClient = new LambdaClient();
   const { Tags } = await lambdaClient.send(
-    new ListTagsCommand({
-      Resource: lambda.FunctionArn,
+    new GetFunctionCommand({
+      FunctionName: lambda.FunctionName,
     }),
   );
 
