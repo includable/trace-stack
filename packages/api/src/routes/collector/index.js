@@ -1,8 +1,8 @@
 import { Hono } from "hono";
-import slug from "slug";
 
 import { getExpiryTime, put, update } from "../../lib/database";
 import { saveHourlyStat } from "../../lib/stats";
+import { getErrorKey } from "../../lib/errors";
 
 const app = new Hono();
 
@@ -60,9 +60,7 @@ app.post("/", async (c) => {
 
       // save error
       if (span.error) {
-        const errorKey = slug(
-          `${span.error.type} ${span.error.message}`.trim() || "unknown",
-        );
+        const errorKey = getErrorKey(span.error);
         await update({
           Key: {
             pk: `function#${span.region}#${span.name}`,
