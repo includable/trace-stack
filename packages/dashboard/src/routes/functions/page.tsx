@@ -46,6 +46,7 @@ const Functions = () => {
       <DataTable
         id="functions"
         defaultSorting={[{ id: "name", desc: false }]}
+        defaultVisibility={{lastInvocation: false, tags: false}}
         columns={columns}
         data={mappedFunctions}
         paginate

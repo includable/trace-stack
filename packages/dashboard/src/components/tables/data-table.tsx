@@ -33,6 +33,7 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   defaultSorting?: SortingState;
+  defaultVisibility?: Record<string, boolean>;
   paginate?: boolean;
   pageSize?: number;
   children?: (table: Table<TData>) => React.ReactNode;
@@ -43,6 +44,7 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   defaultSorting = [],
+  defaultVisibility = {},
   paginate = false,
   pageSize = 20,
   children,
@@ -62,7 +64,7 @@ export function DataTable<TData, TValue>({
   );
   const [columnVisibility, setColumnVisibility] = useUserState(
     `table/${id}/visibility`,
-    [],
+    defaultVisibility,
   );
 
   const table = useReactTable({

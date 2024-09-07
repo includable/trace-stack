@@ -5,6 +5,7 @@ import { MiniStatsChart } from "@/components/stats/mini-stats-chart";
 import { Badge } from "@/components/ui/badge";
 import { Tooltipped } from "@/components/ui/tooltipped";
 import { ColumnDef, Table } from "@tanstack/react-table";
+import { formatRelative } from "date-fns";
 import { CheckCircle2, CirclePause, CircleX } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -78,6 +79,17 @@ export const columns: ColumnDef<FunctionItem>[] = [
     header: "Memory allocated",
     cell: ({ row }) => {
       return <span>{row.getValue("memoryAllocated") || "-"} MB</span>;
+    },
+  },
+  {
+    accessorKey: "lastInvocation",
+    header: "Last invoked",
+    cell: ({ row }) => {
+      const lastInvocation = row.getValue("lastInvocation");
+      if (!lastInvocation) return <span>-</span>;
+      return (
+        <span>{formatRelative(new Date(lastInvocation), new Date())}</span>
+      );
     },
   },
   {

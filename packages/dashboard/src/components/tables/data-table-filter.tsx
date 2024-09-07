@@ -50,8 +50,8 @@ export function DataTableFilter<TData, TValue>({
           variant="outline"
           size="sm"
           className={cn(
-            selectedValues.size < 1 && "text-muted-foreground",
-            "h-8 border-dashed",
+            selectedValues.size < 1 && "text-muted-foreground border-dashed",
+            "h-8",
           )}
         >
           <PlusCircledIcon className="mr-2 h-4 w-4" />

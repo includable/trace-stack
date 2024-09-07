@@ -39,7 +39,7 @@ export default function Root() {
               >
                 Functions
               </Link>
-              <Link
+              {/* <Link
                 to="/issues"
                 className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
               >
@@ -62,7 +62,7 @@ export default function Root() {
                 className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
               >
                 Settings
-              </Link>
+              </Link> */}
             </nav>
             <div className="ml-auto flex items-center space-x-4">
               <DatePicker />
