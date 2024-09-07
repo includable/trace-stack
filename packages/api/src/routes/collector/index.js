@@ -7,13 +7,13 @@ const app = new Hono();
 app.post("/", async (c) => {
   const body = await c.req.json();
 
-  if (process.env.TRACER_TOKEN && body.token !== process.env.TRACER_TOKEN) {
-    console.log(`Invalid token: ${body.token}`);
-    return c.json({ error: "Invalid token" }, 401);
-  }
-
   for (const span of body) {
     console.log(span);
+
+    if (process.env.TRACER_TOKEN && span.token !== process.env.TRACER_TOKEN) {
+      console.log(`Invalid token: ${span.token}`);
+      continue;
+    }
 
     if (span.type === "log") {
       // save log span
