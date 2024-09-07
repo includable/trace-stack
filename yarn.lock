@@ -5994,7 +5994,7 @@ __metadata:
     postcss: "npm:^8.4.41"
     react: "npm:^18.3.1"
     react-cytoscapejs: "npm:^2.0.0"
-    react-date-range: "npm:^2.0.1"
+    react-day-picker: "npm:8.10.1"
     react-dom: "npm:^18.3.1"
     react-json-tree: "npm:^0.19.0"
     react-router-dom: "npm:^6.26.1"
@@ -7704,13 +7704,6 @@ __metadata:
   dependencies:
     clsx: "npm:2.0.0"
   checksum: 10c0/e11c57edf4bf50ef1c97bae41d68885afbaaedba26c48b7cc5dfb033390fed7012147e9532168d8c4f3497fce4dff15e20e6e60b8c9c9a4b0fe26b0e804513db
-  languageName: node
-  linkType: hard
-
-"classnames@npm:^2.2.6":
-  version: 2.5.1
-  resolution: "classnames@npm:2.5.1"
-  checksum: 10c0/afff4f77e62cea2d79c39962980bf316bacb0d7c49e13a21adaadb9221e1c6b9d3cdb829d8bb1b23c406f4e740507f37e1dcf506f7e3b7113d17c5bab787aa69
   languageName: node
   linkType: hard
 
@@ -15062,7 +15055,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:15, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
+"prop-types@npm:^15.6.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -15232,18 +15225,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-date-range@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "react-date-range@npm:2.0.1"
-  dependencies:
-    classnames: "npm:^2.2.6"
-    prop-types: "npm:^15.7.2"
-    react-list: "npm:^0.8.13"
-    shallow-equal: "npm:^1.2.1"
+"react-day-picker@npm:8.10.1":
+  version: 8.10.1
+  resolution: "react-day-picker@npm:8.10.1"
   peerDependencies:
-    date-fns: 3.0.6 || >=3.0.0
-    react: ^0.14 || ^15.0.0-rc || >=15.0
-  checksum: 10c0/be419f377b86cd9eafbe1e4fb60ba20b81b173e64dbe6cab8649edbe2a9afbc97f23701ab1e382caf4d82f65aaf4746e89d3df8cbbeb127df9ea4b7a3d11a8ab
+    date-fns: ^2.28.0 || ^3.0.0
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 10c0/a0ff28c4b61b3882e6a825b19e5679e2fdf3256cf1be8eb0a0c028949815c1ae5a6561474c2c19d231c010c8e0e0b654d3a322610881e0655abca05a2e03d9df
   languageName: node
   linkType: hard
 
@@ -15283,17 +15271,6 @@ __metadata:
     "@types/react": ^16.8.0 || ^17.0.0 || ^18.0.0
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
   checksum: 10c0/197aa5b6ed19eb362a1d9e74a144e35641c7937257531047653ba828c3e85b0010846ca7f535f3395e78161982900d5d62e6813c9cf9601dc0c319ed422edefa
-  languageName: node
-  linkType: hard
-
-"react-list@npm:^0.8.13":
-  version: 0.8.17
-  resolution: "react-list@npm:0.8.17"
-  dependencies:
-    prop-types: "npm:15"
-  peerDependencies:
-    react: 0.14 || 15 - 18
-  checksum: 10c0/85b2324b9fb410fcb3c6811578d8de51ec84eb308c320a865664c7f161fa3f70510fcc15ec7786e2725cac981355a937683b37d91a66ccfdffacf92c9e40326c
   languageName: node
   linkType: hard
 
@@ -16379,13 +16356,6 @@ __metadata:
   version: 1.0.5
   resolution: "setimmediate@npm:1.0.5"
   checksum: 10c0/5bae81bfdbfbd0ce992893286d49c9693c82b1bcc00dcaaf3a09c8f428fdeacf4190c013598b81875dfac2b08a572422db7df779a99332d0fce186d15a3e4d49
-  languageName: node
-  linkType: hard
-
-"shallow-equal@npm:^1.2.1":
-  version: 1.2.1
-  resolution: "shallow-equal@npm:1.2.1"
-  checksum: 10c0/51e03abadd97c9ebe590547d92db9148446962a3f23a3a0fb1ba2fccab80af881eef0ff1f8ccefd3f066c0bc5a4c8ca53706194813b95c8835fa66448a843a26
   languageName: node
   linkType: hard
 

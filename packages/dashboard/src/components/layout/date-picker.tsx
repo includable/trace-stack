@@ -1,26 +1,51 @@
-import { createContext, useContext, useState } from "react";
-import { DateRangePicker, createStaticRanges } from "react-date-range";
-import { Calendar } from "lucide-react";
-import { subDays, format, subHours } from "date-fns";
-import { enGB } from "date-fns/locale";
+import { createContext, useContext, useEffect, useState } from "react";
+import { CalendarIcon } from "lucide-react";
+import { subDays, format, subHours, parse } from "date-fns";
 
-import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
-import "react-date-range/dist/styles.css";
-import "react-date-range/dist/theme/default.css";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Input } from "@/components/ui/input";
 
 const store = createContext({});
 export const useDateRange = () => useContext(store);
 const { Provider } = store;
 
+const ranges = [
+  {
+    label: "Last hours",
+    startDate: subHours(new Date(), 1),
+    endDate: new Date(),
+  },
+  {
+    label: "Last 4 hours",
+    startDate: subHours(new Date(), 4),
+    endDate: new Date(),
+  },
+  {
+    label: "Last 24 hours",
+    startDate: subDays(new Date(), 1),
+    endDate: new Date(),
+  },
+  {
+    label: "Last 3 days",
+    startDate: subDays(new Date(), 3),
+    endDate: new Date(),
+  },
+  {
+    label: "Last 7 days",
+    startDate: subDays(new Date(), 7),
+    endDate: new Date(),
+  },
+];
+
 export const DateRangeProvider = ({ children }) => {
-  const [startDate, setStartDate] = useState(subDays(new Date(), 1));
-  const [endDate, setEndDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(ranges[2].startDate);
+  const [endDate, setEndDate] = useState(ranges[2].endDate);
   const [label, setLabel] = useState("Last 24 hours");
 
   return (
@@ -43,75 +68,25 @@ const DatePicker = ({}) => {
   const { startDate, endDate, label, setStartDate, setEndDate, setLabel } =
     useDateRange();
   const [open, setOpen] = useState(false);
-  const [dateRange, setDateRange] = useState([
-    { startDate, endDate, key: "selection" },
-  ]);
 
-  const handleClose = (range) => {
-    setOpen(false);
-    const { startDate, endDate } = range[0];
-    const selected = ranges.find(
-      (option) => option.isSelected(range[0]) === true,
+  useEffect(() => {
+    const range = ranges.find(
+      (range) =>
+        range.startDate.valueOf() === startDate.valueOf() &&
+        range.endDate.valueOf() === endDate.valueOf(),
     );
-    const label = selected
-      ? selected.label
-      : `${format(startDate, "PP")} – ${format(endDate, "PP")}`;
+    setLabel(
+      range?.label || `${format(startDate, "PP")} – ${format(endDate, "PP")}`,
+    );
+  }, [startDate, endDate]);
 
-    setStartDate(startDate);
-    setEndDate(endDate);
-    setLabel(label);
+  const handleClose = ({ to, from, label = "" }) => {
+    setOpen(false);
+
+    setStartDate(to);
+    setEndDate(from);
+    setLabel(label || `${format(to, "PP")} – ${format(from, "PP")}`);
   };
-
-  const getDayIndex = (date) => Math.floor(date.valueOf() / 86400000);
-
-  const handleSelect = (item) => {
-    setDateRange([item.selection]);
-    if (
-      getDayIndex(item.selection.startDate) !==
-      getDayIndex(item.selection.endDate)
-    ) {
-      // automatically close after a new range has been selected
-      handleClose([item.selection]);
-    }
-  };
-
-  const ranges = createStaticRanges([
-    {
-      label: "Last hours",
-      range: () => ({
-        startDate: subHours(new Date(), 1),
-        endDate: new Date(),
-      }),
-    },
-    {
-      label: "Last 4 hours",
-      range: () => ({
-        startDate: subHours(new Date(), 4),
-        endDate: new Date(),
-      }),
-    },
-    {
-      label: "Last 24 hours",
-      range: () => ({
-        startDate: subDays(new Date(), 1),
-        endDate: new Date(),
-      }),
-    },
-    {
-      label: "Last 3 days",
-      range: () => ({
-        startDate: subDays(new Date(), 3),
-        endDate: new Date(),
-      }),
-    },
-    {
-      label: "Last 7 days",
-      range: () => ({
-        startDate: subDays(new Date(), 7),
-        endDate: new Date(),
-      }),
-    },
-  ]);
 
   return (
     <Popover open={open} onOpenChange={(open) => setOpen(open)}>
@@ -121,21 +96,67 @@ const DatePicker = ({}) => {
           onClick={() => setOpen(true)}
           className="px-3"
         >
-          <Calendar className="h-[1.1rem] w-[1.1rem] mr-2" />
+          <CalendarIcon className="h-[1.1rem] w-[1.1rem] mr-2" />
           {label}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="end">
-        <DateRangePicker
-          locale={enGB}
-          onChange={handleSelect}
-          minDate={new Date("2020-01-01")} // TODO: define based on data retention config
-          maxDate={new Date()}
-          ranges={dateRange}
-          shownDate={dateRange[0].endDate}
-          direction="horizontal"
-          staticRanges={ranges}
-        />
+        <div className="flex divide-x">
+          <div className="p-3 w-40">
+            {ranges.map((option) => (
+              <Button
+                key={option.label}
+                variant={option.label === label ? "default" : "ghost"}
+                className="w-full justify-start"
+                onClick={() =>
+                  handleClose({
+                    to: option.startDate,
+                    from: option.endDate,
+                    label: option.label,
+                  })
+                }
+              >
+                {option.label}
+              </Button>
+            ))}
+          </div>
+          <div>
+            <Calendar
+              className="p-4 flex-1"
+              initialFocus
+              mode="range"
+              defaultMonth={startDate}
+              selected={{ from: startDate, to: endDate }}
+              onSelect={(range) => {
+                if (range?.from) {
+                  setStartDate(range.from);
+                }
+                if (range?.to) {
+                  setEndDate(range.to);
+                }
+              }}
+            />
+            <div className="flex items-center justify-between gap-2 p-4 pt-0">
+              <Input
+                type="time"
+                className="flex-1"
+                value={format(startDate, "HH:mm")}
+                onChange={(e) =>
+                  setStartDate(parse(e.target.value, "HH:mm", startDate))
+                }
+              />
+              <span className="text-muted">&ndash;</span>
+              <Input
+                type="time"
+                className="flex-1"
+                value={format(endDate, "HH:mm")}
+                onChange={(e) =>
+                  setEndDate(parse(e.target.value, "HH:mm", endDate))
+                }
+              />
+            </div>
+          </div>
+        </div>
       </PopoverContent>
     </Popover>
   );
