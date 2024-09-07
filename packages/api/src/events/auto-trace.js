@@ -7,8 +7,10 @@ import {
   ApiGatewayV2Client,
   GetApisCommand,
 } from "@aws-sdk/client-apigatewayv2";
+import pLimit from "p-limit";
 import { acquireLock, releaseLock } from "../lib/locks";
 import Logger from "../lib/logger";
+import { put } from "../lib/database";
 
 const supportedRuntimes = ["nodejs16.x", "nodejs18.x", "nodejs20.x"];
 const lambdaExecWrapper = "/opt/nodejs/tracer_wrapper";
@@ -51,6 +53,48 @@ const getApiEndpoint = async () => {
   return item.ApiEndpoint?.replace("https://", "");
 };
 
+const updateLambda = async (lambda, arnBase, edgeEndpoint) => {
+  const updateFunctionConfigurationCommand =
+    new UpdateFunctionConfigurationCommand({
+      FunctionName: lambda.FunctionName,
+      Layers: [
+        ...(lambda.Layers || [])
+          .map((layer) => layer.Arn)
+          .filter((arn) => !arn.startsWith(arnBase)),
+        process.env.LAMBDA_LAYER_ARN,
+      ],
+      Environment: {
+        ...(lambda.Environment || {}),
+        Variables: {
+          ...(lambda.Environment?.Variables || {}),
+          AUTO_TRACE_HOST: edgeEndpoint,
+          AWS_LAMBDA_EXEC_WRAPPER: lambdaExecWrapper,
+        },
+      },
+    });
+
+  const res = await new LambdaClient().send(updateFunctionConfigurationCommand);
+  logger.info(res);
+};
+
+const saveFunctionInfo = async (lambda, traceStatus) => {
+  await put(
+    {
+      pk: `function#${process.env.AWS_REGION}#${lambda.FunctionName}`,
+      sk: `function#${process.env.AWS_REGION}`,
+      name: lambda.FunctionName,
+      type: "function",
+      runtime: lambda.Runtime,
+      region: process.env.AWS_REGION,
+      arn: lambda.FunctionArn,
+      memoryAllocated: lambda.MemorySize,
+      timeout: lambda.Timeout,
+      traceStatus,
+    },
+    true,
+  );
+};
+
 export const autoTrace = async () => {
   // Check if we know our Lambda Layer ARN
   const arn = process.env.LAMBDA_LAYER_ARN;
@@ -71,69 +115,70 @@ export const autoTrace = async () => {
 
   // List all the lambda functions in the AWS account
   const lambdas = await getAccountLambdas();
+  logger.info(`Found ${lambdas.length} lambdas in the account`);
 
-  // Find all lambdas that need a layer added
-  let lambdasWithoutLayer = lambdas.filter((lambda) => {
-    const layers = lambda.Layers || [];
-    const envVars = lambda.Environment?.Variables || {};
+  // Update qualifying lambdas
+  const limit = pLimit(4);
+  await Promise.all(
+    lambdas.map((lambda) =>
+      limit(async () => {
+        const layers = lambda.Layers || [];
+        const envVars = lambda.Environment?.Variables || {};
 
-    const isTraceStack = envVars.LAMBDA_LAYER_ARN === arn;
-    const isUpdating = lambda.LastUpdateStatus === "InProgress";
-    const hasDisableEnvVar = envVars.AUTO_TRACE_EXCLUDE;
-    const hasOtherWrapper =
-      envVars.AWS_LAMBDA_EXEC_WRAPPER &&
-      envVars.AWS_LAMBDA_EXEC_WRAPPER !== lambdaExecWrapper;
-    const hasSupportedRuntime = supportedRuntimes.includes(lambda.Runtime);
-    const hasLayer = layers.find(({ Arn }) => Arn.startsWith(arnBase));
-    const hasUpdate = layers.find(
-      ({ Arn }) => Arn.startsWith(arnBase) && Arn !== arn,
-    );
+        const isTraceStack = envVars.LAMBDA_LAYER_ARN === arn;
+        const isUpdating = lambda.LastUpdateStatus === "InProgress";
+        const hasDisableEnvVar = envVars.AUTO_TRACE_EXCLUDE;
+        const hasOtherWrapper =
+          envVars.AWS_LAMBDA_EXEC_WRAPPER &&
+          envVars.AWS_LAMBDA_EXEC_WRAPPER !== lambdaExecWrapper;
+        const hasSupportedRuntime = supportedRuntimes.includes(lambda.Runtime);
+        const hasLayer = layers.find(({ Arn }) => Arn.startsWith(arnBase));
+        const hasUpdate = layers.find(
+          ({ Arn }) => Arn.startsWith(arnBase) && Arn !== arn,
+        );
 
-    return (
-      (!hasLayer || hasUpdate) &&
-      !hasDisableEnvVar &&
-      !hasOtherWrapper &&
-      !isUpdating &&
-      !isTraceStack &&
-      hasSupportedRuntime
-    );
-  });
+        if (hasLayer && !hasUpdate) {
+          logger.info(`- ${lambda.FunctionName} already has the latest layer`);
+          await saveFunctionInfo(lambda, "enabled");
+          return;
+        }
+        if (hasDisableEnvVar) {
+          logger.info(`- ${lambda.FunctionName} has AUTO_TRACE_EXCLUDE`);
+          await saveFunctionInfo(lambda, "excluded");
+          return;
+        }
+        if (hasOtherWrapper) {
+          logger.info(`- ${lambda.FunctionName} has a custom wrapper`);
+          await saveFunctionInfo(lambda, "custom_wrapper");
+          return;
+        }
+        if (isUpdating) {
+          logger.info(`- ${lambda.FunctionName} is already updating`);
+          await saveFunctionInfo(lambda, "update_in_progress");
+          return;
+        }
+        if (isTraceStack) {
+          logger.info(`- ${lambda.FunctionName} is part of TraceStack`);
+          return;
+        }
+        if (!hasSupportedRuntime) {
+          logger.info(`- ${lambda.FunctionName} has an unsupported runtime`);
+          await saveFunctionInfo(lambda, "unsupported_runtime");
+          return;
+        }
 
-  logger.info(`Found ${lambdasWithoutLayer.length} lambdas to update`);
+        try {
+          await updateLambda(lambda, arnBase, edgeEndpoint);
 
-  for (const lambda of lambdasWithoutLayer) {
-    try {
-      const updateFunctionConfigurationCommand =
-        new UpdateFunctionConfigurationCommand({
-          FunctionName: lambda.FunctionName,
-          Layers: [
-            ...(lambda.Layers || [])
-              .map((layer) => layer.Arn)
-              .filter((arn) => !arn.startsWith(arnBase)),
-            process.env.LAMBDA_LAYER_ARN,
-          ],
-          Environment: {
-            ...(lambda.Environment || {}),
-            Variables: {
-              ...(lambda.Environment?.Variables || {}),
-              AUTO_TRACE_HOST: edgeEndpoint,
-              AWS_LAMBDA_EXEC_WRAPPER: lambdaExecWrapper,
-            },
-          },
-        });
-
-      const res = await new LambdaClient().send(
-        updateFunctionConfigurationCommand,
-      );
-      logger.info(res);
-
-      logger.info(`✓ Updated ${lambda.FunctionName}`);
-      // TODO: save function info in DynamoDB
-    } catch (e) {
-      logger.warn(`✗ Failed to update ${lambda.FunctionName}`);
-      logger.warn(e);
-    }
-  }
+          logger.info(`✓ Updated ${lambda.FunctionName}`);
+          await saveFunctionInfo(lambda, "enabled");
+        } catch (e) {
+          logger.warn(`✗ Failed to update ${lambda.FunctionName}`, e);
+          await saveFunctionInfo(lambda, "error");
+        }
+      }),
+    ),
+  );
 
   await releaseLock("auto-trace");
 };

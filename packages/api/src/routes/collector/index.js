@@ -72,6 +72,7 @@ app.post("/", async (c) => {
           arn: span.invokedArn,
           memoryAllocated: span.memoryAllocated,
           timeout: span.maxFinishTime - span.started,
+          traceStatus: 'enabled',
         },
         true,
       );
