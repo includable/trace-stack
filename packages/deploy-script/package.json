@@ -6,6 +6,10 @@
   "main": "index.js",
   "packageManager": "yarn@4.4.1",
   "bin": "./src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/includable/trace-stack.git"
+  },
   "dependencies": {
     "@aws-sdk/client-apigatewayv2": "^3.645.0",
     "boxen": "^8.0.1",
