@@ -13,7 +13,11 @@ import {
 } from "@aws-sdk/client-apigatewayv2";
 
 const exec = (command, options = {}) => {
-  const child = child_process.exec(command, options);
+  const child = child_process.exec(command, {
+    ...options,
+    env: { ...process.env, ...(options.env || {}) },
+  });
+
   child.stdout.on("data", function (data) {
     console.log(data?.trim());
   });
