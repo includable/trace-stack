@@ -19,4 +19,14 @@ app.get("/*", async (c) => {
   return c.html(html);
 });
 
-export const handler = handle(app);
+export const httpApp = handle(app);
+
+export const handler = (event, context) => {
+  console.log(`Action: ${event.action}`);
+
+  if (event.action === "auto-trace") {
+    return require("./events/auto-trace").handler();
+  }
+
+  return httpApp(event, context);
+};

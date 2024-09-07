@@ -110,5 +110,7 @@ export const handler = async () => {
     console.log(res);
 
     console.log(`✓ Updated ${lambda.FunctionName}`);
+
+    // TODO: save function info in DynamoDB
   }
 };

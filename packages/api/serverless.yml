@@ -36,6 +36,7 @@ provider:
   region: eu-west-1
   deploymentMethod: direct
   versionFunctions: false
+  stage: ${opt:stage, 'production'}
   stackTags:
     service: ${self:service}
   environment:
@@ -66,10 +67,22 @@ provider:
   lambdaHashingVersion: 20201221
   iam:
     role:
-      statements: # TODO: define IAMs per function
+      statements:
         - Effect: Allow
           Action:
             - dynamodb:*
+          Resource:
+            - arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/${self:service}-${sls:stage}
+            - arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/${self:service}-${sls:stage}/index/*
+        - Effect: Allow
+          Action:
+            - lambda:ListFunctions
+            - lambda:UpdateFunctionConfiguration
+          Resource:
+            - "*"
+        - Effect: Allow
+          Action:
+            - apigateway:GetRestApis
           Resource:
             - "*"
 
@@ -86,16 +99,16 @@ layers:
 functions:
   main:
     handler: src/index.handler
+    timeout: 900
+    memorySize: 2048
     events:
       - httpApi:
           path: /{proxy+}
           method: any
-  auto-trace:
-    handler: src/events/auto-trace.handler
-    timeout: 900
-    memorySize: 2048
-    events:
-      - schedule: rate(1 day)
+      - schedule:
+          rate: rate(1 day)
+          input:
+            action: auto-trace
 
 resources:
   - ${file(./src/infrastructure/database/table.yml)}
