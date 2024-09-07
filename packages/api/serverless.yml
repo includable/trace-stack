@@ -3,26 +3,22 @@ service: trace-stack
 plugins:
   - serverless-esbuild
   - serverless-offline
-  # - serverless-domain-manager
+  - serverless-domain-manager
 
 params:
   default:
     DATA_RETENTION_DAYS: ${env:DATA_RETENTION_DAYS, 30}
     CUSTOM_DOMAIN: ${env:CUSTOM_DOMAIN, ""}
+    HAS_CUSTOM_DOMAIN: ${strToBool(${env:HAS_CUSTOM_DOMAIN, "false"})}
 
 custom:
-  # baseDomain: my-app.com
-  # domain:
-  #   production: api.${self:custom.baseDomain}
-  #   default: api-${sls:stage}.${self:custom.baseDomain}
-  # customDomain:
-  #   domainName: ${self:custom.domain.${sls:stage}, self:custom.domain.default}
-  #   stage: ${sls:stage}
-  #   certificateName: ${self:custom.baseDomain}
-  #   createRoute53Record: true
-  #   endpointType: regional
-  #   apiType: http
-  #   autoDomain: true
+  customDomain:
+    enabled: ${param:HAS_CUSTOM_DOMAIN}
+    domainName: ${param:CUSTOM_DOMAIN}
+    createRoute53Record: true
+    autoDomain: true
+    endpointType: regional
+    apiType: http
 
 package:
   individually: true
@@ -36,7 +32,7 @@ provider:
   region: eu-west-1
   deploymentMethod: direct
   versionFunctions: false
-  stage: ${opt:stage, 'production'}
+  stage: ${opt:stage, 'dev'}
   stackTags:
     service: ${self:service}
   environment:

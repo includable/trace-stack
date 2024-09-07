@@ -45,7 +45,7 @@ const getApiEndpoint = async () => {
   return item.ApiEndpoint?.replace("https://", "");
 };
 
-export const handler = async () => {
+export const autoTrace = async () => {
   // Check if we know our Lambda Layer ARN
   const arn = process.env.LAMBDA_LAYER_ARN;
   const arnBase = arn?.substring(0, arn?.lastIndexOf(":") + 1);

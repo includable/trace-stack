@@ -6,6 +6,10 @@ import inquirer from "inquirer";
 import degit from "degit";
 import child_process from "child_process";
 import { mkdir, writeFile } from "fs/promises";
+import {
+  ApiGatewayV2Client,
+  GetApisCommand,
+} from "@aws-sdk/client-apigatewayv2";
 
 const exec = (command, options = {}) => {
   const child = child_process.exec(command, options);
@@ -20,6 +24,22 @@ const exec = (command, options = {}) => {
     child.addListener("error", reject);
     child.addListener("exit", resolve);
   });
+};
+
+const getApiEndpoint = async () => {
+  const apiGatewayV2Client = new ApiGatewayV2Client();
+
+  const getApisCommand = new GetApisCommand({
+    MaxResults: "1000",
+  });
+  const { Items } = await apiGatewayV2Client.send(getApisCommand);
+  const item = Items.find((item) => item.Name === "dev-trace-stack");
+
+  if (!item) {
+    throw new Error(`API Gateway dev-trace-stack not found`);
+  }
+
+  return item.ApiEndpoint?.replace("https://", "");
 };
 
 // Intro text
@@ -57,8 +77,6 @@ const questions = [
 ];
 const answers = await inquirer.prompt(questions);
 
-// TODO: validate custom domain
-
 // Clone repo
 console.log(chalk.blue("\nCloning TraceStack repo..."));
 const cloner = degit("includable/trace-stack", {
@@ -77,7 +95,9 @@ await exec("yarn install", { cwd: "/tmp/trace-stack" });
 console.log(chalk.blue("Writing .env file..."));
 await writeFile(
   "/tmp/trace-stack/packages/api/.env",
-  `RETENTION_DAYS=${answers.RETENTION_DAYS}\nCUSTOM_DOMAIN=${answers.CUSTOM_DOMAIN}\n`,
+  `RETENTION_DAYS=${answers.RETENTION_DAYS}\n` +
+    `CUSTOM_DOMAIN=${answers.CUSTOM_DOMAIN}\n` +
+    `HAS_CUSTOM_DOMAIN=${answers.CUSTOM_DOMAIN ? "true" : "false"}\n`,
 );
 
 // Deploy
@@ -86,11 +106,10 @@ await exec("yarn deploy", { cwd: "/tmp/trace-stack" });
 
 // Create user
 console.log(chalk.blue("Creating user..."));
-// TODO: create user in Cognito
+// TODO: create user account in DDB
 
 // Done
-// TODO: find real domain
-const domain = "trace-stack.yourdomain.com";
+const domain = answers.CUSTOM_DOMAIN || (await getApiEndpoint());
 console.log(
   "\n\n" +
     boxen(

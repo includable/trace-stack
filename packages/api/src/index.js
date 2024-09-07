@@ -5,6 +5,7 @@ import fs from "fs";
 
 import collector from "./routes/collector";
 import explore from "./routes/explore";
+import { autoTrace } from "./events/auto-trace";
 
 const app = new Hono();
 app.route("/api/spans", collector);
@@ -25,7 +26,7 @@ export const handler = (event, context) => {
   console.log(`Action: ${event.action}`);
 
   if (event.action === "auto-trace") {
-    return require("./events/auto-trace").handler();
+    return autoTrace();
   }
 
   return httpApp(event, context);
