@@ -86,7 +86,7 @@ export const columns: ColumnDef<FunctionItem>[] = [
     header: "Last invoked",
     cell: ({ row }) => {
       const lastInvocation = row.getValue("lastInvocation");
-      if (!lastInvocation) return <span>-</span>;
+      if (!lastInvocation || lastInvocation === '0') return <span>-</span>;
       return (
         <span>{formatRelative(new Date(lastInvocation), new Date())}</span>
       );

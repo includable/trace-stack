@@ -40,7 +40,7 @@ export function DataTableFilter<TData, TValue>({
   const selectedValues = new Set(column?.getFilterValue() as string[]);
 
   options = Array.from(
-    options || facets?.keys().map((value) => ({ value, label: value })) || [],
+    options || facets?.keys?.().map((value) => ({ value, label: value })) || [],
   );
 
   return (

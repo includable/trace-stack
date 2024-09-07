@@ -11,6 +11,7 @@ const Functions = () => {
   const mappedFunctions = useMemo(() => {
     return functions.map((func) => ({
       ...func,
+      lastInvocation: func.lastInvocation || '0',
       tags: Object.entries(func.tags || {})
         .filter(([tag]) => !tag.startsWith("aws:cloudformation:"))
         .filter(([tag]) => !tag.startsWith("lumigo:"))

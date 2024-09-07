@@ -1,11 +1,10 @@
-import { DataTable } from "@/components/tables/data-table";
-import { StatsChart } from "@/components/stats/stats-chart";
+import { useState } from "react";
 
-import { columns } from "./columns";
-import { useData } from "@/lib/api";
-import { DataTableFilter } from "@/components/tables/data-table-filter";
-import { useMemo, useState } from "react";
+import { DataTable } from "@/components/tables/data-table";
 import { Button } from "@/components/ui/button";
+
+import { useData } from "@/lib/api";
+import { columns } from "./columns";
 
 const Errors = () => {
   const [startKey, setStartKey] = useState("");
