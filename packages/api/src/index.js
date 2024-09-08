@@ -25,8 +25,6 @@ app.get("/*", async (c) => {
 export const httpApp = handle(app);
 
 export const handler = (event, context) => {
-  console.log(`Action: ${event.action}`);
-
   if (event.action === "auto-trace") {
     return autoTrace();
   }
