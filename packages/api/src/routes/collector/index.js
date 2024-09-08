@@ -87,7 +87,6 @@ app.post("/", async (c) => {
           },
         });
         await saveHourlyStat(span.region, span.name + ".error." + errorKey, 1);
-        await saveHourlyStat(span.region, "error." + errorKey, 1);
       }
 
       // save function meta data
@@ -116,17 +115,12 @@ app.post("/", async (c) => {
 
       // save stats
       const duration = span.ended - span.started;
-      const memory = span.memoryAllocated;
       await saveHourlyStat(span.region, span.name + ".invocations", 1);
       await saveHourlyStat(span.region, span.name + ".duration", duration);
-      await saveHourlyStat(span.region, span.name + ".memory", Number(memory));
-      await saveHourlyStat(span.region, "invocations", 1);
-      await saveHourlyStat(span.region, "duration", duration);
       await saveHourlyStat("global", "invocations", 1);
       await saveHourlyStat("global", "duration", duration);
       if (span.error) {
         await saveHourlyStat(span.region, span.name + ".errors", 1);
-        await saveHourlyStat(span.region, "errors", 1);
         await saveHourlyStat("global", "errors", 1);
       }
     }
