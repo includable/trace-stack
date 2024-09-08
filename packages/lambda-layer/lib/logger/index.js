@@ -7,7 +7,7 @@ const uuid = require("../utils/uuid");
  * Initialise log catcher and forwarder.
  * @param {Function} [externalLogger]
  */
-const initLogger = (externalLogger = undefined) => {
+const initLogger = (config = {}, externalLogger = undefined) => {
   let queue = [];
   let logSequenceNumber = 0;
 
@@ -23,7 +23,7 @@ const initLogger = (externalLogger = undefined) => {
         body: JSON.stringify(queueToSend),
         headers: {
           "Content-Type": "application/json",
-          Authorization: "t_0000000000000000",
+          Authorization: config.token,
         },
       });
     } catch (e) {
@@ -55,10 +55,11 @@ const initLogger = (externalLogger = undefined) => {
         info: {
           traceId: trace,
           tracer: {
-            name: "auto-tracer#logger",
+            name: "@trace-stack/logger",
             version: "1.0.0",
           },
         },
+        token: config.token,
         transactionId: trace.transactionId,
         type: "log",
         logType: type,

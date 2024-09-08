@@ -16,7 +16,7 @@ const tracer = require("@lumigo/tracer")({
 const { load } = require("./lib/aws/aws-user-function.js");
 
 const initLogger = require("./lib/logger");
-const logger = initLogger();
+const logger = initLogger(config);
 
 const getHandlerAsync = async () => {
   if (!process.env.TRACER_ORIGINAL_HANDLER) {
