@@ -118,7 +118,6 @@ app.post("/", async (c) => {
       await saveHourlyStat(span.region, span.name + ".invocations", 1);
       await saveHourlyStat(span.region, span.name + ".duration", duration);
       await saveHourlyStat("global", "invocations", 1);
-      await saveHourlyStat("global", "duration", duration);
       if (span.error) {
         await saveHourlyStat(span.region, span.name + ".errors", 1);
         await saveHourlyStat("global", "errors", 1);
