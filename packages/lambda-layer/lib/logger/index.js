@@ -2,6 +2,7 @@ const { getTraceId } = require("@lumigo/tracer/dist/utils");
 const fetch = require("node-fetch");
 
 const uuid = require("../utils/uuid");
+const MAX_LOGS = Number(process.env.TRACER_MAX_LOGS || 50);
 
 /**
  * Initialise log catcher and forwarder.
@@ -44,29 +45,28 @@ const initLogger = (config = {}, externalLogger = undefined) => {
     }
 
     try {
-      const trace = getTraceId(process.env._X_AMZN_TRACE_ID);
-      logSequenceNumber++;
-      if (logSequenceNumber > 10000) {
-        logSequenceNumber = 0;
-      }
+      if (logSequenceNumber < MAX_LOGS) {
+        logSequenceNumber++;
 
-      queue.push({
-        id: uuid(),
-        info: {
-          traceId: trace,
-          tracer: {
-            name: "@trace-stack/logger",
-            version: "1.0.0",
+        const trace = getTraceId(process.env._X_AMZN_TRACE_ID);
+        queue.push({
+          id: uuid(),
+          info: {
+            traceId: trace,
+            tracer: {
+              name: "@trace-stack/logger",
+              version: "1.0.0",
+            },
           },
-        },
-        token: config.token,
-        transactionId: trace.transactionId,
-        type: "log",
-        logType: type,
-        log: JSON.stringify(args),
-        logSequenceNumber: logSequenceNumber,
-        started: Number(`${Date.now()}.${logSequenceNumber}`),
-      });
+          token: config.token,
+          transactionId: trace.transactionId,
+          type: "log",
+          logType: type,
+          log: JSON.stringify(args),
+          logSequenceNumber: logSequenceNumber,
+          started: Number(`${Date.now()}.${logSequenceNumber}`),
+        });
+      }
 
       if (needsFlush()) {
         flushQueue();
@@ -80,6 +80,11 @@ const initLogger = (config = {}, externalLogger = undefined) => {
 
   const stop = () => {
     global.console = global.console._originalConsole;
+    logSequenceNumber = 0;
+  };
+
+  const start = () => {
+    logSequenceNumber = 0;
   };
 
   global.console = (function (console) {
@@ -105,7 +110,7 @@ const initLogger = (config = {}, externalLogger = undefined) => {
     };
   })(console);
 
-  return { flushQueue, stop, queue };
+  return { flushQueue, start, stop, queue };
 };
 
 module.exports = initLogger;

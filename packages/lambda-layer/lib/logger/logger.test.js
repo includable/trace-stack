@@ -1,4 +1,5 @@
 jest.mock("node-fetch");
+process.env.TRACER_MAX_LOGS = 150;
 const fetch = require("node-fetch");
 
 const initLogger = require("./index.js");
@@ -13,6 +14,7 @@ describe("logger", () => {
   beforeEach(() => {
     // @ts-ignore
     fetch.mockClear();
+    logger.start();
   });
 
   afterAll(() => {
@@ -34,7 +36,7 @@ describe("logger", () => {
   it("flushes logs when the queue is full", async () => {
     for (let i = 0; i < 120; i++) {
       console.log("Hello, world!");
-    }
+    };
 
     expect(fetch).toHaveBeenCalledTimes(2);
   });

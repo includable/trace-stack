@@ -69,6 +69,7 @@ const handler = async (event, context, callback) => {
     return userHandler(event, context, callback);
   }
 
+  await logger.start();
   const resultValue = await tracer.trace(userHandler)(event, context, callback);
   await logger.flushQueue();
   return resultValue;
