@@ -49,6 +49,7 @@ const initLogger = (config = {}, externalLogger = undefined) => {
         logSequenceNumber++;
 
         const trace = getTraceId(process.env._X_AMZN_TRACE_ID);
+        const content = JSON.stringify(args);
         queue.push({
           id: uuid(),
           info: {
@@ -62,7 +63,8 @@ const initLogger = (config = {}, externalLogger = undefined) => {
           transactionId: trace.transactionId,
           type: "log",
           logType: type,
-          log: JSON.stringify(args),
+          log: content.substring(0, 10000),
+          truncated: content.length > 10000,
           logSequenceNumber: logSequenceNumber,
           started: Number(`${Date.now()}.${logSequenceNumber}`),
         });
