@@ -3,6 +3,7 @@ const fetch = require("node-fetch");
 
 const uuid = require("../utils/uuid");
 const MAX_LOGS = Number(process.env.TRACER_MAX_LOGS || 50);
+const MAX_LOG_SIZE = Number(process.env.TRACER_MAX_LOG_SIZE || 1024 * 5);
 
 /**
  * Initialise log catcher and forwarder.
@@ -63,8 +64,8 @@ const initLogger = (config = {}, externalLogger = undefined) => {
           transactionId: trace.transactionId,
           type: "log",
           logType: type,
-          log: content.substring(0, 10000),
-          truncated: content.length > 10000,
+          log: content.substring(0, MAX_LOG_SIZE),
+          truncated: content.length > MAX_LOG_SIZE,
           logSequenceNumber: logSequenceNumber,
           started: Number(`${Date.now()}.${logSequenceNumber}`),
         });
