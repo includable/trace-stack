@@ -4,6 +4,7 @@ plugins:
   - serverless-esbuild
   - serverless-offline
   - serverless-domain-manager
+  - serverless-plugin-log-retention
 
 params:
   default:
@@ -20,6 +21,7 @@ custom:
     autoDomain: true
     endpointType: regional
     apiType: http
+  logRetentionInDays: 14
 
 package:
   individually: true

@@ -5958,6 +5958,7 @@ __metadata:
     serverless-domain-manager: "npm:^7.3.6"
     serverless-esbuild: "npm:^1.51.0"
     serverless-offline: "npm:^13.3.3"
+    serverless-plugin-log-retention: "npm:^2.0.0"
     slug: "npm:^9.1.0"
   languageName: unknown
   linkType: soft
@@ -13672,6 +13673,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nco@npm:1.0.1":
+  version: 1.0.1
+  resolution: "nco@npm:1.0.1"
+  checksum: 10c0/70df951e073b2c3eda20bdd50435579a698d1865cb8f40e9ea7cff5a12cf2202186c20279ca895ea45ccd83703db51d382fbe370f9d739f3f8c0e69e01444266
+  languageName: node
+  linkType: hard
+
 "negotiator@npm:^0.6.3":
   version: 0.6.3
   resolution: "negotiator@npm:0.6.3"
@@ -16133,6 +16141,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"semver@npm:5.4.1":
+  version: 5.4.1
+  resolution: "semver@npm:5.4.1"
+  bin:
+    semver: ./bin/semver
+  checksum: 10c0/38122c0861f58ec18371352e079fc9de154649546126be4e23c6fb0fa4ec48dd9d59eabf2796c2fab7314911b66b306a047b6c9b6137989fd946528e0ea682db
+  languageName: node
+  linkType: hard
+
 "semver@npm:^6.0.0, semver@npm:^6.2.0, semver@npm:^6.3.1":
   version: 6.3.1
   resolution: "semver@npm:6.3.1"
@@ -16231,6 +16248,16 @@ __metadata:
   peerDependencies:
     serverless: ^3.2.0
   checksum: 10c0/6b6ba6091d2f59ff1a8966bbfa83c338293cbc7199627e7cb75d92837a412a9918fb2c4ef32eede9f8c16cdb482c225dccedc292d511026e0556fa37816966e3
+  languageName: node
+  linkType: hard
+
+"serverless-plugin-log-retention@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "serverless-plugin-log-retention@npm:2.0.0"
+  dependencies:
+    nco: "npm:1.0.1"
+    semver: "npm:5.4.1"
+  checksum: 10c0/80bee0bf2b7d895f373292154181bd916cb2e8175d79db0bd995eda1ad40ca1b65ec3544758e3abe1db0190fbb9aec7023566005fe7f38bd3240917cca0de358
   languageName: node
   linkType: hard
 
