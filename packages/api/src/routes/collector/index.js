@@ -132,6 +132,7 @@ app.post("/", async (c) => {
       itemsToSave.push({
         pk,
         sk: `spans#${chunk[0].started || chunk[0].sending_time}#${chunk[0].id}`,
+        type: 'spans',
         spans: chunk,
       });
     }
