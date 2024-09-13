@@ -126,13 +126,14 @@ app.post("/", async (c) => {
   }
 
   const itemsToSave = [];
-  for (const [pk, items] of Object.entries(groupedItems)) {
+  for (let [pk, items] of Object.entries(groupedItems)) {
+    items = groupSpans(items);
     while (items.length) {
       const chunk = items.splice(0, 50);
       itemsToSave.push({
         pk,
         sk: `spans#${chunk[0].started || chunk[0].sending_time}#${chunk[0].id}`,
-        type: 'spans',
+        type: "spans",
         spans: chunk,
       });
     }
