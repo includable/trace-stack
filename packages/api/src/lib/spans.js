@@ -47,6 +47,7 @@ const simplifySpans = (spans) => {
       token,
       region,
       type,
+      transactionId,
       isMetadata,
       memoryAllocated,
       readiness,
