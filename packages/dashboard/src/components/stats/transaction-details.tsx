@@ -211,7 +211,11 @@ const SpanItem = ({ spans, nested = false }) => {
         >
           <ServiceIcon transaction={transaction} />
           <span className="block flex-1 truncate w-full">
-            {spans.length > 1 ? `(${spans.length}) ` : ""}
+            {spans.length > 1
+              ? `(${spans.length}) `
+              : spans[0].instances > 1
+                ? `(${spans[0].instances}) `
+                : ""}
             <TransactionTitle transaction={transaction} />
           </span>
         </div>
