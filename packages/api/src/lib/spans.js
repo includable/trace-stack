@@ -37,6 +37,36 @@ const removeGroupingKeys = (spans) => {
   });
 };
 
+const simplifySpans = (spans) => {
+  return spans.map((span) => {
+    const {
+      info,
+      vendor,
+      version,
+      runtime,
+      token,
+      region,
+      type,
+      isMetadata,
+      memoryAllocated,
+      readiness,
+      messageVersion,
+      account,
+      invokedArn,
+      invokedVersion,
+      ...rest
+    } = span;
+    const { traceId, tracer, ...restInfo } = info || {};
+    return {
+      ...rest,
+      info: {
+        traceId: traceId?.Root,
+        ...restInfo,
+      },
+    };
+  });
+};
+
 const getTime = (span) => span.started || span.sending_time;
 
 export const groupSpans = (spans) => {
@@ -52,5 +82,5 @@ export const groupSpans = (spans) => {
     }
   }
 
-  return removeGroupingKeys(groupedSpans);
+  return simplifySpans(removeGroupingKeys(groupedSpans));
 };
