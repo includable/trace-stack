@@ -30,6 +30,11 @@ app.post("/", async (c) => {
       continue;
     }
 
+    // ignore started spans and enrichments
+    if (span.id.endsWith("_started") || span.type === "enrichment") {
+      continue;
+    }
+
     // save transaction span
     groupedItems[pk].push({
       ...span,
@@ -126,7 +131,7 @@ app.post("/", async (c) => {
       const chunk = items.splice(0, 50);
       itemsToSave.push({
         pk,
-        sk: `spans#${items[0].started || items[0].sending_time}#${items[0].id}`,
+        sk: `spans#${chunk[0].started || chunk[0].sending_time}#${chunk[0].id}`,
         spans: chunk,
       });
     }
