@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import { getExpiryTime, put, update } from "../../lib/database";
 import { saveHourlyStat } from "../../lib/stats";
 import { getErrorKey } from "../../lib/errors";
+import { groupSpans } from "../../lib/spans";
 
 const app = new Hono();
 

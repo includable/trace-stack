@@ -39,7 +39,7 @@ const removeGroupingKeys = (spans) => {
 
 const getTime = (span) => span.started || span.sending_time;
 
-const groupSpans = (spans) => {
+export const groupSpans = (spans) => {
   spans = addGroupingKeys(spans).sort((a, b) => getTime(a) - getTime(b));
 
   const groupedSpans = [];
