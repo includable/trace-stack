@@ -13,6 +13,8 @@ const tracer = require("@lumigo/tracer")({
   edgeHost: process.env.AUTO_TRACE_HOST || config.edgeHost,
 });
 
+const verbose = process.env.TRACER_LOG_VERBOSE;
+
 const { load } = require("./lib/aws/aws-user-function.js");
 
 const initLogger = require("./lib/logger");
@@ -62,15 +64,39 @@ const handler = async (event, context, callback) => {
   try {
     userHandler = await getHandlerAsync();
   } catch (e) {
+    if (verbose) {
+      console.log("[tracer] Error loading user handler", e);
+    }
     throw removeTracerFromStacktrace(e);
   }
 
   if (process.env.AUTO_TRACE_EXCLUDE) {
+    if (verbose) {
+      console.log("[tracer] AUTO_TRACE_EXCLUDE is set, skipping tracing");
+    }
     return userHandler(event, context, callback);
   }
 
+  if (verbose) {
+    console.log("[tracer] Loaded user handler, starting logger");
+  }
+
   await logger.start();
-  const resultValue = await tracer.trace(userHandler)(event, context, callback);
+
+  let resultValue;
+  try {
+    resultValue = await tracer.trace(userHandler)(event, context, callback);
+    if (verbose) {
+      console.log("[tracer] User handler completed successfully");
+    }
+  } catch (e) {
+    if (verbose) {
+      console.log("[tracer] User handler threw an error");
+    }
+    await logger.flushQueue();
+    throw removeTracerFromStacktrace(e);
+  }
+
   await logger.flushQueue();
   return resultValue;
 };
