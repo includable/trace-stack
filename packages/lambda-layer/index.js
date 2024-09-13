@@ -17,8 +17,8 @@ const verbose = process.env.TRACER_LOG_VERBOSE;
 
 const { load } = require("./lib/aws/aws-user-function.js");
 
-const initLogger = require("./lib/logger");
-const logger = initLogger(config);
+// const initLogger = require("./lib/logger");
+// const logger = initLogger(config);
 
 const getHandlerAsync = async () => {
   if (!process.env.TRACER_ORIGINAL_HANDLER) {
@@ -60,44 +60,54 @@ const removeTracerFromStacktrace = (err) => {
 };
 
 const handler = async (event, context, callback) => {
-  const originalLogger = await logger.start();
+  // const originalLogger = await logger.start();
+
+  if (verbose) {
+    // originalLogger.log("[tracer] Starting handler");
+    console.log("[tracer] Starting handler");
+  }
 
   let userHandler;
   try {
     userHandler = await getHandlerAsync();
   } catch (e) {
     if (verbose) {
-      originalLogger.log("[tracer] Error loading user handler", e);
+      // originalLogger.log("[tracer] Error loading user handler", e);
+      console.log("[tracer] Error loading user handler", e);
     }
     throw removeTracerFromStacktrace(e);
   }
 
   if (process.env.AUTO_TRACE_EXCLUDE) {
     if (verbose) {
-      originalLogger.log("[tracer] AUTO_TRACE_EXCLUDE is set, skipping tracing");
+      // originalLogger.log("[tracer] AUTO_TRACE_EXCLUDE is set, skipping tracing");
+      console.log("[tracer] AUTO_TRACE_EXCLUDE is set, skipping tracing");
     }
     return userHandler(event, context, callback);
   }
 
   if (verbose) {
-    originalLogger.log("[tracer] Loaded user handler, starting logger");
+    // originalLogger.log("[tracer] Loaded user handler, starting logger");
+    console.log("[tracer] Loaded user handler, starting logger");
   }
 
   let resultValue;
   try {
     resultValue = await tracer.trace(userHandler)(event, context, callback);
     if (verbose) {
-      originalLogger.log("[tracer] User handler completed successfully");
+      // originalLogger.log("[tracer] User handler completed successfully");
+      console.log("[tracer] User handler completed successfully");
     }
   } catch (e) {
     if (verbose) {
-      originalLogger.log("[tracer] User handler threw an error");
+      // originalLogger.log("[tracer] User handler threw an error");
+      console.log("[tracer] User handler threw an error");
     }
-    await logger.flushQueue();
+    // await logger.flushQueue();
     throw removeTracerFromStacktrace(e);
   }
 
-  await logger.flushQueue();
+  // await logger.flushQueue();
   return resultValue;
 };
 
