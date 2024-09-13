@@ -53,10 +53,15 @@ const TransactionTitle = ({ transaction }) => {
   }
 
   if (transaction.type === "log" && transaction.log) {
-    const log = JSON.parse(transaction.log);
-    let firstLog = log?.[0];
-    if (typeof firstLog === "object") {
-      firstLog = JSON.stringify(firstLog);
+    let firstLog;
+    try {
+      const log = JSON.parse(transaction.log);
+      firstLog = log?.[0];
+      if (typeof firstLog === "object") {
+        firstLog = JSON.stringify(firstLog);
+      }
+    } catch (e) {
+      firstLog = transaction.log;
     }
 
     const classes = cn(
@@ -119,19 +124,22 @@ const SpanDetails = ({ span }) => {
   }
 
   if (span.type === "log") {
-    let log = JSON.parse(span.log);
-    if (
-      typeof log === "object" &&
-      Object.keys(log).length === 1 &&
-      "0" in log
-    ) {
-      log = log[0];
-      if (typeof log === "string") {
-        try {
-          log = JSON.parse(log);
-        } catch (e) {}
+    let log = span.log;
+    try {
+      log = JSON.parse(span.log);
+      if (
+        typeof log === "object" &&
+        Object.keys(log).length === 1 &&
+        "0" in log
+      ) {
+        log = log[0];
+        if (typeof log === "string") {
+          try {
+            log = JSON.parse(log);
+          } catch (e) {}
+        }
       }
-    }
+    } catch (e) {}
 
     return <PayloadPreview value={log} />;
   }
