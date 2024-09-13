@@ -60,38 +60,38 @@ const removeTracerFromStacktrace = (err) => {
 };
 
 const handler = async (event, context, callback) => {
+  const originalLogger = await logger.start();
+
   let userHandler;
   try {
     userHandler = await getHandlerAsync();
   } catch (e) {
     if (verbose) {
-      console.log("[tracer] Error loading user handler", e);
+      originalLogger.log("[tracer] Error loading user handler", e);
     }
     throw removeTracerFromStacktrace(e);
   }
 
   if (process.env.AUTO_TRACE_EXCLUDE) {
     if (verbose) {
-      console.log("[tracer] AUTO_TRACE_EXCLUDE is set, skipping tracing");
+      originalLogger.log("[tracer] AUTO_TRACE_EXCLUDE is set, skipping tracing");
     }
     return userHandler(event, context, callback);
   }
 
   if (verbose) {
-    console.log("[tracer] Loaded user handler, starting logger");
+    originalLogger.log("[tracer] Loaded user handler, starting logger");
   }
-
-  await logger.start();
 
   let resultValue;
   try {
     resultValue = await tracer.trace(userHandler)(event, context, callback);
     if (verbose) {
-      console.log("[tracer] User handler completed successfully");
+      originalLogger.log("[tracer] User handler completed successfully");
     }
   } catch (e) {
     if (verbose) {
-      console.log("[tracer] User handler threw an error");
+      originalLogger.log("[tracer] User handler threw an error");
     }
     await logger.flushQueue();
     throw removeTracerFromStacktrace(e);

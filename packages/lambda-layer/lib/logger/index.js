@@ -88,6 +88,7 @@ const initLogger = (config = {}, externalLogger = undefined) => {
 
   const start = () => {
     logSequenceNumber = 0;
+    return global.console._originalConsole;
   };
 
   global.console = (function (console) {
