@@ -1,7 +1,7 @@
 import { API_URL } from "@/lib/api";
 import useSWR from "swr";
 
-export const getGroupingKey = (transaction, extended = false) => {
+export const getGroupingKey = (transaction: any, extended = false) => {
   const items = [
     transaction.spanType,
     transaction.service,
@@ -19,11 +19,11 @@ export const getGroupingKey = (transaction, extended = false) => {
   return items.filter(Boolean).join(",");
 };
 
-export const getTransactionService = (transaction) => {
+export const getTransactionService = (transaction: any) => {
   return transaction.service || transaction.spanType || transaction.type;
 };
 
-export const getTransactionLabel = (transaction) => {
+export const getTransactionLabel = (transaction: any) => {
   if (transaction.info?.resourceName) {
     return transaction.info.resourceName;
   }
@@ -35,13 +35,10 @@ export const getTransactionLabel = (transaction) => {
   return transaction.service || transaction.spanType;
 };
 
-export const groupSpans = (spans) => {
-  const grouped = [];
+export const groupSpans = (spans: any[]) => {
+  const grouped: { groupingKey: any; spans: any[] }[] = [];
   for (const span of spans) {
-    if (
-      span.id?.endsWith("_started") ||
-      span.spanType === "enrichment"
-    )
+    if (span.id?.endsWith("_started") || span.spanType === "enrichment")
       continue;
 
     span.groupingKey = getGroupingKey(span, true);
@@ -59,15 +56,24 @@ export const groupSpans = (spans) => {
   return grouped;
 };
 
-export const getTransaction = async (id) => {
+export const getTransaction = async (id: string) => {
   const res = await fetch(`${API_URL}/transactions/${id}`);
   const spans = await res.json();
 
+  let result: any[] = [];
+  for (const span of spans) {
+    if (span.spans) {
+      result = result.concat(span.spans);
+    } else {
+      result.push(span);
+    }
+  }
+
   return {
-    spans: spans.sort((a, b) => a.started - b.started),
+    spans: result.sort((a, b) => a.started - b.started),
   };
 };
 
-export const useTransaction = (id, swrOptions = {}) => {
+export const useTransaction = (id: string, swrOptions = {}) => {
   return useSWR(`transactions/${id}`, () => getTransaction(id), swrOptions);
 };

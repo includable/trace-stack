@@ -9,38 +9,33 @@ const app = new Hono();
 app.post("/", async (c) => {
   const body = await c.req.json();
 
+  const groupedItems = {};
+
   for (const span of body) {
     if (process.env.TRACER_TOKEN && span.token !== process.env.TRACER_TOKEN) {
       console.log(`Invalid token: ${span.token}`);
       continue;
     }
 
+    const pk = `transaction#${span.transactionId || span.transaction_id}`;
+    if (!groupedItems[pk]) groupedItems[pk] = [];
+
     if (span.type === "log") {
       // save log span
-      await put(
-        {
-          ...span,
-          transactionId: span.transactionId || span.transaction_id,
-          pk: `transaction#${span.transactionId || span.transaction_id}`,
-          sk: `log#${span.started}#${span.id}`,
-          type: "log",
-        },
-        true,
-      );
+      groupedItems[pk].push({
+        ...span,
+        transactionId: span.transactionId || span.transaction_id,
+        type: "log",
+      });
       continue;
     }
 
     // save transaction span
-    await put(
-      {
-        ...span,
-        pk: `transaction#${span.transactionId || span.transaction_id}`,
-        sk: `span#${span.started || span.sending_time}#${span.id}`,
-        type: "span",
-        spanType: span.type,
-      },
-      true,
-    );
+    groupedItems[pk].push({
+      ...span,
+      type: "span",
+      spanType: span.type,
+    });
 
     if (
       span.type === "function" &&
@@ -124,6 +119,20 @@ app.post("/", async (c) => {
       }
     }
   }
+
+  const itemsToSave = [];
+  for (const [pk, items] of Object.entries(groupedItems)) {
+    while (items.length) {
+      const chunk = items.splice(0, 50);
+      itemsToSave.push({
+        pk,
+        sk: `spans#${items[0].started || items[0].sending_time}#${items[0].id}`,
+        spans: chunk,
+      });
+    }
+  }
+
+  await Promise.all(itemsToSave.map((item) => put(item), true));
 
   return c.json({ success: true });
 });
