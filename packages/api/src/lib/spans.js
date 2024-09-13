@@ -54,9 +54,10 @@ const simplifySpans = (spans) => {
       account,
       invokedArn,
       invokedVersion,
+      lumigo_execution_tags_no_scrub,
       ...rest
     } = span;
-    const { traceId, tracer, ...restInfo } = info || {};
+    const { traceId, tracer, logGroupName,  logStreamName, ...restInfo } = info || {};
     return {
       ...rest,
       info: {
