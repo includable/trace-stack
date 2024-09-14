@@ -83,6 +83,7 @@ provider:
             - lambda:UpdateFunctionConfiguration
             - lambda:GetLayerVersion
             - lambda:GetFunction
+            - lambda:GetFunctionUrlConfig
             - lambda:ListTags
           Resource:
             - "*"
@@ -107,6 +108,7 @@ functions:
     handler: src/index.handler
     timeout: 900
     memorySize: 2048
+    url: true
     events:
       - httpApi:
           path: /{proxy+}

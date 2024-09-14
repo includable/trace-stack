@@ -1,13 +1,10 @@
 import {
   GetFunctionCommand,
+  GetFunctionUrlConfigCommand,
   LambdaClient,
   ListFunctionsCommand,
   UpdateFunctionConfigurationCommand,
 } from "@aws-sdk/client-lambda";
-import {
-  ApiGatewayV2Client,
-  GetApisCommand,
-} from "@aws-sdk/client-apigatewayv2";
 import pLimit from "p-limit";
 
 import { acquireLock, releaseLock } from "../lib/locks";
@@ -39,43 +36,47 @@ const getAccountLambdas = async () => {
   return lambdas;
 };
 
-const getApiEndpoint = async () => {
-  const apiGatewayV2Client = new ApiGatewayV2Client();
+const getEdgeEndpoint = async (lambdas) => {
+  const lambdaName = `${process.env.SERVICE}-${process.env.STAGE}-main`;
 
-  const getApisCommand = new GetApisCommand({
-    MaxResults: "1000",
-  });
-  const { Items } = await apiGatewayV2Client.send(getApisCommand);
-  const item = Items.find((item) => item.Name === process.env.API_GATEWAY_NAME);
+  try {
+    const command = new GetFunctionUrlConfigCommand({
+      FunctionName: lambdaName,
+    });
 
-  if (!item) {
-    throw new Error(`API Gateway ${process.env.API_GATEWAY_NAME} not found`);
+    const res = await new LambdaClient().send(command);
+
+    return res.FunctionUrl?.replace("https://", "").replace("/", "");
+  } catch (e) {
+    if (e.name === "ResourceNotFoundException") {
+      throw new Error(
+        `Lambda ${lambdaName} not found - could not determine edge endpoint.`,
+      );
+    }
+    throw e;
   }
-
-  return item.ApiEndpoint?.replace("https://", "");
 };
 
 const updateLambda = async (lambda, arnBase, edgeEndpoint) => {
-  const updateFunctionConfigurationCommand =
-    new UpdateFunctionConfigurationCommand({
-      FunctionName: lambda.FunctionName,
-      Layers: [
-        ...(lambda.Layers || [])
-          .map((layer) => layer.Arn)
-          .filter((arn) => !arn.startsWith(arnBase)),
-        process.env.LAMBDA_LAYER_ARN,
-      ],
-      Environment: {
-        ...(lambda.Environment || {}),
-        Variables: {
-          ...(lambda.Environment?.Variables || {}),
-          AUTO_TRACE_HOST: edgeEndpoint,
-          AWS_LAMBDA_EXEC_WRAPPER: lambdaExecWrapper,
-        },
+  const command = new UpdateFunctionConfigurationCommand({
+    FunctionName: lambda.FunctionName,
+    Layers: [
+      ...(lambda.Layers || [])
+        .map((layer) => layer.Arn)
+        .filter((arn) => !arn.startsWith(arnBase)),
+      process.env.LAMBDA_LAYER_ARN,
+    ],
+    Environment: {
+      ...(lambda.Environment || {}),
+      Variables: {
+        ...(lambda.Environment?.Variables || {}),
+        AUTO_TRACE_HOST: edgeEndpoint,
+        AWS_LAMBDA_EXEC_WRAPPER: lambdaExecWrapper,
       },
-    });
+    },
+  });
 
-  const res = await new LambdaClient().send(updateFunctionConfigurationCommand);
+  const res = await new LambdaClient().send(command);
   logger.info(res);
 };
 
@@ -126,8 +127,8 @@ export const autoTrace = async () => {
     throw new Error("LAMBDA_LAYER_ARN is not defined");
   }
 
-  // Get our API Gateway endpoint for the collector
-  const edgeEndpoint = await getApiEndpoint();
+  // Get our Lambda URL endpoint for the collector
+  const edgeEndpoint = await getEdgeEndpoint();
 
   // Make sure we lock so that only one process is updating lambdas
   const lockAcquired = await acquireLock("auto-trace");
