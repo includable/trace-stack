@@ -152,6 +152,7 @@ export const autoTrace = async () => {
         const isTraceStack = envVars.LAMBDA_LAYER_ARN === arn;
         const isUpdating = lambda.LastUpdateStatus === "InProgress";
         const hasDisableEnvVar = envVars.AUTO_TRACE_EXCLUDE;
+        const hasWrongEndpoint = envVars.AUTO_TRACE_HOST !== edgeEndpoint;
         const hasOtherWrapper =
           envVars.AWS_LAMBDA_EXEC_WRAPPER &&
           envVars.AWS_LAMBDA_EXEC_WRAPPER !== lambdaExecWrapper;
@@ -161,7 +162,7 @@ export const autoTrace = async () => {
           ({ Arn }) => Arn.startsWith(arnBase) && Arn !== arn,
         );
 
-        if (hasLayer && !hasUpdate) {
+        if (hasLayer && !hasUpdate && !hasWrongEndpoint) {
           logger.info(`- ${lambda.FunctionName} already has the latest layer`);
           await saveFunctionInfo(lambda, "enabled");
           return;
