@@ -77,7 +77,8 @@ export const groupSpans = (spans) => {
 
   const groupedSpans = [];
   for (const span of spans) {
-    const latestSpan = groupedSpans[groupSpans.length - 1] || {};
+    const latestSpan = groupedSpans[groupedSpans.length - 1] || {};
+
     if (span.groupingKey === latestSpan.groupingKey) {
       latestSpan.instances++;
     } else {

@@ -135,9 +135,487 @@ const traces = [
   },
 ];
 
+const traces2 = [
+  {
+    return_value:
+      '{"statusCode":200,"body":"{}","isBase64Encoded":false,"headers":{"Content-Type":"application/json; charset=utf-8"}}',
+    maxFinishTime: 1726304725060,
+    instances: 1,
+    name: "thumbnails-tokens-production-usage--report",
+    ended: 1726304700362,
+    envs: '{"AWS_LAMBDA_FUNCTION_VERSION":"$LATEST","TRACER_ORIGINAL_HANDLER":"src/functions/usage/report/handler.handler","REPORTS_BUCKET":"thumbnails-tokens-production-reports","AWS_SESSION_TOKEN":"IQoJb3JpZ2luX2VjEKn//////////wEaCWV1LXdlc3QtMSJGMEQCIF+ibaB9vrPCvEriTOXk2m6w62wbUcYucW0zE6VzXeFNAiBB7hYqK4ci/WlY6uxgI1+vFyMRed0OuFHBHbr7OoNXWCqyAwjS//////////8BEAMaDDY3Mjg5NTAyNzQxMyIMBN+KMPccXfO8bTSvKoYD4WalkWegJA8Kp6DBvM/xkNyhHfmCx331sVO2p9kXTPiS/XFcGerMpBmjh/Mqvh/BhQVCKylER37QPa1/LtCfjDPvQNHPOhQFL27XvaOSk3/qjfcXnuEeYxtnQz+HVUcGR98bU67Rh496R6/nODfjy5uZBqzgr9gIOX1VeNWnVhYVmZL2NszvkzuUDbBh2mQmAGDkHoZcc8dHq+/AZEKRsdBKin9rftOwL6asATAOUIUTPS+yFmvYrsRTxaOSMCz0g8JZT17pPkN9+e1BUYHsKAa78t+vV3D6bMOOJumwD2HsdTNT/KWA64Jcm81CyxbL8EWbvj6kFzpbhJySsSMVFwFzMN0D231xftsW2jMArsP87EtCfyn6AvLPnZ8bG3yzDHldGQZOmO0UqYea6OZr0IMmZZpqUvShuTnDUChLQvvIuyxHxBvmpsegUzb7H5/SdhziWWUmak7ysY37ra4/65DPNz4y129iJQRyXo2y+YFkkpGJsUakcT/z57bTzJc9MIJHvlk2MJChlbcGOp4BiyIow2gkPoH85+KS9o1p/OgP0vOHRr51zDx5Ru52s3CpjHjk/NDH79amegKwRrilnyK5rFk6MmCo0pQf2tbmPmGlaNWgMnb1XCZ1LyeEwA80mon1SE7EHAtlYS9mqnAiuIzFPFIhhBmRNZ/o7IDihnnd/GKbNHdyPP35XnCbAgsigf7cvg5QDD00RY+qZsoJfKi19VYYYHdwPwDBa5o=","LAMBDA_TASK_ROOT":"/var/task","AWS_LAMBDA_LOG_GROUP_NAME":"/aws/lambda/thumbnails-tokens-production-usage--report","LD_LIBRARY_PATH":"/var/lang/lib:/lib64:/usr/lib64:/var/runtime:/var/runtime/lib:/var/task:/var/task/lib:/opt/lib","AWS_LAMBDA_LOG_STREAM_NAME":"2024/09/14/[$LATEST]607ff0a879de44ecbc3da9de116c9da0","AWS_LAMBDA_RUNTIME_API":"127.0.0.1:9001","AWS_EXECUTION_ENV":"AWS_Lambda_nodejs16.x","AWS_XRAY_DAEMON_ADDRESS":"169.254.79.129:2000","AWS_LAMBDA_FUNCTION_NAME":"thumbnails-tokens-production-usage--report","PATH":"/var/lang/bin:/usr/local/bin:/usr/bin/:/bin:/opt/bin","TABLE_NAME":"thumbnails-tokens-production","AWS_DEFAULT_REGION":"eu-west-1","SERVICE":"thumbnails-tokens","PWD":"/var/task","AWS_SECRET_ACCESS_KEY":"****","LAMBDA_RUNTIME_DIR":"/var/runtime","LANG":"en_US.UTF-8","AWS_LAMBDA_INITIALIZATION_TYPE":"on-demand","AWS_REGION":"eu-west-1","TZ":":UTC","NODE_PATH":"/opt/nodejs/node16/node_modules:/opt/nodejs/node_modules:/var/runtime/node_modules:/var/runtime:/var/task"}...[too long]',
+    spanType: "function",
+    started: 1726304700096,
+    id: "9fd58ff6-dfae-4176-b4bd-d0ca0ca1b0e7",
+    event:
+      '{"version":"2.0","routeKey":"****","rawPath":"/usage","rawQueryString":"","body":"[{\\"entity\\":\\"domain:v5.airtableusercontent.com\\",\\"success\\":9,\\"failed\\":0,\\"averageDuration\\":1683,\\"period\\":\\"5m\\"},{\\"entity\\":\\"token:azzn3tt4pbyhc1xhx\\",\\"success\\":9,\\"failed\\":0,\\"averageDuration\\":1683,\\"period\\":\\"5m\\"},{\\"entity\\":\\"extension:png\\",\\"success\\":2,\\"failed\\":0,\\"averageDuration\\":526,\\"period\\":\\"5m\\"},{\\"entity\\":\\"domain:firebasestorage.googleapis.com\\",\\"success\\":2,\\"failed\\":0,\\"averageDuration\\":16514,\\"period\\":\\"5m\\"},{\\"entity\\":\\"token:16bcfdryi2bfw1rux\\",\\"success\\":2,\\"failed\\":0,\\"averageDuration\\":16514,\\"period\\":\\"5m\\"},{\\"entity\\":\\"extension:mp4\\",\\"success\\":2,\\"failed\\":0,\\"averageDuration\\":16514,\\"period\\":\\"5m\\"},{\\"entity\\":\\"extension:pdf\\",\\"success\\":6,\\"failed\\":0,\\"averageDuration\\":1820,\\"period\\":\\"5m\\"},{\\"entity\\":\\"domain:includable-content.s3.eu-west-1.amazonaws.com\\",\\"success\\":0,\\"failed\\":6,\\"averageDuration\\":215,\\"period\\":\\"5m\\"},{\\"entity\\":\\"token:jjhsojkrzd0x3sbtb\\",\\"success\\":0,\\"failed\\":6,\\"averageDuration\\":215,\\"period\\":\\"5m\\"},{\\"entity\\":\\"extension:jpg\\",\\"success\\":0,\\"failed\\":6,\\"averageDuration\\":215,\\"period\\":\\"5m\\"},{\\"entity\\":\\"extension:jpeg\\",\\"success\\":1,\\"failed\\":0,\\"averageDuration\\":3178,\\"period\\":\\"5m\\"}]","requestContext":{"http":{"method":"POST","path":"/usage","protocol":"HTTP/1.1","sourceIp":"3.254.66.227","userAgent":"axios/1.6.0"},"requestId":"eFm1biV6DoEEJag="},"headers":{"content-length":"1071","content-type":"application/json","host":"tokens.thumbnails.cloud","user-agent":"axios/1.6.0"},"isBase64Encoded":false}',
+    info: {
+      traceId: "1-66e551bc-59d9a2c63335f02d78f30c38",
+      trigger: [
+        {
+          fromMessageIds: ["eFm1biV6DoEEJag="],
+          id: "603c7730-4961-4808-7c63-f51e03929571",
+          targetId: null,
+          triggeredBy: "apigw",
+          extra: {
+            api: "tokens.thumbnails.cloud",
+            stage: "$default",
+            httpMethod: "POST",
+            resource: "/usage",
+          },
+        },
+      ],
+    },
+  },
+  {
+    instances: 1,
+    service: "dynamodb",
+    ended: 1726304700148,
+    spanType: "http",
+    started: 1726304700102,
+    id: "1480dcfa-5f14-639b-cf58-4b3c8b43123e",
+    reporterAwsRequestId: "9fd58ff6-dfae-4176-b4bd-d0ca0ca1b0e7",
+    parentId: "9fd58ff6-dfae-4176-b4bd-d0ca0ca1b0e7",
+    info: {
+      traceId: "1-66e551bc-59d9a2c63335f02d78f30c38",
+      dynamodbMethod: "PutItem",
+      messageId: "fded8adc05e0a0bd2001a3ab0f29538f",
+      httpInfo: {
+        host: "dynamodb.eu-west-1.amazonaws.com",
+        request: {
+          path: "/",
+          headers:
+            '{"user-agent":"aws-sdk-nodejs/2.1374.0 linux/v16.20.2 exec-env/AWS_Lambda_nodejs16.x promise","content-type":"application/x-amz-json-1.0","x-amz-target":"DynamoDB_20120810.PutItem","x-amz-content-sha256":"881e8e900d37159f76c1cb14903deb9745a02fdc4cb58c8ad185ff52793bc842","content-length":393,"host":"dynamodb.eu-west-1.amazonaws.com","x-amzn-trace-id":"Root=1-66e551bc-59d9a2c63335f02d78f30c38;Parent=23fbaf954399c861;Sampled=0","x-amz-date":"20240914T090500Z","x-amz-security-token":"****","authorization":"****"}',
+          protocol: "https:",
+          method: "POST",
+          port: 443,
+          host: "dynamodb.eu-west-1.amazonaws.com",
+          truncated: false,
+          body: '{"TableName":"thumbnails-tokens-production","Item":{"pk":{"S":"domain:v5.airtableusercontent.com"},"sk":{"S":"2024-09-14T09:05:00.100Z#jpbg43e"},"date":{"S":"2024-09-14T09:05:00.100Z"},"createdAt":{"S":"2024-09-14T09:05:00.100Z"},"updatedAt":{"S":"2024-09-14T09:05:00.100Z"},"type":{"S":"UsageReport"},"success":{"N":"9"},"failed":{"N":"0"},"averageDuration":{"N":"1683"},"period":{"S":"5m"}}}',
+          uri: "dynamodb.eu-west-1.amazonaws.com/",
+          sendTime: 1726304700102,
+        },
+        response: {
+          truncated: false,
+          headers:
+            '{"server":"Server","date":"Sat, 14 Sep 2024 09:05:00 GMT","content-type":"application/x-amz-json-1.0","content-length":"2","connection":"keep-alive","x-amzn-requestid":"L4TEHHTRF8ORIGAR9AN98UGQVBVV4KQNSO5AEMVJF66Q9ASUAAJG","x-amz-crc32":"2745614147"}',
+          body: "{}",
+          statusCode: 200,
+          receivedTime: 1726304700148,
+        },
+      },
+      resourceName: "thumbnails-tokens-production",
+    },
+  },
+  {
+    instances: 1,
+    service: "dynamodb",
+    ended: 1726304700170,
+    spanType: "http",
+    started: 1726304700151,
+    id: "96984001-1f79-3297-75c8-822a85efcd5c",
+    reporterAwsRequestId: "9fd58ff6-dfae-4176-b4bd-d0ca0ca1b0e7",
+    parentId: "9fd58ff6-dfae-4176-b4bd-d0ca0ca1b0e7",
+    info: {
+      traceId: "1-66e551bc-59d9a2c63335f02d78f30c38",
+      dynamodbMethod: "PutItem",
+      messageId: "b81e92b2ecbf09952dfee8edd9c2e820",
+      httpInfo: {
+        host: "dynamodb.eu-west-1.amazonaws.com",
+        request: {
+          path: "/",
+          headers:
+            '{"user-agent":"aws-sdk-nodejs/2.1374.0 linux/v16.20.2 exec-env/AWS_Lambda_nodejs16.x promise","content-type":"application/x-amz-json-1.0","x-amz-target":"DynamoDB_20120810.PutItem","x-amz-content-sha256":"59ab278493dad323cf0769cdf561538dd53df551f9c963c5ad13a883ed85393b","content-length":383,"host":"dynamodb.eu-west-1.amazonaws.com","x-amzn-trace-id":"Root=1-66e551bc-59d9a2c63335f02d78f30c38;Parent=23fbaf954399c861;Sampled=0","x-amz-date":"20240914T090500Z","x-amz-security-token":"****","authorization":"****"}',
+          protocol: "https:",
+          method: "POST",
+          port: 443,
+          host: "dynamodb.eu-west-1.amazonaws.com",
+          truncated: false,
+          body: '{"TableName":"thumbnails-tokens-production","Item":{"pk":{"S":"token:azzn3tt4pbyhc1xhx"},"sk":{"S":"2024-09-14T09:05:00.149Z#n0fqpbk"},"date":{"S":"2024-09-14T09:05:00.149Z"},"createdAt":{"S":"2024-09-14T09:05:00.149Z"},"updatedAt":{"S":"2024-09-14T09:05:00.149Z"},"type":{"S":"UsageReport"},"success":{"N":"9"},"failed":{"N":"0"},"averageDuration":{"N":"1683"},"period":{"S":"5m"}}}',
+          uri: "dynamodb.eu-west-1.amazonaws.com/",
+          sendTime: 1726304700151,
+        },
+        response: {
+          truncated: false,
+          headers:
+            '{"server":"Server","date":"Sat, 14 Sep 2024 09:05:00 GMT","content-type":"application/x-amz-json-1.0","content-length":"2","connection":"keep-alive","x-amzn-requestid":"DU327RVI9U3C6LKIVCF773MLJVVV4KQNSO5AEMVJF66Q9ASUAAJG","x-amz-crc32":"2745614147"}',
+          body: "{}",
+          statusCode: 200,
+          receivedTime: 1726304700170,
+        },
+      },
+      resourceName: "thumbnails-tokens-production",
+    },
+  },
+  {
+    instances: 1,
+    service: "dynamodb",
+    ended: 1726304700192,
+    spanType: "http",
+    started: 1726304700172,
+    id: "bd2d2343-3b92-1013-52e2-738d9f44f7de",
+    reporterAwsRequestId: "9fd58ff6-dfae-4176-b4bd-d0ca0ca1b0e7",
+    parentId: "9fd58ff6-dfae-4176-b4bd-d0ca0ca1b0e7",
+    info: {
+      traceId: "1-66e551bc-59d9a2c63335f02d78f30c38",
+      dynamodbMethod: "PutItem",
+      messageId: "39380716d22f35971224d3e9741cbe93",
+      httpInfo: {
+        host: "dynamodb.eu-west-1.amazonaws.com",
+        request: {
+          path: "/",
+          headers:
+            '{"user-agent":"aws-sdk-nodejs/2.1374.0 linux/v16.20.2 exec-env/AWS_Lambda_nodejs16.x promise","content-type":"application/x-amz-json-1.0","x-amz-target":"DynamoDB_20120810.PutItem","x-amz-content-sha256":"01e9593b542cd265df5404026617c83fd2a94e6ab04dd2f18e7bd79ddc45c39d","content-length":372,"host":"dynamodb.eu-west-1.amazonaws.com","x-amzn-trace-id":"Root=1-66e551bc-59d9a2c63335f02d78f30c38;Parent=23fbaf954399c861;Sampled=0","x-amz-date":"20240914T090500Z","x-amz-security-token":"****","authorization":"****"}',
+          protocol: "https:",
+          method: "POST",
+          port: 443,
+          host: "dynamodb.eu-west-1.amazonaws.com",
+          truncated: false,
+          body: '{"TableName":"thumbnails-tokens-production","Item":{"pk":{"S":"extension:png"},"sk":{"S":"2024-09-14T09:05:00.171Z#i55p9yk"},"date":{"S":"2024-09-14T09:05:00.171Z"},"createdAt":{"S":"2024-09-14T09:05:00.171Z"},"updatedAt":{"S":"2024-09-14T09:05:00.171Z"},"type":{"S":"UsageReport"},"success":{"N":"2"},"failed":{"N":"0"},"averageDuration":{"N":"526"},"period":{"S":"5m"}}}',
+          uri: "dynamodb.eu-west-1.amazonaws.com/",
+          sendTime: 1726304700172,
+        },
+        response: {
+          truncated: false,
+          headers:
+            '{"server":"Server","date":"Sat, 14 Sep 2024 09:05:00 GMT","content-type":"application/x-amz-json-1.0","content-length":"2","connection":"keep-alive","x-amzn-requestid":"C1LMVS1U9FHV68K98H27BJT4LBVV4KQNSO5AEMVJF66Q9ASUAAJG","x-amz-crc32":"2745614147"}',
+          body: "{}",
+          statusCode: 200,
+          receivedTime: 1726304700192,
+        },
+      },
+      resourceName: "thumbnails-tokens-production",
+    },
+  },
+  {
+    instances: 1,
+    service: "dynamodb",
+    ended: 1726304700212,
+    spanType: "http",
+    started: 1726304700194,
+    id: "6b355f3f-cecd-6e42-56cf-e1d7d6be0a2d",
+    reporterAwsRequestId: "9fd58ff6-dfae-4176-b4bd-d0ca0ca1b0e7",
+    parentId: "9fd58ff6-dfae-4176-b4bd-d0ca0ca1b0e7",
+    info: {
+      traceId: "1-66e551bc-59d9a2c63335f02d78f30c38",
+      dynamodbMethod: "PutItem",
+      messageId: "8e7f30cba7673723b8e02e9a4937fe16",
+      httpInfo: {
+        host: "dynamodb.eu-west-1.amazonaws.com",
+        request: {
+          path: "/",
+          headers:
+            '{"user-agent":"aws-sdk-nodejs/2.1374.0 linux/v16.20.2 exec-env/AWS_Lambda_nodejs16.x promise","content-type":"application/x-amz-json-1.0","x-amz-target":"DynamoDB_20120810.PutItem","x-amz-content-sha256":"cf7e2917e033b89db709d659beb3348c8c0e201561fb5ed3a64ab7248e02a92d","content-length":398,"host":"dynamodb.eu-west-1.amazonaws.com","x-amzn-trace-id":"Root=1-66e551bc-59d9a2c63335f02d78f30c38;Parent=23fbaf954399c861;Sampled=0","x-amz-date":"20240914T090500Z","x-amz-security-token":"****","authorization":"****"}',
+          protocol: "https:",
+          method: "POST",
+          port: 443,
+          host: "dynamodb.eu-west-1.amazonaws.com",
+          truncated: false,
+          body: '{"TableName":"thumbnails-tokens-production","Item":{"pk":{"S":"domain:firebasestorage.googleapis.com"},"sk":{"S":"2024-09-14T09:05:00.193Z#1qngte8"},"date":{"S":"2024-09-14T09:05:00.193Z"},"createdAt":{"S":"2024-09-14T09:05:00.193Z"},"updatedAt":{"S":"2024-09-14T09:05:00.193Z"},"type":{"S":"UsageReport"},"success":{"N":"2"},"failed":{"N":"0"},"averageDuration":{"N":"16514"},"period":{"S":"5m"}}}',
+          uri: "dynamodb.eu-west-1.amazonaws.com/",
+          sendTime: 1726304700194,
+        },
+        response: {
+          truncated: false,
+          headers:
+            '{"server":"Server","date":"Sat, 14 Sep 2024 09:05:00 GMT","content-type":"application/x-amz-json-1.0","content-length":"2","connection":"keep-alive","x-amzn-requestid":"JA293422P2SI5V3SJ1FJDONVOJVV4KQNSO5AEMVJF66Q9ASUAAJG","x-amz-crc32":"2745614147"}',
+          body: "{}",
+          statusCode: 200,
+          receivedTime: 1726304700212,
+        },
+      },
+      resourceName: "thumbnails-tokens-production",
+    },
+  },
+  {
+    instances: 1,
+    service: "dynamodb",
+    ended: 1726304700234,
+    spanType: "http",
+    started: 1726304700216,
+    id: "5dba5c19-eddf-e7fe-4ab9-de380db43710",
+    reporterAwsRequestId: "9fd58ff6-dfae-4176-b4bd-d0ca0ca1b0e7",
+    parentId: "9fd58ff6-dfae-4176-b4bd-d0ca0ca1b0e7",
+    info: {
+      traceId: "1-66e551bc-59d9a2c63335f02d78f30c38",
+      dynamodbMethod: "PutItem",
+      messageId: "4c28f02b044bbac4d8186eef22704b24",
+      httpInfo: {
+        host: "dynamodb.eu-west-1.amazonaws.com",
+        request: {
+          path: "/",
+          headers:
+            '{"user-agent":"aws-sdk-nodejs/2.1374.0 linux/v16.20.2 exec-env/AWS_Lambda_nodejs16.x promise","content-type":"application/x-amz-json-1.0","x-amz-target":"DynamoDB_20120810.PutItem","x-amz-content-sha256":"74d1dbf67826f42f0ab2a3637fc50ee437ab2411ebaefbb05ba8c9dada9177bc","content-length":384,"host":"dynamodb.eu-west-1.amazonaws.com","x-amzn-trace-id":"Root=1-66e551bc-59d9a2c63335f02d78f30c38;Parent=23fbaf954399c861;Sampled=0","x-amz-date":"20240914T090500Z","x-amz-security-token":"****","authorization":"****"}',
+          protocol: "https:",
+          method: "POST",
+          port: 443,
+          host: "dynamodb.eu-west-1.amazonaws.com",
+          truncated: false,
+          body: '{"TableName":"thumbnails-tokens-production","Item":{"pk":{"S":"token:16bcfdryi2bfw1rux"},"sk":{"S":"2024-09-14T09:05:00.213Z#mnfz6wz"},"date":{"S":"2024-09-14T09:05:00.213Z"},"createdAt":{"S":"2024-09-14T09:05:00.213Z"},"updatedAt":{"S":"2024-09-14T09:05:00.213Z"},"type":{"S":"UsageReport"},"success":{"N":"2"},"failed":{"N":"0"},"averageDuration":{"N":"16514"},"period":{"S":"5m"}}}',
+          uri: "dynamodb.eu-west-1.amazonaws.com/",
+          sendTime: 1726304700216,
+        },
+        response: {
+          truncated: false,
+          headers:
+            '{"server":"Server","date":"Sat, 14 Sep 2024 09:05:00 GMT","content-type":"application/x-amz-json-1.0","content-length":"2","connection":"keep-alive","x-amzn-requestid":"2ET7TK50UB5RMITS9BLQNVAB3NVV4KQNSO5AEMVJF66Q9ASUAAJG","x-amz-crc32":"2745614147"}',
+          body: "{}",
+          statusCode: 200,
+          receivedTime: 1726304700234,
+        },
+      },
+      resourceName: "thumbnails-tokens-production",
+    },
+  },
+  {
+    instances: 1,
+    service: "dynamodb",
+    ended: 1726304700254,
+    spanType: "http",
+    started: 1726304700236,
+    id: "323cafc2-9788-49f7-ba40-0b16df8e3e3e",
+    reporterAwsRequestId: "9fd58ff6-dfae-4176-b4bd-d0ca0ca1b0e7",
+    parentId: "9fd58ff6-dfae-4176-b4bd-d0ca0ca1b0e7",
+    info: {
+      traceId: "1-66e551bc-59d9a2c63335f02d78f30c38",
+      dynamodbMethod: "PutItem",
+      messageId: "03c33523f12fd83d023f3265cab2ec20",
+      httpInfo: {
+        host: "dynamodb.eu-west-1.amazonaws.com",
+        request: {
+          path: "/",
+          headers:
+            '{"user-agent":"aws-sdk-nodejs/2.1374.0 linux/v16.20.2 exec-env/AWS_Lambda_nodejs16.x promise","content-type":"application/x-amz-json-1.0","x-amz-target":"DynamoDB_20120810.PutItem","x-amz-content-sha256":"289c6a79a22d8b99b963c0070e20bb56577a26b3c54fbba1cb1196c044fdb531","content-length":374,"host":"dynamodb.eu-west-1.amazonaws.com","x-amzn-trace-id":"Root=1-66e551bc-59d9a2c63335f02d78f30c38;Parent=23fbaf954399c861;Sampled=0","x-amz-date":"20240914T090500Z","x-amz-security-token":"****","authorization":"****"}',
+          protocol: "https:",
+          method: "POST",
+          port: 443,
+          host: "dynamodb.eu-west-1.amazonaws.com",
+          truncated: false,
+          body: '{"TableName":"thumbnails-tokens-production","Item":{"pk":{"S":"extension:mp4"},"sk":{"S":"2024-09-14T09:05:00.234Z#zf9pd5j"},"date":{"S":"2024-09-14T09:05:00.234Z"},"createdAt":{"S":"2024-09-14T09:05:00.234Z"},"updatedAt":{"S":"2024-09-14T09:05:00.234Z"},"type":{"S":"UsageReport"},"success":{"N":"2"},"failed":{"N":"0"},"averageDuration":{"N":"16514"},"period":{"S":"5m"}}}',
+          uri: "dynamodb.eu-west-1.amazonaws.com/",
+          sendTime: 1726304700236,
+        },
+        response: {
+          truncated: false,
+          headers:
+            '{"server":"Server","date":"Sat, 14 Sep 2024 09:05:00 GMT","content-type":"application/x-amz-json-1.0","content-length":"2","connection":"keep-alive","x-amzn-requestid":"TUPM8I3E7G5SMIB958DOT1BGSVVV4KQNSO5AEMVJF66Q9ASUAAJG","x-amz-crc32":"2745614147"}',
+          body: "{}",
+          statusCode: 200,
+          receivedTime: 1726304700254,
+        },
+      },
+      resourceName: "thumbnails-tokens-production",
+    },
+  },
+  {
+    instances: 1,
+    service: "dynamodb",
+    ended: 1726304700276,
+    spanType: "http",
+    started: 1726304700257,
+    id: "08408ef2-0364-f8f1-9ac5-05839bbcc565",
+    reporterAwsRequestId: "9fd58ff6-dfae-4176-b4bd-d0ca0ca1b0e7",
+    parentId: "9fd58ff6-dfae-4176-b4bd-d0ca0ca1b0e7",
+    info: {
+      traceId: "1-66e551bc-59d9a2c63335f02d78f30c38",
+      dynamodbMethod: "PutItem",
+      messageId: "757228cda6ba81e6683e8826cdb8cffb",
+      httpInfo: {
+        host: "dynamodb.eu-west-1.amazonaws.com",
+        request: {
+          path: "/",
+          headers:
+            '{"user-agent":"aws-sdk-nodejs/2.1374.0 linux/v16.20.2 exec-env/AWS_Lambda_nodejs16.x promise","content-type":"application/x-amz-json-1.0","x-amz-target":"DynamoDB_20120810.PutItem","x-amz-content-sha256":"173f001796722573581e631880b19d28b000b51f244e6f550088a99912af57d6","content-length":373,"host":"dynamodb.eu-west-1.amazonaws.com","x-amzn-trace-id":"Root=1-66e551bc-59d9a2c63335f02d78f30c38;Parent=23fbaf954399c861;Sampled=0","x-amz-date":"20240914T090500Z","x-amz-security-token":"****","authorization":"****"}',
+          protocol: "https:",
+          method: "POST",
+          port: 443,
+          host: "dynamodb.eu-west-1.amazonaws.com",
+          truncated: false,
+          body: '{"TableName":"thumbnails-tokens-production","Item":{"pk":{"S":"extension:pdf"},"sk":{"S":"2024-09-14T09:05:00.255Z#1f000eq"},"date":{"S":"2024-09-14T09:05:00.255Z"},"createdAt":{"S":"2024-09-14T09:05:00.255Z"},"updatedAt":{"S":"2024-09-14T09:05:00.255Z"},"type":{"S":"UsageReport"},"success":{"N":"6"},"failed":{"N":"0"},"averageDuration":{"N":"1820"},"period":{"S":"5m"}}}',
+          uri: "dynamodb.eu-west-1.amazonaws.com/",
+          sendTime: 1726304700257,
+        },
+        response: {
+          truncated: false,
+          headers:
+            '{"server":"Server","date":"Sat, 14 Sep 2024 09:05:00 GMT","content-type":"application/x-amz-json-1.0","content-length":"2","connection":"keep-alive","x-amzn-requestid":"9IFN7UPR0EP00LHRL6V28LICNNVV4KQNSO5AEMVJF66Q9ASUAAJG","x-amz-crc32":"2745614147"}',
+          body: "{}",
+          statusCode: 200,
+          receivedTime: 1726304700276,
+        },
+      },
+      resourceName: "thumbnails-tokens-production",
+    },
+  },
+  {
+    instances: 1,
+    service: "dynamodb",
+    ended: 1726304700300,
+    spanType: "http",
+    started: 1726304700278,
+    id: "3edfc450-ccbf-642d-e795-0219dcd7efad",
+    reporterAwsRequestId: "9fd58ff6-dfae-4176-b4bd-d0ca0ca1b0e7",
+    parentId: "9fd58ff6-dfae-4176-b4bd-d0ca0ca1b0e7",
+    info: {
+      traceId: "1-66e551bc-59d9a2c63335f02d78f30c38",
+      dynamodbMethod: "PutItem",
+      messageId: "3fcbaceaf94a7c3762bf68aa7dae707e",
+      httpInfo: {
+        host: "dynamodb.eu-west-1.amazonaws.com",
+        request: {
+          path: "/",
+          headers:
+            '{"user-agent":"aws-sdk-nodejs/2.1374.0 linux/v16.20.2 exec-env/AWS_Lambda_nodejs16.x promise","content-type":"application/x-amz-json-1.0","x-amz-target":"DynamoDB_20120810.PutItem","x-amz-content-sha256":"81aaf4e112b4bed1bdfaba1263b499b884601a018e28f526d99e93f395155831","content-length":411,"host":"dynamodb.eu-west-1.amazonaws.com","x-amzn-trace-id":"Root=1-66e551bc-59d9a2c63335f02d78f30c38;Parent=23fbaf954399c861;Sampled=0","x-amz-date":"20240914T090500Z","x-amz-security-token":"****","authorization":"****"}',
+          protocol: "https:",
+          method: "POST",
+          port: 443,
+          host: "dynamodb.eu-west-1.amazonaws.com",
+          truncated: false,
+          body: '{"TableName":"thumbnails-tokens-production","Item":{"pk":{"S":"domain:includable-content.s3.eu-west-1.amazonaws.com"},"sk":{"S":"2024-09-14T09:05:00.277Z#wzbar2c"},"date":{"S":"2024-09-14T09:05:00.277Z"},"createdAt":{"S":"2024-09-14T09:05:00.277Z"},"updatedAt":{"S":"2024-09-14T09:05:00.277Z"},"type":{"S":"UsageReport"},"success":{"N":"0"},"failed":{"N":"6"},"averageDuration":{"N":"215"},"period":{"S":"5m"}}}',
+          uri: "dynamodb.eu-west-1.amazonaws.com/",
+          sendTime: 1726304700278,
+        },
+        response: {
+          truncated: false,
+          headers:
+            '{"server":"Server","date":"Sat, 14 Sep 2024 09:05:00 GMT","content-type":"application/x-amz-json-1.0","content-length":"2","connection":"keep-alive","x-amzn-requestid":"JU1E36OK780CG0UTM3L4I3AEVNVV4KQNSO5AEMVJF66Q9ASUAAJG","x-amz-crc32":"2745614147"}',
+          body: "{}",
+          statusCode: 200,
+          receivedTime: 1726304700300,
+        },
+      },
+      resourceName: "thumbnails-tokens-production",
+    },
+  },
+  {
+    instances: 1,
+    service: "dynamodb",
+    ended: 1726304700320,
+    spanType: "http",
+    started: 1726304700302,
+    id: "0e31cde8-18a7-f93d-f2cd-1a8237d0447c",
+    reporterAwsRequestId: "9fd58ff6-dfae-4176-b4bd-d0ca0ca1b0e7",
+    parentId: "9fd58ff6-dfae-4176-b4bd-d0ca0ca1b0e7",
+    info: {
+      traceId: "1-66e551bc-59d9a2c63335f02d78f30c38",
+      dynamodbMethod: "PutItem",
+      messageId: "6b91c6e5073b9db954edaa90c86f98d5",
+      httpInfo: {
+        host: "dynamodb.eu-west-1.amazonaws.com",
+        request: {
+          path: "/",
+          headers:
+            '{"user-agent":"aws-sdk-nodejs/2.1374.0 linux/v16.20.2 exec-env/AWS_Lambda_nodejs16.x promise","content-type":"application/x-amz-json-1.0","x-amz-target":"DynamoDB_20120810.PutItem","x-amz-content-sha256":"c33af9bdf3ed572b24de82309b95148c40728f5cb07f4597e01885f320aaac29","content-length":382,"host":"dynamodb.eu-west-1.amazonaws.com","x-amzn-trace-id":"Root=1-66e551bc-59d9a2c63335f02d78f30c38;Parent=23fbaf954399c861;Sampled=0","x-amz-date":"20240914T090500Z","x-amz-security-token":"****","authorization":"****"}',
+          protocol: "https:",
+          method: "POST",
+          port: 443,
+          host: "dynamodb.eu-west-1.amazonaws.com",
+          truncated: false,
+          body: '{"TableName":"thumbnails-tokens-production","Item":{"pk":{"S":"token:jjhsojkrzd0x3sbtb"},"sk":{"S":"2024-09-14T09:05:00.300Z#4gwxeva"},"date":{"S":"2024-09-14T09:05:00.300Z"},"createdAt":{"S":"2024-09-14T09:05:00.300Z"},"updatedAt":{"S":"2024-09-14T09:05:00.300Z"},"type":{"S":"UsageReport"},"success":{"N":"0"},"failed":{"N":"6"},"averageDuration":{"N":"215"},"period":{"S":"5m"}}}',
+          uri: "dynamodb.eu-west-1.amazonaws.com/",
+          sendTime: 1726304700302,
+        },
+        response: {
+          truncated: false,
+          headers:
+            '{"server":"Server","date":"Sat, 14 Sep 2024 09:05:00 GMT","content-type":"application/x-amz-json-1.0","content-length":"2","connection":"keep-alive","x-amzn-requestid":"6J86V55U6IS5CNH9B9UHEBFVKJVV4KQNSO5AEMVJF66Q9ASUAAJG","x-amz-crc32":"2745614147"}',
+          body: "{}",
+          statusCode: 200,
+          receivedTime: 1726304700320,
+        },
+      },
+      resourceName: "thumbnails-tokens-production",
+    },
+  },
+  {
+    instances: 1,
+    service: "dynamodb",
+    ended: 1726304700339,
+    spanType: "http",
+    started: 1726304700322,
+    id: "04f4c32d-3867-eb14-c388-09354caab4d0",
+    reporterAwsRequestId: "9fd58ff6-dfae-4176-b4bd-d0ca0ca1b0e7",
+    parentId: "9fd58ff6-dfae-4176-b4bd-d0ca0ca1b0e7",
+    info: {
+      traceId: "1-66e551bc-59d9a2c63335f02d78f30c38",
+      dynamodbMethod: "PutItem",
+      messageId: "1d70a8854708481c793f015f11cedf97",
+      httpInfo: {
+        host: "dynamodb.eu-west-1.amazonaws.com",
+        request: {
+          path: "/",
+          headers:
+            '{"user-agent":"aws-sdk-nodejs/2.1374.0 linux/v16.20.2 exec-env/AWS_Lambda_nodejs16.x promise","content-type":"application/x-amz-json-1.0","x-amz-target":"DynamoDB_20120810.PutItem","x-amz-content-sha256":"d99a0d72ebc08e3d15d20034ca513054f604465beb70f5794cc3c779b0998551","content-length":372,"host":"dynamodb.eu-west-1.amazonaws.com","x-amzn-trace-id":"Root=1-66e551bc-59d9a2c63335f02d78f30c38;Parent=23fbaf954399c861;Sampled=0","x-amz-date":"20240914T090500Z","x-amz-security-token":"****","authorization":"****"}',
+          protocol: "https:",
+          method: "POST",
+          port: 443,
+          host: "dynamodb.eu-west-1.amazonaws.com",
+          truncated: false,
+          body: '{"TableName":"thumbnails-tokens-production","Item":{"pk":{"S":"extension:jpg"},"sk":{"S":"2024-09-14T09:05:00.321Z#fm3gr3c"},"date":{"S":"2024-09-14T09:05:00.321Z"},"createdAt":{"S":"2024-09-14T09:05:00.321Z"},"updatedAt":{"S":"2024-09-14T09:05:00.321Z"},"type":{"S":"UsageReport"},"success":{"N":"0"},"failed":{"N":"6"},"averageDuration":{"N":"215"},"period":{"S":"5m"}}}',
+          uri: "dynamodb.eu-west-1.amazonaws.com/",
+          sendTime: 1726304700322,
+        },
+        response: {
+          truncated: false,
+          headers:
+            '{"server":"Server","date":"Sat, 14 Sep 2024 09:05:00 GMT","content-type":"application/x-amz-json-1.0","content-length":"2","connection":"keep-alive","x-amzn-requestid":"DTETACQMMLRPGE380QLOA2H7F7VV4KQNSO5AEMVJF66Q9ASUAAJG","x-amz-crc32":"2745614147"}',
+          body: "{}",
+          statusCode: 200,
+          receivedTime: 1726304700339,
+        },
+      },
+      resourceName: "thumbnails-tokens-production",
+    },
+  },
+  {
+    instances: 1,
+    service: "dynamodb",
+    ended: 1726304700361,
+    spanType: "http",
+    started: 1726304700341,
+    id: "a46580cc-7b7c-6ffc-3f0d-b868661c49cc",
+    reporterAwsRequestId: "9fd58ff6-dfae-4176-b4bd-d0ca0ca1b0e7",
+    parentId: "9fd58ff6-dfae-4176-b4bd-d0ca0ca1b0e7",
+    info: {
+      traceId: "1-66e551bc-59d9a2c63335f02d78f30c38",
+      dynamodbMethod: "PutItem",
+      messageId: "adc6eaaa9d346f5d9ed02d58276498ac",
+      httpInfo: {
+        host: "dynamodb.eu-west-1.amazonaws.com",
+        request: {
+          path: "/",
+          headers:
+            '{"user-agent":"aws-sdk-nodejs/2.1374.0 linux/v16.20.2 exec-env/AWS_Lambda_nodejs16.x promise","content-type":"application/x-amz-json-1.0","x-amz-target":"DynamoDB_20120810.PutItem","x-amz-content-sha256":"c85e0f1c61a314edb6680bfa91672481873be8d05120f84e295c71e1c2518272","content-length":374,"host":"dynamodb.eu-west-1.amazonaws.com","x-amzn-trace-id":"Root=1-66e551bc-59d9a2c63335f02d78f30c38;Parent=23fbaf954399c861;Sampled=0","x-amz-date":"20240914T090500Z","x-amz-security-token":"****","authorization":"****"}',
+          protocol: "https:",
+          method: "POST",
+          port: 443,
+          host: "dynamodb.eu-west-1.amazonaws.com",
+          truncated: false,
+          body: '{"TableName":"thumbnails-tokens-production","Item":{"pk":{"S":"extension:jpeg"},"sk":{"S":"2024-09-14T09:05:00.340Z#tywxlyl"},"date":{"S":"2024-09-14T09:05:00.340Z"},"createdAt":{"S":"2024-09-14T09:05:00.340Z"},"updatedAt":{"S":"2024-09-14T09:05:00.340Z"},"type":{"S":"UsageReport"},"success":{"N":"1"},"failed":{"N":"0"},"averageDuration":{"N":"3178"},"period":{"S":"5m"}}}',
+          uri: "dynamodb.eu-west-1.amazonaws.com/",
+          sendTime: 1726304700341,
+        },
+        response: {
+          truncated: false,
+          headers:
+            '{"server":"Server","date":"Sat, 14 Sep 2024 09:05:00 GMT","content-type":"application/x-amz-json-1.0","content-length":"2","connection":"keep-alive","x-amzn-requestid":"90TBUQKHJAIEHUQKE4TMR106B7VV4KQNSO5AEMVJF66Q9ASUAAJG","x-amz-crc32":"2745614147"}',
+          body: "{}",
+          statusCode: 200,
+          receivedTime: 1726304700361,
+        },
+      },
+      resourceName: "thumbnails-tokens-production",
+    },
+  },
+];
+
 describe("spans utils", () => {
-  it("should group similar traces", async () => {
+  it("should group similar traces (1)", async () => {
     const groupedSpans = groupSpans(traces);
+    expect(groupedSpans).toHaveLength(2);
+  });
+  it("should group similar traces (2)", async () => {
+    const groupedSpans = groupSpans(traces2);
     expect(groupedSpans).toHaveLength(2);
   });
 });
