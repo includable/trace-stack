@@ -25,7 +25,7 @@ export const MiniInvocationSummary = ({ data, short = false }) => {
         </>
       )}
       <dt>Duration</dt>
-      <dd className="mr-4 font-semibold">{data.ended - data.started} ms</dd>
+      <dd className="mr-4 font-semibold">{(data.ended - data.started).toLocaleString()} ms</dd>
       {short ? null : (
         <>
           <dt>Transaction ID</dt>
