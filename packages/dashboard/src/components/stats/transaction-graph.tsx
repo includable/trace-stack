@@ -1,6 +1,6 @@
 import Dagre from "@dagrejs/dagre";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ReactFlow,
   Background,
@@ -165,14 +165,34 @@ const getLayoutElements = (nodes, edges, options) => {
   };
 };
 
-const TransactionGraph = ({ id, onNodeClick }) => {
+const TransactionGraph = ({ id, onNodeClick, requestId, requestOnly }) => {
   const { fitView } = useReactFlow();
   const { data } = useTransaction(id, { suspense: true });
+  const grouped = useMemo(() => {
+    let spans = data?.spans;
+    if (requestOnly) {
+      spans = spans.filter(
+        (span) =>
+          span.reporterAwsRequestId === requestId || span.id === requestId,
+      );
+    }
+    return spans;
+  }, [data, requestOnly]);
 
-  const { initialNodes, initialEdges } = buildTransactionGraph(data?.spans);
+  const { initialNodes, initialEdges } = buildTransactionGraph(grouped);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [layouted, setLayouted] = useState(0);
+
+  useEffect(() => {
+    if (grouped?.length) {
+      const { initialNodes, initialEdges } = buildTransactionGraph(grouped);
+      setNodes(initialNodes);
+      setEdges(initialEdges);
+      setLayouted(0);
+      onLayout();
+    }
+  }, [grouped]);
 
   const onLayout = useCallback(() => {
     if (layouted > 2) return;
@@ -183,7 +203,8 @@ const TransactionGraph = ({ id, onNodeClick }) => {
 
     window.requestAnimationFrame(() =>
       fitView({
-        minZoom: 0.75,
+        padding: 0.4,
+        minZoom: 0.7,
         maxZoom: 1.25,
       }),
     );
@@ -200,7 +221,6 @@ const TransactionGraph = ({ id, onNodeClick }) => {
       edges={edges}
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
-      onViewportChange={(viewport) => console.log(viewport)}
       onNodeClick={onNodeClick}
       nodeTypes={{ default: GraphNode }}
     >
@@ -209,10 +229,10 @@ const TransactionGraph = ({ id, onNodeClick }) => {
   );
 };
 
-const TransactionGraphWrapper = ({ id, onNodeClick }) => {
+const TransactionGraphWrapper = (props) => {
   return (
     <ReactFlowProvider>
-      <TransactionGraph id={id} onNodeClick={onNodeClick} />
+      <TransactionGraph {...props} />
     </ReactFlowProvider>
   );
 };

@@ -42,9 +42,9 @@ export const getTransactionLabel = (transaction: any) => {
   return transaction.service || transaction.spanType;
 };
 
-export const groupSpans = (spans: any[]) => {
+export const groupSpans = (spans?: any[]) => {
   const grouped: { groupingKey: any; spans: any[] }[] = [];
-  for (const span of spans) {
+  for (const span of spans || []) {
     if (span.id?.endsWith("_started") || span.spanType === "enrichment")
       continue;
 

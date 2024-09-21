@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Loader } from "lucide-react";
 
@@ -11,6 +11,7 @@ import { useData } from "@/lib/api";
 
 const Invocations = () => {
   const { region, name, id, ts } = useParams();
+  const [requestOnly, setRequestOnly] = useState(true);
   const { data: invocation } = useData(
     `functions/${region}/${name}/invocations/${ts}/${id}`,
     { suspense: true },
@@ -33,6 +34,9 @@ const Invocations = () => {
         >
           <TransactionGraph
             id={invocation.transactionId}
+            requestId={id}
+            requestOnly={requestOnly}
+            setRequestOnly={setRequestOnly}
             onNodeClick={(e, { data }) => {
               document
                 .querySelectorAll("details[open]")
@@ -73,12 +77,23 @@ const Invocations = () => {
           <PayloadPreview title="Environment" value={invocation.envs} />
         </div>
         <div className="col-span-2 flex flex-col">
-          <h4 className="text-sm font-medium mb-3">Transaction details</h4>
-          <div className="flex-1 rounded-md border">
-            <Suspense fallback={<div>Loading...</div>}>
-              <TransactionDetails id={invocation.transactionId} />
-            </Suspense>
-          </div>
+          <Suspense
+            fallback={
+              <>
+                <h4 className="text-sm font-medium mb-3">
+                  Transaction details
+                </h4>
+                <div className="flex-1 rounded-md border p-5">Loading...</div>
+              </>
+            }
+          >
+            <TransactionDetails
+              id={invocation.transactionId}
+              requestId={id}
+              requestOnly={requestOnly}
+              setRequestOnly={setRequestOnly}
+            />
+          </Suspense>
         </div>
       </div>
     </div>

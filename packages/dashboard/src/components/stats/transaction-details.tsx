@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { CaretDownIcon } from "@radix-ui/react-icons";
 
 import {
@@ -7,6 +7,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Switch } from "@/components/ui/switch";
+
 import PayloadPreview from "@/components/stats/payload-preview";
 import {
   getTransactionService,
@@ -14,6 +16,7 @@ import {
   useTransaction,
 } from "@/lib/transaction";
 import { cn } from "@/lib/utils";
+import { Label } from "@/components/ui/label";
 
 const TransactionTitle = ({ transaction }) => {
   if (transaction.info?.dynamodbMethod) {
@@ -116,11 +119,31 @@ const ServiceIcon = ({ transaction }) => {
 };
 
 const SpanDetails = ({ span }) => {
-  if (span.info?.trigger?.length > 1) {
-    return <PayloadPreview value={span.info.trigger} />;
-  }
-  if (span.info?.trigger?.[0]) {
-    return <PayloadPreview value={span.info.trigger[0]} />;
+  if (span.info?.trigger) {
+      return (
+        <>
+        <PayloadPreview
+          title="Trigger"
+          value={
+            span.info.trigger?.length > 1
+              ? span.info.trigger
+              : span.info.trigger[0]
+          }
+        />
+        {span.error && (
+            <div>
+              <h4 className="text-sm font-medium mb-3 mt-4">Error</h4>
+              <div className="rounded-md border overflow-auto max-h-[30rem]">
+                <pre className="font-mono text-sm p-4 px-5">
+                  <b className="text-red-400">{span.error.message}</b>
+                  <br />
+                  {span.error.stacktrace}
+                </pre>
+              </div>
+            </div>
+          )}
+        </>
+      );
   }
 
   if (span.type === "log") {
@@ -244,18 +267,46 @@ const SpanItem = ({ spans, nested = false }) => {
   );
 };
 
-const TransactionDetails = ({ id }) => {
-  const {
-    data: { spans },
-  } = useTransaction(id, { suspense: true });
-  const grouped = useMemo(() => groupSpans(spans), [spans]);
+const TransactionDetails = ({ id, requestId, requestOnly, setRequestOnly }) => {
+  const { data } = useTransaction(id, { suspense: true });
+
+  const grouped = useMemo(() => {
+    let spans = data?.spans;
+    if (requestOnly) {
+      spans = spans.filter(
+        (span) =>
+          span.reporterAwsRequestId === requestId || span.id === requestId,
+      );
+    }
+
+    return groupSpans(spans);
+  }, [data, requestOnly]);
 
   return (
-    <div className="divide-y border-b">
-      {grouped.map((group) => {
-        return <SpanItem key={group.groupingKey} spans={group.spans} />;
-      })}
-    </div>
+    <>
+      <div className="flex justify-between items-center mb-3">
+        <h4 className="text-sm font-medium">Transaction details</h4>
+        <div className="flex items-center space-x-2">
+          <Switch
+            id="request-only"
+            checked={requestOnly}
+            onCheckedChange={() => setRequestOnly((r) => !r)}
+          />
+          <Label
+            htmlFor="request-only"
+            className="text-xs text-muted-foreground"
+          >
+            Filter current function
+          </Label>
+        </div>
+      </div>
+
+      <div className="flex-1 rounded-md border divide-y border-b">
+        {grouped.map((group) => {
+          return <SpanItem key={group.groupingKey} spans={group.spans} />;
+        })}
+      </div>
+    </>
   );
 };
 
