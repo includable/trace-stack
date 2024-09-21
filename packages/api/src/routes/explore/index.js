@@ -1,22 +1,13 @@
 import { Hono } from "hono";
+
 import { query, queryAll } from "../../lib/database";
-import { getHourlyValues } from "../../lib/stats";
-import {
-  addDays,
-  addHours,
-  differenceInDays,
-  eachDayOfInterval,
-  eachHourOfInterval,
-  subDays,
-} from "date-fns";
+import { getDates } from "./utils";
+
+import statsRoute from "./stats";
 
 const app = new Hono();
 
-const getDates = (c) => {
-  const start = new Date(c.req.query("startDate") || subDays(new Date(), 7));
-  const end = new Date(c.req.query("endDate") || new Date());
-  return [start, end];
-};
+app.route("stats", statsRoute);
 
 app.get("/functions", async (c) => {
   const items = await queryAll({
@@ -160,41 +151,6 @@ app.get("/transactions/:id", async (c) => {
   });
 
   return c.json(items);
-});
-
-app.get("/stats/:region/:name", async (c) => {
-  const [start, end] = getDates(c);
-
-  const useDaily = differenceInDays(end, start) > 3;
-  const ticks = useDaily
-    ? eachDayOfInterval({ start, end })
-    : eachHourOfInterval({ start, end });
-
-  const duration = useDaily ? "1d" : "1h";
-
-  const values = await getHourlyValues(
-    c.req.param("region"),
-    c.req.param("name"),
-  );
-
-  const periods = ticks.map((tick) => {
-    const items = values.filter(
-      (value) => value.date.getTime() === tick.getTime(),
-    );
-    const numerator = items.reduce((sum, item) => sum + item.numerator, 0);
-    const denominator = items.reduce((sum, item) => sum + item.denominator, 0);
-
-    return {
-      date: tick,
-      startDate: tick,
-      endDate: useDaily ? addDays(tick, 1) : addHours(tick, 1),
-      duration,
-      average: denominator ? numerator / denominator : 0,
-      sum: numerator,
-    };
-  });
-
-  return c.json(periods);
 });
 
 export default app;
