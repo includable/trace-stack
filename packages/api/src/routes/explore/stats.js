@@ -1,10 +1,10 @@
 import { Hono } from "hono";
 import {
-  addDays,
-  addHours,
   differenceInDays,
   eachDayOfInterval,
   eachHourOfInterval,
+  endOfDay,
+  endOfHour,
   isWithinInterval,
 } from "date-fns";
 
@@ -29,7 +29,7 @@ app.get("/:region/:name", async (c) => {
   );
 
   const periods = ticks.map((tick) => {
-    const endDate = useDaily ? addDays(tick, 1) : addHours(tick, 1);
+    const endDate = useDaily ? endOfDay(tick) : endOfHour(tick);
     const items = values.filter((value) =>
       isWithinInterval(new Date(value.date), { start: tick, end: endDate }),
     );
