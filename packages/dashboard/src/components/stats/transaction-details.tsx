@@ -286,7 +286,7 @@ const TransactionDetails = ({ id, requestId, requestOnly, setRequestOnly }) => {
     <>
       <div className="flex justify-between items-center mb-3">
         <h4 className="text-sm font-medium">Transaction details</h4>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1.5">
           <Switch
             id="request-only"
             checked={requestOnly}

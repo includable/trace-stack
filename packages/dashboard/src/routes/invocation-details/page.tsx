@@ -1,6 +1,6 @@
 import { Suspense, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Loader } from "lucide-react";
+import { Loader, Minimize2, Maximize2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import InvocationSummary from "@/components/stats/invocation-summary";
@@ -8,10 +8,13 @@ import TransactionDetails from "@/components/stats/transaction-details";
 import PayloadPreview from "@/components/stats/payload-preview";
 import TransactionGraph from "@/components/stats/transaction-graph";
 import { useData } from "@/lib/api";
+import { cn } from "@/lib/utils";
 
 const Invocations = () => {
   const { region, name, id, ts } = useParams();
   const [requestOnly, setRequestOnly] = useState(true);
+  const [expandedGraph, setExpandedGraph] = useState(false);
+
   const { data: invocation } = useData(
     `functions/${region}/${name}/invocations/${ts}/${id}`,
     { suspense: true },
@@ -24,7 +27,25 @@ const Invocations = () => {
       </Button>
       <h1 className="text-2xl font-bold">{id}</h1>
       <InvocationSummary data={invocation} />
-      <div className="h-[300px] w-full rounded-md border mt-6 overflow-hidden">
+      <div
+        className={cn(
+          "w-full rounded-md border mt-6 relative overflow-hidden group",
+          expandedGraph ? "h-[600px]" : "h-[300px]",
+        )}
+      >
+        <div className="absolute top-3 right-3 gap-2 z-20 hidden group-hover:flex">
+          <Button
+            variant="outline"
+            size="miniIcon"
+            onClick={() => setExpandedGraph((g) => !g)}
+          >
+            {expandedGraph ? (
+              <Minimize2 className="size-3" />
+            ) : (
+              <Maximize2 className="size-3" />
+            )}
+          </Button>
+        </div>
         <Suspense
           fallback={
             <div className="flex h-full w-full items-center justify-center">
