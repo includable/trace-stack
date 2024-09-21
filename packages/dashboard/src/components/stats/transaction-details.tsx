@@ -296,7 +296,7 @@ const TransactionDetails = ({ id, requestId, requestOnly, setRequestOnly }) => {
             htmlFor="request-only"
             className="text-xs text-muted-foreground"
           >
-            Filter current function
+            Filter current invocation
           </Label>
         </div>
       </div>

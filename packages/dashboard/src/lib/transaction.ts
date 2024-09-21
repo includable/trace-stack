@@ -22,7 +22,8 @@ export const getGroupingKey = (transaction: any, extended = false) => {
 
 export const getTransactionService = (transaction: any) => {
   if (
-    transaction.info?.httpInfo?.host?.match(/\.s3\.\w+-\w+-\d+\.amazonaws\.com/)
+    transaction.info?.httpInfo?.host?.match(/\.s3\.\w+-\w+-\d+\.amazonaws\.com/) || 
+    transaction.info?.httpInfo?.host?.match(/\.s3-accelerate\.amazonaws\.com/)
   ) {
     return "s3";
   }

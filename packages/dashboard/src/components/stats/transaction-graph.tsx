@@ -184,16 +184,6 @@ const TransactionGraph = ({ id, onNodeClick, requestId, requestOnly }) => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [layouted, setLayouted] = useState(0);
 
-  useEffect(() => {
-    if (grouped?.length) {
-      const { initialNodes, initialEdges } = buildTransactionGraph(grouped);
-      setNodes(initialNodes);
-      setEdges(initialEdges);
-      setLayouted(0);
-      onLayout();
-    }
-  }, [grouped]);
-
   const onLayout = useCallback(() => {
     if (layouted > 2) return;
     const layout = getLayoutElements(nodes, edges, { direction: "LR" });
@@ -231,7 +221,7 @@ const TransactionGraph = ({ id, onNodeClick, requestId, requestOnly }) => {
 
 const TransactionGraphWrapper = (props) => {
   return (
-    <ReactFlowProvider>
+    <ReactFlowProvider key={props.requestOnly}>
       <TransactionGraph {...props} />
     </ReactFlowProvider>
   );
