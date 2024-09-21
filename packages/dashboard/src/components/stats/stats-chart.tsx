@@ -56,7 +56,7 @@ export function StatsChart({
             color: color,
           },
         }}
-        className="min-h-[160px] max-h-[240px] w-full"
+        className="h-[240px] w-full"
       >
         {data ? (
           <BarChart accessibilityLayer data={data}>
