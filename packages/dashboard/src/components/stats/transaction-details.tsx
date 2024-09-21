@@ -80,7 +80,7 @@ const TransactionTitle = ({ transaction }) => {
   if (transaction.info?.trigger?.[0]) {
     return (
       <>
-        Function executed triggered by{" "}
+        Function <code>{transaction.name}</code> executed triggered by{" "}
         <code>{transaction.info.trigger[0].triggeredBy}</code>
       </>
     );
@@ -196,7 +196,11 @@ const SpanItem = ({ spans, nested = false }) => {
   const hasDuration = duration !== null && transaction.spanType !== "function";
 
   return (
-    <details key={`${transaction.id}${transaction.started}`}>
+    <details
+      id={transaction.id}
+      key={`${transaction.id}${transaction.started}`}
+      className="transition focus:ring-2"
+    >
       <summary
         className={cn(
           "text-sm flex items-center justify-between gap-2 cursor-pointer",

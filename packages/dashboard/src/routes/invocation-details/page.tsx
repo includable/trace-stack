@@ -1,13 +1,13 @@
+import { Suspense } from "react";
 import { Link, useParams } from "react-router-dom";
+import { Loader } from "lucide-react";
 
-import { useData } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import InvocationSummary from "@/components/stats/invocation-summary";
-import { Suspense } from "react";
 import TransactionDetails from "@/components/stats/transaction-details";
 import PayloadPreview from "@/components/stats/payload-preview";
 import TransactionGraph from "@/components/stats/transaction-graph";
-import { Loader } from "lucide-react";
+import { useData } from "@/lib/api";
 
 const Invocations = () => {
   const { region, name, id, ts } = useParams();
@@ -33,8 +33,20 @@ const Invocations = () => {
         >
           <TransactionGraph
             id={invocation.transactionId}
-            onNodeClick={() => {
-              /* TODO */
+            onNodeClick={(e, { data }) => {
+              document
+                .querySelectorAll("details[open]")
+                .forEach((el) => el.removeAttribute("open"));
+
+              const item = document.getElementById(data.id);
+              if (!item) return;
+
+              item.setAttribute("open", "true");
+              item.scrollIntoView({ behavior: "smooth" });
+              item.focus();
+
+              item.classList?.add("bg-muted");
+              setTimeout(() => item.classList?.remove("bg-muted"), 1000);
             }}
           />
         </Suspense>

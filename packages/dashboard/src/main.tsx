@@ -4,6 +4,8 @@ import {
   Navigate,
   RouterProvider,
 } from "react-router-dom";
+
+import "@xyflow/react/dist/style.css";
 import "./index.css";
 
 import Root from "@/routes/root";

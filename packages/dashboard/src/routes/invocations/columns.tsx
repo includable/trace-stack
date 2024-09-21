@@ -1,8 +1,10 @@
 "use client";
 
 import InvocationResult from "@/components/stats/invocation-result";
+import { Tooltipped } from "@/components/ui/tooltipped";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatRelative } from "date-fns";
+import { SnowflakeIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export type InvocationItem = {
@@ -55,7 +57,16 @@ export const columns: ColumnDef<InvocationItem>[] = [
     header: "Duration",
     cell: ({ row }) => {
       const duration = row.original.ended - row.original.started;
-      return <span>{duration} ms</span>;
+      return (
+        <div className="flex items-center gap-2">
+          <span>{duration} ms</span>
+          {row.original.readiness === "cold" && (
+            <Tooltipped title="Cold start">
+              <SnowflakeIcon className="size-3.5 text-blue-400" />
+            </Tooltipped>
+          )}
+        </div>
+      );
     },
   },
 ];

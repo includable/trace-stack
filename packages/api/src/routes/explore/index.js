@@ -81,7 +81,7 @@ app.get("/functions/:region/:name/invocations", async (c) => {
       ":skEnd": `invocation#${endTs}`,
     },
     ProjectionExpression:
-      "#pk, #sk, #type, #error, #id, #region, #name, transactionId, started, ended, memoryAllocated",
+      "#pk, #sk, #type, #error, #id, #region, #name, transactionId, started, ended, readiness, memoryAllocated",
     Limit: 50,
     ScanIndexForward: false,
   });

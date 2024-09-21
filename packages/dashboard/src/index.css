@@ -66,3 +66,21 @@
 details summary::-webkit-details-marker {
   display: none;
 }
+
+.react-flow__node {
+  padding: 0;
+  width: auto;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.react-flow__handle {
+  border: 0;
+  width: 5px;
+  height: 5px;
+  @apply bg-foreground;
+}
+
+.react-flow__attribution {
+  display: none;
+}

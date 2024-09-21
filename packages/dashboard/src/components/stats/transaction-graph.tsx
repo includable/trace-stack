@@ -1,9 +1,16 @@
-import Cytoscape from "cytoscape";
-import CytoscapeComponent from "react-cytoscapejs";
-import klay from "cytoscape-klay";
+import Dagre from "@dagrejs/dagre";
 
-import { createRoot } from "react-dom/client";
-import { useTheme } from "@/components/layout/theme-provider";
+import { useCallback, useEffect, useState } from "react";
+import {
+  ReactFlow,
+  Background,
+  useNodesState,
+  useEdgesState,
+  useReactFlow,
+  Position,
+  ReactFlowProvider,
+  Handle,
+} from "@xyflow/react";
 
 import {
   getGroupingKey,
@@ -12,9 +19,7 @@ import {
   useTransaction,
 } from "@/lib/transaction";
 
-Cytoscape.use(klay);
-
-const GraphNode = ({ data }) => {
+const GraphNode = ({ data, isConnectable }) => {
   return (
     <div
       className="size-10 rounded-full bg-gray-400 text-xs bg-cover bg-center"
@@ -22,6 +27,16 @@ const GraphNode = ({ data }) => {
         backgroundImage: `url(/images/service-icons/${data.service}.svg)`,
       }}
     >
+      <Handle
+        type="target"
+        position={Position.Left}
+        isConnectable={isConnectable}
+      />
+      <Handle
+        type="source"
+        position={Position.Right}
+        isConnectable={isConnectable}
+      />
       {data.spans.length > 1 ? (
         <div className="bg-primary text-white p-1 min-w-6 min-h-6 text-center rounded-full absolute -top-2 -right-2">
           {data.spans.length}
@@ -34,70 +49,9 @@ const GraphNode = ({ data }) => {
   );
 };
 
-function renderHTMLNodes(options) {
-  const cyto = this.cy();
-  const cytoContainer = cyto.container();
-  const nodeHtmlContainer = document.createElement("div");
-  const internalId = "__cytoscape-html__";
-
-  const createNode = (node: any) => {
-    const id = node.id();
-    const data = node.data();
-
-    const namespace = "__cytoscape-html";
-    const internalNodeId = `${namespace}_node-${id}`;
-    const position = node.renderedPosition();
-    const posX = position.x.toFixed(2);
-    const posY = position.y.toFixed(2);
-
-    const newNode = document.createElement("div");
-    const existingNode = nodeHtmlContainer.querySelector("#" + internalNodeId);
-    const nodeTranslation = `translate(${posX}px, ${posY}px)`;
-    const nodeScale = `scale(${cyto.zoom()})`;
-    const transform = `translate(-50%, -50%) ${nodeTranslation} ${nodeScale}`;
-    createRoot(newNode).render(<GraphNode data={data} />);
-
-    newNode.id = internalNodeId;
-    newNode.style.position = "absolute";
-    newNode.style.transform = transform;
-    newNode.style.zIndex = "2";
-
-    if (existingNode) nodeHtmlContainer.removeChild(existingNode);
-    nodeHtmlContainer.appendChild(newNode);
-
-    if (options.hideOriginal) {
-      // Hide the original node
-      node.style({ "background-opacity": 0 });
-    }
-  };
-
-  function handleMovement() {
-    cyto.nodes().forEach((node) => createNode(node));
-  }
-
-  if (!document.getElementById(internalId)) {
-    const canvas = cytoContainer.querySelector("canvas");
-
-    nodeHtmlContainer.id = internalId;
-    canvas.parentNode.appendChild(nodeHtmlContainer);
-    nodeHtmlContainer.style.width = canvas.style.width;
-    nodeHtmlContainer.style.height = canvas.style.height;
-    nodeHtmlContainer.style.zIndex = "1";
-
-    cyto.on("add", "node", (e: cytoscape.EventObject) => createNode(e.target));
-    cyto.on("drag", "node", (e: cytoscape.EventObject) => createNode(e.target));
-    cyto.on("pan resize", handleMovement);
-  }
-
-  return cyto.nodes();
-}
-
-Cytoscape("collection", "renderHTMLNodes", renderHTMLNodes);
-
 const buildTransactionGraph = (transaction) => {
   const nodes = [] as any[];
-  const edges = [];
-  const roots = [];
+  const edges = [] as any[];
   const mappings = {} as Record<string, string>;
 
   const addNode = (node) => {
@@ -111,15 +65,36 @@ const buildTransactionGraph = (transaction) => {
       return existingGroup.data.id;
     }
 
-    nodes.push({
-      data: {
-        spans: [node.id],
-        ...node,
-      },
-    });
+    if (!nodes.find((n) => n.id === node.id)) {
+      nodes.push({
+        id: node.id,
+        position: { x: 0, y: 0 },
+        sourcePosition: Position.Right,
+        targetPosition: Position.Left,
+        connectable: false,
+        deletable: false,
+        data: {
+          spans: [node.id],
+          ...node,
+        },
+      });
+    }
     mappings[node.id] = node.id;
 
     return node.id;
+  };
+
+  const addEdge = (edge) => {
+    const id = `${edge.source}-${edge.target}`;
+    if (!edges.find((e) => e.id === id)) {
+      edges.push({
+        id,
+        source: edge.source,
+        target: edge.target,
+        deletable: false,
+        selectable: false,
+      });
+    }
   };
 
   for (const item of transaction) {
@@ -139,13 +114,8 @@ const buildTransactionGraph = (transaction) => {
     });
 
     if (item.parentId) {
-      edges.push({
-        data: {
-          source: mappings[item.parentId] || item.parentId,
-          target: id,
-          label: item.spanType,
-        },
-      });
+      const source = mappings[item.parentId] || item.parentId;
+      addEdge({ source, target: id });
     }
 
     if (item.info.trigger) {
@@ -157,73 +127,94 @@ const buildTransactionGraph = (transaction) => {
           service: trigger.triggeredBy || item.service || item.spanType,
           transaction: item,
         });
-        edges.push({
-          data: {
-            source: id,
-            target: mappings[item.id] || item.id,
-            label: "trigger",
-          },
-        });
-        roots.push(trigger.id);
+        const target = mappings[item.id] || item.id;
+        addEdge({ source: id, target });
       }
     }
   }
 
-  return [[...nodes, ...edges], roots];
+  return { initialNodes: nodes, initialEdges: edges };
+};
+
+const getLayoutElements = (nodes, edges, options) => {
+  const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
+  g.setGraph({ rankdir: options.direction, ranksep: 64, nodesep: 120 });
+
+  edges.forEach((edge) => g.setEdge(edge.source, edge.target));
+  nodes.forEach((node) =>
+    g.setNode(node.id, {
+      ...node,
+      width: (node.measured?.width ?? 0) + 32,
+      height: (node.measured?.height ?? 0) + 32,
+    }),
+  );
+
+  Dagre.layout(g);
+
+  return {
+    nodes: nodes.map((node) => {
+      const position = g.node(node.id);
+      // We are shifting the dagre node position (anchor=center center) to the top left
+      // so it matches the React Flow node anchor point (top left).
+      const x = position.x - (node.measured?.width ?? 0) / 2;
+      const y = position.y - (node.measured?.height ?? 0) / 2;
+
+      return { ...node, position: { x, y } };
+    }),
+    edges,
+  };
 };
 
 const TransactionGraph = ({ id, onNodeClick }) => {
-  const {
-    data: { spans },
-  } = useTransaction(id, { suspense: true });
-  const { value: theme } = useTheme();
+  const { fitView } = useReactFlow();
+  const { data } = useTransaction(id, { suspense: true });
 
-  const [elements, roots] = buildTransactionGraph(spans);
+  const { initialNodes, initialEdges } = buildTransactionGraph(data?.spans);
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [layouted, setLayouted] = useState(0);
+
+  const onLayout = useCallback(() => {
+    if (layouted > 2) return;
+    const layout = getLayoutElements(nodes, edges, { direction: "LR" });
+
+    setNodes([...layout.nodes]);
+    setEdges([...layout.edges]);
+
+    window.requestAnimationFrame(() =>
+      fitView({
+        minZoom: 0.75,
+        maxZoom: 1.25,
+      }),
+    );
+    setLayouted((l) => l + 1);
+  }, [nodes, edges]);
+
+  useEffect(() => {
+    onLayout();
+  }, [layouted, nodes, edges]);
 
   return (
-    <CytoscapeComponent
-      elements={elements}
-      stylesheet={[
-        {
-          selector: "node",
-          style: {
-            width: 48,
-            height: 48,
-            content: "data(label)",
-            "text-valign": "bottom",
-            "text-margin-y": 13,
-            "font-family": "Inter, sans-serif",
-            "font-size": "12px",
-            color: theme === "dark" ? "#000" : "#fff",
-          },
-        },
-        {
-          selector: "edge",
-          style: {
-            "line-color": theme === "dark" ? "#212936" : "#9da3ae",
-          },
-        },
-      ]}
-      layout={{
-        name: "klay",
-        fit: false,
-        nodeDimensionsIncludeLabels: true,
-        padding: 30,
-        stop: (event: any) => event.cy.center(),
-        klay: {
-          spacing: 80,
-        },
-      }}
-      style={{ width: "100%", height: "300px" }}
-      cy={(cy) => {
-        cy.center();
-        cy.nodes().renderHTMLNodes({ hideOriginal: true });
-        cy.on("click", "node", function (evt) {
-          onNodeClick?.(evt.target.data());
-        });
-      }}
-    />
+    <ReactFlow
+      nodes={nodes}
+      edges={edges}
+      onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange}
+      onViewportChange={(viewport) => console.log(viewport)}
+      onNodeClick={onNodeClick}
+      nodeTypes={{ default: GraphNode }}
+    >
+      <Background />
+    </ReactFlow>
   );
 };
 
-export default TransactionGraph;
+const TransactionGraphWrapper = ({ id, onNodeClick }) => {
+  return (
+    <ReactFlowProvider>
+      <TransactionGraph id={id} onNodeClick={onNodeClick} />
+    </ReactFlowProvider>
+  );
+};
+
+export default TransactionGraphWrapper;

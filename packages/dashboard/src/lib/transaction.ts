@@ -7,6 +7,7 @@ export const getGroupingKey = (transaction: any, extended = false) => {
     transaction.service,
     transaction.info?.resourceName,
     transaction.info?.httpInfo?.host,
+    transaction.name,
     transaction.log,
   ];
 
@@ -20,6 +21,12 @@ export const getGroupingKey = (transaction: any, extended = false) => {
 };
 
 export const getTransactionService = (transaction: any) => {
+  if (
+    transaction.info?.httpInfo?.host?.match(/\.s3\.\w+-\w+-\d+\.amazonaws\.com/)
+  ) {
+    return "s3";
+  }
+
   return transaction.service || transaction.spanType || transaction.type;
 };
 
