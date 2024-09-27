@@ -193,7 +193,7 @@ const TransactionGraph = ({ id, onNodeClick, requestId, requestOnly }) => {
 
     window.requestAnimationFrame(() =>
       fitView({
-        padding: 0.4,
+        padding: 0.5,
         minZoom: 0.55,
         maxZoom: 1.25,
       }),
