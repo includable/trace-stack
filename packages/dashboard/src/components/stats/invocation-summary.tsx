@@ -1,8 +1,7 @@
 import { format } from "date-fns";
-import { ExternalLink, ScrollText } from "lucide-react";
+import { ExternalLink, ScrollText, SnowflakeIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { useData } from "@/lib/api";
 import {
   Tooltip,
   TooltipContent,
@@ -10,6 +9,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import InvocationResult from "@/components/stats/invocation-result";
+import { Tooltipped } from "@/components/ui/tooltipped";
 
 export const MiniInvocationSummary = ({ data, short = false }) => {
   return (
@@ -25,8 +25,13 @@ export const MiniInvocationSummary = ({ data, short = false }) => {
         </>
       )}
       <dt className="hidden md:block">Duration</dt>
-      <dd className="mr-4 font-semibold">
+      <dd className="mr-4 font-semibold flex items-center gap-2">
         {(data.ended - data.started).toLocaleString()} ms
+        {data.readiness === "cold" && (
+            <Tooltipped title="Cold start">
+              <SnowflakeIcon className="size-3.5 text-blue-400" />
+            </Tooltipped>
+          )}
       </dd>
       {short ? null : (
         <>
