@@ -122,7 +122,10 @@ const buildTransactionGraph = (transaction) => {
       for (const trigger of item.info.trigger) {
         const id = addNode({
           id: trigger.id,
-          label: trigger.triggeredBy || "trigger",
+          type: 'trigger',
+          label: getTransactionLabel({
+            service: trigger.triggeredBy || "trigger",
+          }),
           groupingKey: trigger.triggeredBy,
           service: trigger.triggeredBy || item.service || item.spanType,
           transaction: item,

@@ -47,30 +47,36 @@ const Invocations = () => {
               requestOnly={requestOnly}
               setRequestOnly={setRequestOnly}
               onNodeClick={(e, { data }) => {
-                setCurrentTab("transaction");
-
-                window.requestAnimationFrame(() => {
+                if (data.type === "trigger") {
+                  setCurrentTab("context");
                   document
-                    .querySelectorAll("details[open]")
-                    .forEach((el) => el.removeAttribute("open"));
+                    .getElementById("context")?.scrollTo({ top: 0, behavior: "smooth" });
+                } else {
+                  setCurrentTab("transaction");
 
-                  const item = document.getElementById(data.id);
-                  if (!item) return;
+                  window.requestAnimationFrame(() => {
+                    document
+                      .querySelectorAll("details[open]")
+                      .forEach((el) => el.removeAttribute("open"));
 
-                  item.setAttribute("open", "true");
-                  item.scrollIntoView({ behavior: "smooth" });
-                  item.focus();
+                    const item = document.getElementById(data.id);
+                    if (!item) return;
 
-                  item.classList?.add("bg-muted");
-                  setTimeout(() => item.classList?.remove("bg-muted"), 1000);
-                });
+                    item.setAttribute("open", "true");
+                    item.scrollIntoView({ behavior: "smooth" });
+                    item.focus();
+
+                    item.classList?.add("bg-muted");
+                    setTimeout(() => item.classList?.remove("bg-muted"), 1000);
+                  });
+                }
               }}
             />
           </Suspense>
         </div>
 
         {/* --- Transaction details --- */}
-        <div className="flex-1 md:h-full md:overflow-auto p-6 md:px-10 md:py-8">
+        <div className="flex-1 md:h-full md:overflow-auto p-6 md:px-10 md:py-8" id="context">
           <Tabs value={currentTab} onValueChange={setCurrentTab}>
             <TabsList className="mb-6">
               <TabsTrigger value="context">Context</TabsTrigger>
