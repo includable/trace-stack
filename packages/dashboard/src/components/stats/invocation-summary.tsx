@@ -8,7 +8,7 @@ import InvocationResult from "@/components/stats/invocation-result";
 export const MiniInvocationSummary = ({ data, short = false }) => {
   return (
     <dl className="flex md:gap-2 text-sm text-muted-foreground mt-2">
-      <InvocationResult error={data.error} />
+      <InvocationResult error={data.error} returnValue={data.return_value} />
       {short ? null : (
         <>
           {" "}
