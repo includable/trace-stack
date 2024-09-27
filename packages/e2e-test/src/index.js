@@ -6,16 +6,11 @@ export const handler = async (event) => {
   }
 
   if (event.action === "error-memory") {
-    let x = 0,
-      z = 0,
-      y = [];
-    while (x < 1024 * 1024) {
-      while (z < 1024 * 1024) {
-        y.push(new Array(1024 * 1024 * 1024).fill(0));
-        z++;
-      }
-      x++;
+    let array = [];
+    while (true) {
+      array.push(Buffer.alloc(1024 * 1024));
     }
+    console.log("error-memory");
   }
 
   if (event.action === "error-throw") {
