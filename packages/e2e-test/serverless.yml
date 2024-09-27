@@ -1,0 +1,38 @@
+service: trace-e2e
+
+plugins:
+  - serverless-plugin-log-retention
+
+custom:
+  logRetentionInDays: 1
+
+package:
+  individually: true
+  include:
+    - src/**
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  timeout: 25
+  region: eu-west-1
+  deploymentMethod: direct
+  versionFunctions: false
+  stage: testing
+  httpApi:
+    payload: "2.0"
+    cors: true
+functions:
+  main:
+    handler: src/index.handler
+    timeout: 5
+    memorySize: 64
+    url: true
+    events:
+      - httpApi:
+          path: /{proxy+}
+          method: any
+      - schedule:
+          rate: rate(1 day)
+          input:
+            action: auto-trace

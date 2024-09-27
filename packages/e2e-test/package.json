@@ -1,0 +1,17 @@
+{
+  "name": "@trace-stack/e2e-test",
+  "type": "module",
+  "scripts": {
+    "test:e2e": "yarn node --experimental-vm-modules $(yarn bin jest) --coverage"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-dynamodb": "^3.658.1",
+    "@aws-sdk/lib-dynamodb": "^3.658.1",
+    "@laconia/invoker": "^1.14.0",
+    "@laconia/test": "^1.14.0",
+    "aws-testing-library": "^4.0.6",
+    "jest": "^29.7.0",
+    "serverless": "^3",
+    "serverless-plugin-log-retention": "^2.0.0"
+  }
+}
