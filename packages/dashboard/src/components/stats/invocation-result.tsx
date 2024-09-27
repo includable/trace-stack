@@ -9,7 +9,21 @@ import {
 } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 
-const InvocationResult = ({ error, returnValue }) => {
+const StatusCodeBadge = ({ statusCode }) => {
+  if (statusCode.startsWith("2")) {
+    return <Badge variant="success">{statusCode}</Badge>;
+  }
+  if (statusCode.startsWith("4")) {
+    return <Badge variant="warning">{statusCode}</Badge>;
+  }
+  if (statusCode.startsWith("5")) {
+    return <Badge variant="error">{statusCode}</Badge>;
+  }
+
+  return <Badge variant="outline">{statusCode}</Badge>;
+};
+
+const InvocationResult = ({ error, returnValue = null }) => {
   const statusCode = useMemo(() => {
     if (returnValue && typeof returnValue === "string") {
       try {
@@ -17,7 +31,7 @@ const InvocationResult = ({ error, returnValue }) => {
       } catch (e) {}
     }
     if (returnValue && returnValue.statusCode) {
-      return returnValue.statusCode;
+      return `${returnValue.statusCode}`;
     }
   }, [returnValue]);
 
@@ -26,7 +40,7 @@ const InvocationResult = ({ error, returnValue }) => {
       <div className="flex items-center gap-2 text-emerald-500 pr-10">
         <CheckCircle2 className="size-4" />
         Successful
-        {statusCode && <Badge variant="outline">{statusCode}</Badge>}
+        {statusCode && <StatusCodeBadge statusCode={statusCode} />}
       </div>
     );
   }
