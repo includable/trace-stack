@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { CaretDownIcon } from "@radix-ui/react-icons";
 
 import {

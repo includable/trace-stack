@@ -89,6 +89,13 @@ provider:
             - "*"
         - Effect: Allow
           Action:
+            - logs:GetLogEvents
+            - logs:DescribeLogGroups
+            - logs:DescribeLogStreams
+          Resource:
+            - "*"
+        - Effect: Allow
+          Action:
             - apigateway:GET
           Resource:
             - "arn:aws:apigateway:${aws:region}::/apis"

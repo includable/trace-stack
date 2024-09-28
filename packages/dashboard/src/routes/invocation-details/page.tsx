@@ -9,6 +9,7 @@ import PayloadPreview from "@/components/stats/payload-preview";
 import TransactionGraph from "@/components/stats/transaction-graph";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useData } from "@/lib/api";
+import InvocationLogs from "@/components/stats/invocation-logs";
 
 const Invocations = () => {
   const { region, name, id, ts } = useParams();
@@ -50,7 +51,8 @@ const Invocations = () => {
                 if (data.type === "trigger") {
                   setCurrentTab("context");
                   document
-                    .getElementById("context")?.scrollTo({ top: 0, behavior: "smooth" });
+                    .getElementById("context")
+                    ?.scrollTo({ top: 0, behavior: "smooth" });
                 } else {
                   setCurrentTab("transaction");
 
@@ -76,12 +78,15 @@ const Invocations = () => {
         </div>
 
         {/* --- Transaction details --- */}
-        <div className="flex-1 md:h-full md:overflow-auto p-6 md:px-10 md:py-8" id="context">
+        <div
+          className="flex-1 md:h-full md:overflow-auto p-6 md:px-10 md:py-8"
+          id="context"
+        >
           <Tabs value={currentTab} onValueChange={setCurrentTab}>
             <TabsList className="mb-6">
               <TabsTrigger value="context">Context</TabsTrigger>
               <TabsTrigger value="transaction">Transaction</TabsTrigger>
-              {/* <TabsTrigger value="logs">Logs</TabsTrigger> */}
+              <TabsTrigger value="logs">Logs</TabsTrigger>
             </TabsList>
             <TabsContent value="context">
               <div className="flex w-full flex-col gap-10">
@@ -128,6 +133,27 @@ const Invocations = () => {
                   requestId={id}
                   requestOnly={requestOnly}
                   setRequestOnly={setRequestOnly}
+                />
+              </Suspense>
+            </TabsContent>
+            <TabsContent value="logs">
+              <Suspense
+                fallback={
+                  <>
+                    <h4 className="text-sm font-medium mb-3">
+                      CloudWatch logs
+                    </h4>
+                    <div className="flex-1 rounded-md border p-5">
+                      Loading...
+                    </div>
+                  </>
+                }
+              >
+                <InvocationLogs
+                  id={id}
+                  ts={ts}
+                  region={region}
+                  name={name}
                 />
               </Suspense>
             </TabsContent>

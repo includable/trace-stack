@@ -4,10 +4,12 @@ import { query, queryAll } from "../../lib/database";
 import { getDates } from "./utils";
 
 import statsRoute from "./stats";
+import logsRoute from "./logs";
 
 const app = new Hono();
 
 app.route("stats", statsRoute);
+app.route("logs", logsRoute);
 
 app.get("/functions", async (c) => {
   const items = await queryAll({

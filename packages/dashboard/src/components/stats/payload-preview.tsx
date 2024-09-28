@@ -4,6 +4,7 @@ import { JSONTree } from "react-json-tree";
 import { useTheme } from "@/components/layout/theme-provider";
 import { Button } from "@/components/ui/button";
 import { Clipboard, ClipboardCheck, Maximize2, Minimize2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const theme = {
   scheme: "monokai",
@@ -52,7 +53,7 @@ const PayloadPreviewValue = ({ value }) => {
             )}
           </Button>
         </div>
-        <pre className="font-mono text-sm p-4 px-5">{value}</pre>
+        <pre className="font-mono whitespace-pre-wrap text-sm p-4 px-5">{value}</pre>
       </div>
     );
   }
@@ -91,7 +92,7 @@ const PayloadPreviewValue = ({ value }) => {
   );
 };
 
-const PayloadPreview = ({ title = "", value }) => {
+const PayloadPreview = ({ title = "", value, className = "" }) => {
   const truncated =
     typeof value === "string" && value?.includes("...[too long]");
 
@@ -121,7 +122,12 @@ const PayloadPreview = ({ title = "", value }) => {
           ) : null}
         </h4>
       )}
-      <div className="rounded-md border overflow-auto max-h-[30rem]">
+      <div
+        className={cn(
+          "rounded-md border overflow-auto max-h-[30rem]",
+          className,
+        )}
+      >
         <PayloadPreviewValue value={displayValue} />
       </div>
     </div>
