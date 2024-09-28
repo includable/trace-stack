@@ -4,6 +4,7 @@ import { getExpiryTime, put, update } from "../../lib/database";
 import { saveHourlyStat } from "../../lib/stats";
 import { getErrorKey } from "../../lib/errors";
 import { groupSpans } from "../../lib/spans";
+import { saveInvocation } from "../../lib/invocations";
 
 const app = new Hono();
 
@@ -49,15 +50,7 @@ app.post("/", async (c) => {
       !span.id.includes("_started")
     ) {
       // save function invocation details
-      await put(
-        {
-          ...span,
-          pk: `function#${span.region}#${span.name}`,
-          sk: `invocation#${span.started}#${span.id}`,
-          type: "invocation",
-        },
-        true,
-      );
+      await saveInvocation(span);
 
       // save error
       if (span.error) {

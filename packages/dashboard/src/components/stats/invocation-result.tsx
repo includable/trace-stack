@@ -24,18 +24,7 @@ const StatusCodeBadge = ({ statusCode }) => {
   return <Badge variant="outline">{statusCode}</Badge>;
 };
 
-const InvocationResult = ({ error, returnValue = null }) => {
-  const statusCode = useMemo(() => {
-    if (returnValue && typeof returnValue === "string") {
-      try {
-        returnValue = JSON.parse(returnValue);
-      } catch (e) {}
-    }
-    if (returnValue && returnValue.statusCode) {
-      return `${returnValue.statusCode}`;
-    }
-  }, [returnValue]);
-
+const InvocationResult = ({ error, statusCode = null }) => {
   if (!error) {
     return (
       <div className="flex items-center gap-2 text-emerald-500 pr-10">

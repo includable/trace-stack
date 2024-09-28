@@ -74,6 +74,7 @@ app.get("/functions/:region/:name/invocations", async (c) => {
       "#id": "id",
       "#region": "region",
       "#name": "name",
+      "#statusCode": "statusCode",
     },
     ExpressionAttributeValues: {
       ":pk": `function#${c.req.param("region")}#${c.req.param("name")}`,
@@ -81,7 +82,7 @@ app.get("/functions/:region/:name/invocations", async (c) => {
       ":skEnd": `invocation#${endTs}`,
     },
     ProjectionExpression:
-      "#pk, #sk, #type, #error, #id, #region, #name, transactionId, started, ended, readiness, memoryAllocated",
+      "#pk, #sk, #type, #error, #id, #region, #name, #statusCode, transactionId, started, ended, readiness, memoryAllocated",
     Limit: 50,
     ScanIndexForward: false,
   });

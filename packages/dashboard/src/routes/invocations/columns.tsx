@@ -14,6 +14,7 @@ export type InvocationItem = {
   error: any;
   started: number;
   ended: number;
+  statusCode?: string;
 };
 
 export const columns: ColumnDef<InvocationItem>[] = [
@@ -48,8 +49,8 @@ export const columns: ColumnDef<InvocationItem>[] = [
     accessorKey: "error",
     header: "Result",
     cell: ({ row }) => {
-      const { error } = row.original;
-      return <InvocationResult error={error} />;
+      const { error, statusCode } = row.original;
+      return <InvocationResult error={error} statusCode={statusCode} />;
     },
   },
   {
