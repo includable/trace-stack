@@ -8,6 +8,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
+import { Tooltipped } from "@/components/ui/tooltipped";
 
 const StatusCodeBadge = ({ statusCode }) => {
   if (statusCode.startsWith("2")) {
@@ -40,7 +41,11 @@ const InvocationResult = ({ error, returnValue = null }) => {
       <div className="flex items-center gap-2 text-emerald-500 pr-10">
         <CheckCircle2 className="size-4" />
         Successful
-        {statusCode && <StatusCodeBadge statusCode={statusCode} />}
+        {statusCode && (
+          <Tooltipped title={`HTTP status code: ${statusCode}`}>
+            <StatusCodeBadge statusCode={statusCode} />
+          </Tooltipped>
+        )}
       </div>
     );
   }
