@@ -55,31 +55,6 @@ const TransactionTitle = ({ transaction }) => {
     );
   }
 
-  if (transaction.type === "log" && transaction.log) {
-    let firstLog;
-    try {
-      const log = JSON.parse(transaction.log);
-      firstLog = log?.[0];
-      if (typeof firstLog === "object") {
-        firstLog = JSON.stringify(firstLog);
-      }
-    } catch (e) {
-      firstLog = transaction.log;
-    }
-
-    const classes = cn(
-      transaction.logType === "warn" && "text-amber-500",
-      transaction.logType === "error" && "text-red-500",
-      transaction.logType === "info" && "text-blue-500",
-    );
-
-    return (
-      <code className={classes}>
-        {firstLog.substring(0, 100)?.replace(/\n/g, " ")}
-      </code>
-    );
-  }
-
   if (transaction.info?.trigger?.[0]) {
     return (
       <>
@@ -144,27 +119,6 @@ const SpanDetails = ({ span }) => {
           )}
         </>
       );
-  }
-
-  if (span.type === "log") {
-    let log = span.log;
-    try {
-      log = JSON.parse(span.log);
-      if (
-        typeof log === "object" &&
-        Object.keys(log).length === 1 &&
-        "0" in log
-      ) {
-        log = log[0];
-        if (typeof log === "string") {
-          try {
-            log = JSON.parse(log);
-          } catch (e) {}
-        }
-      }
-    } catch (e) {}
-
-    return <PayloadPreview value={log} />;
   }
 
   if (span.info?.dynamodbMethod) {
