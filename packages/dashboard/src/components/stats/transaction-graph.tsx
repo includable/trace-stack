@@ -37,9 +37,9 @@ const GraphNode = ({ data, isConnectable }) => {
         position={Position.Right}
         isConnectable={isConnectable}
       />
-      {data.spans.length > 1 ? (
+      {data.instances > 1 ? (
         <div className="bg-primary text-white p-1 min-w-6 min-h-6 text-center rounded-full absolute -top-2 -right-2">
-          {data.spans.length}
+          {data.instances}
         </div>
       ) : null}
       <div className="absolute top-full pointer-events-none -left-12 -right-12 mt-2 text-foreground truncate text-center text-xs">
@@ -61,6 +61,7 @@ const buildTransactionGraph = (transaction) => {
 
     if (existingGroup) {
       existingGroup.data.spans.push(node.id);
+      existingGroup.data.instances += node.instances;
       mappings[node.id] = existingGroup.data.id;
       return existingGroup.data.id;
     }
@@ -74,6 +75,7 @@ const buildTransactionGraph = (transaction) => {
         connectable: false,
         deletable: false,
         data: {
+          instances: node.instances,
           spans: [node.id],
           ...node,
         },
@@ -111,6 +113,7 @@ const buildTransactionGraph = (transaction) => {
       transaction: item,
       service: getTransactionService(item),
       groupingKey: getGroupingKey(item),
+      instances: item.instances || 1,
     });
 
     if (item.parentId) {
@@ -122,13 +125,14 @@ const buildTransactionGraph = (transaction) => {
       for (const trigger of item.info.trigger) {
         const id = addNode({
           id: trigger.id,
-          type: 'trigger',
+          type: "trigger",
           label: getTransactionLabel({
             service: trigger.triggeredBy || "trigger",
           }),
           groupingKey: trigger.triggeredBy,
           service: trigger.triggeredBy || item.service || item.spanType,
           transaction: item,
+          instances: 1,
         });
         const target = mappings[item.id] || item.id;
         addEdge({ source: id, target });
