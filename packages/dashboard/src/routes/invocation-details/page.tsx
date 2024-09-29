@@ -25,8 +25,8 @@ const Invocations = () => {
     <>
       {/* --- Page header --- */}
       <div className="px-8 py-6 border-b">
-        <Button variant="link" className="p-0" asChild>
-          <Link to={`/functions/${region}/${name}/invocations`}>← {name}</Link>
+        <Button variant="link" className="px-0 w-full truncate text-left block lg:w-auto lg:inline-flex h-auto" asChild>
+          <Link to={`/functions/${region}/${name}/invocations`} className="truncate block">← {name}</Link>
         </Button>
         <h1 className="text-2xl font-bold">{id}</h1>
         <InvocationSummary data={invocation} />
