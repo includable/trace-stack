@@ -8,7 +8,6 @@ const getGroupingKey = (span) => {
     span.log,
 
     span.info?.httpInfo?.host,
-    span.info?.httpInfo?.request?.path,
     span.info?.httpInfo?.request?.method,
     span.info?.httpInfo?.request?.host,
     span.info?.httpInfo?.request?.protocol,
@@ -78,9 +77,14 @@ export const groupSpans = (spans) => {
   const groupedSpans = [];
   for (const span of spans) {
     const latestSpan = groupedSpans[groupedSpans.length - 1] || {};
+    const similarSpans = groupedSpans.filter(
+      (s) => s.groupingKey === span.groupingKey,
+    );
 
     if (span.groupingKey === latestSpan.groupingKey) {
       latestSpan.instances++;
+    } else if (similarSpans.length >= 30) {
+      similarSpans[similarSpans.length - 1].instances++;
     } else {
       groupedSpans.push(span);
     }
