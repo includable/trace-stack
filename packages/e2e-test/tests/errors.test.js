@@ -16,6 +16,6 @@ describe("Errors", () => {
 
     const errors = await getErrors();
     expect(errors).toHaveLength(1);
-    expect(errors[0].error.type).toBe("Error");
+    expect(errors[0].error.type).toBe("SyntaxError");
   }, 15_000);
 });
