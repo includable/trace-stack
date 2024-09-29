@@ -16,6 +16,7 @@ import Errors from "@/routes/errors/page";
 
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { DateRangeProvider } from "@/components/layout/date-picker";
+import { PrivateRoutes } from "@/components/auth/private-routes";
 
 const router = createBrowserRouter([
   {
@@ -49,7 +50,9 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")).render(
   <ThemeProvider defaultTheme="dark" storageKey="trace-stack-ui-theme">
     <DateRangeProvider>
-      <RouterProvider router={router} />
+      <PrivateRoutes>
+        <RouterProvider router={router} />
+      </PrivateRoutes>
     </DateRangeProvider>
   </ThemeProvider>,
 );

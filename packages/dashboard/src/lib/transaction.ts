@@ -1,4 +1,4 @@
-import { API_URL } from "@/lib/api";
+import { API_URL, authenticatedFetch } from "@/lib/api";
 import useSWR from "swr";
 
 export const getGroupingKey = (transaction: any, extended = false) => {
@@ -121,7 +121,7 @@ export const groupSpans = (spans?: any[]) => {
 };
 
 export const getTransaction = async (id: string) => {
-  const res = await fetch(`${API_URL}/transactions/${id}`);
+  const res = await authenticatedFetch(`${API_URL}/transactions/${id}`);
   const spans = await res.json();
 
   let result: any[] = [];
