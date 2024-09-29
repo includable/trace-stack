@@ -8,6 +8,7 @@ import collectorRoute from "./routes/collector";
 import exploreRoute from "./routes/explore";
 import autoTraceRoute from "./routes/auto-trace";
 import authRoute from "./routes/auth";
+import usersRoute from "./routes/users";
 
 import { autoTrace } from "./events/auto-trace";
 import { auth } from "./routes/auth/middleware";
@@ -21,6 +22,8 @@ app.route("/api/auto-trace", autoTraceRoute);
 
 app.use("/api/explore/*", auth);
 app.route("/api/explore", exploreRoute);
+app.use("/api/users/*", auth);
+app.route("/api/users", usersRoute);
 
 let html = "";
 app.use("/assets/*", serveStatic({ root: "./dist" }));
