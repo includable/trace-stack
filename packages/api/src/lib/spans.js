@@ -1,4 +1,4 @@
-const getGroupingKey = (span) => {
+const getGroupingKey = (span, extended = false) => {
   const items = [
     span.spanType,
     span.service,
@@ -8,6 +8,7 @@ const getGroupingKey = (span) => {
     span.log,
 
     span.info?.httpInfo?.host,
+    extended && span.info?.httpInfo?.request?.path,
     span.info?.httpInfo?.request?.method,
     span.info?.httpInfo?.request?.host,
     span.info?.httpInfo?.request?.protocol,
@@ -25,13 +26,14 @@ const addGroupingKeys = (spans) => {
   return spans.map((span) => ({
     ...span,
     groupingKey: getGroupingKey(span),
+    extendedGroupingKey: getGroupingKey(span, true),
     instances: 1,
   }));
 };
 
 const removeGroupingKeys = (spans) => {
   return spans.map((span) => {
-    const { groupingKey, ...rest } = span;
+    const { groupingKey, extendedGroupingKey, ...rest } = span;
     return rest;
   });
 };
@@ -81,9 +83,9 @@ export const groupSpans = (spans) => {
       (s) => s.groupingKey === span.groupingKey,
     );
 
-    if (span.groupingKey === latestSpan.groupingKey) {
+    if (span.extendedGroupingKey === latestSpan.extendedGroupingKey) {
       latestSpan.instances++;
-    } else if (similarSpans.length >= 30) {
+    } else if (similarSpans.length >= 25) {
       similarSpans[similarSpans.length - 1].instances++;
     } else {
       groupedSpans.push(span);
