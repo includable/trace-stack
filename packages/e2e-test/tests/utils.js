@@ -18,9 +18,9 @@ export const dynamo = DynamoDBDocumentClient.from(
   translateConfig,
 );
 
-export const invoke = async (action) => {
+export const invoke = async (lambda = "main", action = "") => {
   try {
-    await invoker("trace-e2e-testing-main").requestResponse({ action });
+    await invoker(`trace-e2e-testing-${lambda}`).requestResponse({ action });
   } catch (error) {}
 };
 

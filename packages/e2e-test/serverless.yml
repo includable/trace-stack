@@ -23,6 +23,10 @@ provider:
     payload: "2.0"
     cors: true
 functions:
+  error-loading:
+    handler: src/error-loading.handler
+    timeout: 5
+    memorySize: 128
   main:
     handler: src/index.handler
     timeout: 5
@@ -32,7 +36,3 @@ functions:
       - httpApi:
           path: /{proxy+}
           method: any
-      - schedule:
-          rate: rate(1 day)
-          input:
-            action: auto-trace
