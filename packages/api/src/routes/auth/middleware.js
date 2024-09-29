@@ -1,5 +1,5 @@
 import { bearerAuth } from "hono/bearer-auth";
-import { query } from "../../lib/database";
+import { query, update } from "../../lib/database";
 
 const sessionCache = [];
 
@@ -19,6 +19,20 @@ export const auth = bearerAuth({
     if (!Items?.length) {
       return false;
     }
+
+    await update({
+      Key: {
+        pk: Items[0].sk,
+        sk: "user",
+      },
+      UpdateExpression: `SET #lastSeen = :lastSeen`,
+      ExpressionAttributeValues: {
+        ":lastSeen": new Date().toISOString(),
+      },
+      ExpressionAttributeNames: {
+        "#lastSeen": "lastSeen",
+      },
+    });
 
     sessionCache.push(token);
     return true;
