@@ -95,8 +95,8 @@ const ServiceIcon = ({ transaction }) => {
 
 const SpanDetails = ({ span }) => {
   if (span.info?.trigger) {
-      return (
-        <>
+    return (
+      <>
         <PayloadPreview
           title="Trigger"
           value={
@@ -106,19 +106,19 @@ const SpanDetails = ({ span }) => {
           }
         />
         {span.error && (
-            <div>
-              <h4 className="text-sm font-medium mb-3 mt-4">Error</h4>
-              <div className="rounded-md border overflow-auto max-h-[30rem]">
-                <pre className="font-mono text-sm p-4 px-5">
-                  <b className="text-red-400">{span.error.message}</b>
-                  <br />
-                  {span.error.stacktrace}
-                </pre>
-              </div>
+          <div>
+            <h4 className="text-sm font-medium mb-3 mt-4">Error</h4>
+            <div className="rounded-md border overflow-auto max-h-[30rem]">
+              <pre className="font-mono text-sm p-4 px-5">
+                <b className="text-red-400">{span.error.message}</b>
+                <br />
+                {span.error.stacktrace}
+              </pre>
             </div>
-          )}
-        </>
-      );
+          </div>
+        )}
+      </>
+    );
   }
 
   if (span.info?.dynamodbMethod) {
@@ -171,6 +171,7 @@ const SpanItem = ({ spans, nested = false }) => {
   );
 
   const hasDuration = duration !== null && transaction.spanType !== "function";
+  const count = spans?.reduce((acc, span) => acc + (span.instances || 1), 0);
 
   return (
     <details
@@ -192,11 +193,7 @@ const SpanItem = ({ spans, nested = false }) => {
         >
           <ServiceIcon transaction={transaction} />
           <span className="block flex-1 truncate w-full">
-            {spans.length > 1
-              ? `(${spans.length}) `
-              : spans[0].instances > 1
-                ? `(${spans[0].instances}) `
-                : ""}
+            {count > 1 ? `(${count}) ` : ""}
             <TransactionTitle transaction={transaction} />
           </span>
         </div>
