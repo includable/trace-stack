@@ -1,17 +1,26 @@
+import fs from "fs";
 import { Hono } from "hono";
 import { handle } from "hono/aws-lambda";
+import { secureHeaders } from "hono/secure-headers";
 import { serveStatic } from "@hono/node-server/serve-static";
-import fs from "fs";
 
-import collector from "./routes/collector";
-import explore from "./routes/explore";
+import collectorRoute from "./routes/collector";
+import exploreRoute from "./routes/explore";
 import autoTraceRoute from "./routes/auto-trace";
+import authRoute from "./routes/auth";
+
 import { autoTrace } from "./events/auto-trace";
+import { auth } from "./routes/auth/middleware";
 
 const app = new Hono();
-app.route("/api/spans", collector);
-app.route("/api/explore", explore);
+app.use(secureHeaders());
+
+app.route("/api/auth", authRoute);
+app.route("/api/spans", collectorRoute);
 app.route("/api/auto-trace", autoTraceRoute);
+
+app.use("/api/explore/*", auth);
+app.route("/api/explore", exploreRoute);
 
 let html = "";
 app.use("/assets/*", serveStatic({ root: "./dist" }));
