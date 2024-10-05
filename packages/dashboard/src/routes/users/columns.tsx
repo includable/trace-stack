@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { Pencil, Trash } from "lucide-react";
+import { TrashIcon } from "lucide-react";
 import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ export const columns: ColumnDef<UserItem>[] = [
     header: "Username",
     cell: ({ row }) => {
       const name = row.getValue("name") as string;
-      return <span className="font-semibold">{name}</span>;
+      return <span className="font-semibold text-primary">{name}</span>;
     },
     filterFn: (row, id, value) =>
       row.getValue("name")?.toLowerCase().includes(value.toLowerCase()),
@@ -30,17 +30,13 @@ export const columns: ColumnDef<UserItem>[] = [
   },
   {
     accessorKey: "actions",
-    header: "Actions",
+    header: "",
     enableSorting: false,
     cell: ({ row }) => {
       return (
-        <div className="flex items-center gap-2 text-sm text-green-500">
-          <Button className="gap-1.5">
-            <Pencil className="h-4 w-4" />
-            Edit
-          </Button>
-          <Button variant="destructive" className="gap-1.5">
-            <Trash className="h-4 w-4" />
+        <div className="flex justify-end">
+          <Button variant="outline" size="sm">
+            <TrashIcon className="size-4 mr-2" />
             Remove
           </Button>
         </div>

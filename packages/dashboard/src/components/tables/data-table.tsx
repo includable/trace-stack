@@ -37,6 +37,7 @@ interface DataTableProps<TData, TValue> {
   paginate?: boolean;
   pageSize?: number;
   children?: (table: Table<TData>) => React.ReactNode;
+  filterPlaceholder?: string;
 }
 
 export function DataTable<TData, TValue>({
@@ -47,6 +48,7 @@ export function DataTable<TData, TValue>({
   defaultVisibility = {},
   paginate = false,
   pageSize = 20,
+  filterPlaceholder = "Filter functions...",
   children,
 }: DataTableProps<TData, TValue>) {
   const [pagination, setPagination] = useState<PaginationState>({
@@ -96,7 +98,7 @@ export function DataTable<TData, TValue>({
           {table.getColumn("name") && (
             <div className="relative flex">
               <Input
-                placeholder="Filter functions..."
+                placeholder={filterPlaceholder}
                 value={
                   (table.getColumn("name")?.getFilterValue() as string) ?? ""
                 }

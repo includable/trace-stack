@@ -13,6 +13,7 @@ const Users = () => {
       </p>
       <DataTable
         id="users"
+        filterPlaceholder="Filter users..."
         defaultSorting={[{ id: "name", desc: false }]}
         defaultVisibility={{ lastInvocation: false, tags: false }}
         columns={columns}
