@@ -26,8 +26,6 @@ export const useUserState = (key: string, defaultValue: any = null) => {
           value = value(old);
         }
 
-        console.log("value", value);
-
         if (value === null || value === undefined) {
           localStorage.removeItem(`${PREFIX}${key}`);
         } else {
