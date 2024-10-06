@@ -1,6 +1,7 @@
 {
   "name": "@trace-stack/e2e-test",
   "type": "module",
+  "private": true,
   "scripts": {
     "test:e2e": "yarn node --experimental-vm-modules $(yarn bin jest) --coverage"
   },
