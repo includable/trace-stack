@@ -3,7 +3,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "test:e2e": "yarn node --experimental-vm-modules $(yarn bin jest) --coverage"
+    "test:e2e": "yarn node --experimental-vm-modules $(yarn bin jest)"
   },
   "devDependencies": {
     "@aws-sdk/client-dynamodb": "^3.658.1",

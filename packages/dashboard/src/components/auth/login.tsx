@@ -50,11 +50,21 @@ export const Login = ({}) => {
           <CardContent className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="username">Username</Label>
-              <Input id="username" type="text" required />
+              <Input
+                id="username"
+                type="text"
+                autoComplete="username"
+                required
+              />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" required />
+              <Input
+                id="password"
+                type="password"
+                autoComplete="password"
+                required
+              />
             </div>
           </CardContent>
           <CardFooter>

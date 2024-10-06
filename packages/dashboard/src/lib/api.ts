@@ -17,7 +17,7 @@ export const authenticatedFetch = async (
     throw new Error("Unauthorized");
   }
 
-  if (url.startsWith("/")) {
+  if (!url.includes("/api") && url.startsWith("/")) {
     url = `${BASE_URL}/api` + url;
   }
 
