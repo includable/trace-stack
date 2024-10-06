@@ -67,6 +67,8 @@ export function CreateUser({ mutate }) {
               <Input
                 id="username"
                 required
+                data-1p-ignore
+                autoComplete="none"
                 placeholder="pedro"
                 className="col-span-3"
               />
@@ -79,6 +81,8 @@ export function CreateUser({ mutate }) {
                 id="password"
                 required
                 minLength={5}
+                data-1p-ignore
+                autoComplete="none"
                 type="password"
                 className="col-span-3"
               />
