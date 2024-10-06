@@ -58,7 +58,7 @@ const questions = [
 ];
 const answers = await inquirer.prompt(questions);
 
-const { endpoint } = await deploy({
+const { endpoint, adminPassword } = await deploy({
   ...answers,
   tracerToken,
 });
@@ -68,7 +68,7 @@ const domain = answers.CUSTOM_DOMAIN || endpoint;
 console.log(
   "\n\n" +
     boxen(
-      `${chalk.green("Done!")} You can now access your TraceStack instance at \n${chalk.underline(chalk.bold(`https://${domain}`))}`,
+      `${chalk.green("Done!")} You can now access your TraceStack instance at \n${chalk.underline(chalk.bold(`https://${domain}`))}${adminPassword ? `\n\Username: admin\nPassword: ${adminPassword}` : ""}`,
       { padding: 1, borderStyle: "round" },
     ),
 );

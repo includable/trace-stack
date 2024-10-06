@@ -7,6 +7,7 @@ import {
   ApiGatewayV2Client,
   GetApisCommand,
 } from "@aws-sdk/client-apigatewayv2";
+import { checkHasUsers, createAdminUser } from "./users";
 
 const exec = (command, options = {}) => {
   const child = child_process.exec(command, {
@@ -85,8 +86,13 @@ const deploy = async (answers) => {
   await exec("yarn deploy", { cwd: tmpPath });
 
   // Create user
-  console.log(chalk.blue("Creating user..."));
-  // TODO: create user account in DDB
+  let adminPassword;
+  if (await checkHasUsers()) {
+    console.log(chalk.blue("User already exists"));
+  } else {
+    console.log(chalk.blue("Creating user..."));
+    adminPassword = await createAdminUser();
+  }
 
   // Run auto-trace
   console.log(chalk.blue("Auto tracing lambdas..."));
@@ -99,7 +105,7 @@ const deploy = async (answers) => {
     });
   } catch (e) {}
 
-  return { endpoint };
+  return { endpoint, adminPassword };
 };
 
 export default deploy;
