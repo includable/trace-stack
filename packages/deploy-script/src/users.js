@@ -45,7 +45,7 @@ export const createAdminUser = async () => {
       TableName: "trace-stack-dev",
       Item: {
         pk: "user#admin",
-        sk: "user#admin",
+        sk: "user",
         type: "user",
         name: "admin",
         passwordHash: bcryptjs.hashSync(randomPassword),
