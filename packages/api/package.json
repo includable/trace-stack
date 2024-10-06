@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "serverless offline start",
     "deploy": "serverless deploy --verbose",
+    "auto-trace": "serverless invoke local -f main -d '{\"action\": \"auto-trace\"}'",
     "test": "jest"
   },
   "dependencies": {

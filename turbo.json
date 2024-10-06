@@ -19,6 +19,9 @@
     "test:e2e": {
       "inputs": ["$TURBO_DEFAULT$", ".env*"]
     },
+    "auto-trace": {
+      "inputs": ["$TURBO_DEFAULT$", ".env*"]
+    },
     "dev": {
       "cache": false,
       "persistent": true

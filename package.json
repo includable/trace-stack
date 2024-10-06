@@ -10,6 +10,7 @@
   "packageManager": "yarn@4.4.1",
   "scripts": {
     "deploy": "yarn build && yarn turbo deploy --env-mode=loose --color",
+    "auto-trace": "yarn turbo auto-trace --env-mode=loose --color",
     "build": "yarn turbo build --env-mode=loose --color",
     "test": "yarn turbo test --env-mode=loose --color",
     "start": "turbo dev --env-mode=loose --color",

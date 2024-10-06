@@ -9,17 +9,17 @@ import {
 } from "@aws-sdk/client-apigatewayv2";
 import { checkHasUsers, createAdminUser } from "./users.js";
 
-const exec = (command, options = {}) => {
+const exec = (command, options = {}, prefix = "") => {
   const child = child_process.exec(command, {
     ...options,
     env: { ...process.env, ...(options.env || {}) },
   });
 
   child.stdout?.on("data", function (data) {
-    console.log(data?.trim());
+    console.log(prefix + data?.trim());
   });
   child.stderr?.on("data", function (data) {
-    console.error(data?.trim());
+    console.error(prefix + data?.trim());
   });
 
   return new Promise((resolve, reject) => {
@@ -85,6 +85,8 @@ const deploy = async (answers) => {
   console.log(chalk.blue("Deploying..."));
   await exec("yarn deploy", { cwd: tmpPath });
 
+  const endpoint = await getApiEndpoint();
+
   // Create user
   let adminPassword;
   if (await checkHasUsers()) {
@@ -96,14 +98,7 @@ const deploy = async (answers) => {
 
   // Run auto-trace
   console.log(chalk.blue("Auto tracing lambdas..."));
-  const endpoint = await getApiEndpoint();
-  try {
-    await fetch(`https://${endpoint}/api/auto-trace`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token: answers.tracerToken }),
-    });
-  } catch (e) {}
+  await exec("yarn auto-trace", { cwd: tmpPath }, "    ");
 
   return { endpoint, adminPassword };
 };

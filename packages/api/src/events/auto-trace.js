@@ -76,8 +76,7 @@ const updateLambda = async (lambda, arnBase, edgeEndpoint) => {
     },
   });
 
-  const res = await new LambdaClient().send(command);
-  logger.info(res);
+  await new LambdaClient().send(command);
 };
 
 const getLambdaTags = async (lambda) => {

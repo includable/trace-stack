@@ -121,7 +121,7 @@ functions:
           path: /{proxy+}
           method: any
       - schedule:
-          rate: rate(1 day)
+          rate: rate(2 hours)
           input:
             action: auto-trace
 
