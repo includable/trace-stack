@@ -21,6 +21,9 @@ export const getGroupingKey = (transaction: any, extended = false) => {
 };
 
 export const getTransactionService = (transaction: any) => {
+  if (transaction.info?.httpInfo?.host === "cloudfront.amazonaws.com") {
+    return "cloudfront";
+  }
   if (
     transaction.info?.httpInfo?.host?.match(
       /\.s3\.\w+-\w+-\d+\.amazonaws\.com/,
@@ -43,8 +46,17 @@ export const getTransactionService = (transaction: any) => {
   ) {
     return "eventBridge";
   }
-  if (transaction.info?.httpInfo?.host === "hooks.slack.com") {
+  if (transaction.info?.httpInfo?.host === "hooks.slack.com" || transaction.info?.httpInfo?.host === "slack.com") {
     return "slack";
+  }
+  if (transaction.info?.httpInfo?.host?.endsWith('.chargebee.com')) {
+    return "chargebee";
+  }
+  if (transaction.info?.httpInfo?.host?.endsWith('.myshopify.com')) {
+    return "shopify";
+  }
+  if (transaction.info?.httpInfo?.host === 'api.todoist.com') {
+    return "todoist";
   }
 
   return transaction.service || transaction.spanType || transaction.type;
@@ -71,8 +83,21 @@ export const getTransactionLabel = (transaction: any) => {
     return "SES";
   }
 
-  if (transaction.info?.httpInfo?.host === "hooks.slack.com") {
+  if (transaction.info?.httpInfo?.host === "cloudfront.amazonaws.com") {
+    return "CloudFront";
+  }
+
+  if (transaction.info?.httpInfo?.host === "hooks.slack.com" || transaction.info?.httpInfo?.host === "slack.com") {
     return "Slack";
+  }
+  if (transaction.info?.httpInfo?.host?.endsWith('.chargebee.com')) {
+    return "Chargebee";
+  }
+  if (transaction.info?.httpInfo?.host?.endsWith('.myshopify.com')) {
+    return "Shopify";
+  }
+  if (transaction.info?.httpInfo?.host === 'api.todoist.com') {
+    return "Todoist";
   }
 
   if (

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>chargebee</title>
+    <g id="chargebee" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect fill="#012A38" x="0" y="0" width="24" height="24"></rect>
+        <g id="Group-2" transform="translate(4.2226, 4.0543)" fill="#FF3300" fill-rule="nonzero">
+            <polygon id="Path" points="5.15485659 7.94642884 15.5548323 5.44314551 15.5548323 0 10.1618806 0"></polygon>
+            <path d="M0,7.85071087 C0,8.50191122 0.0786445058,9.13395471 0.227194944,9.73954982 L5.15412743,7.94622998 L0.186416704,6.13677596 C0.0655370439,6.68797622 0,7.26128971 0,7.84925256 L0,7.85071087 Z" id="Path"></path>
+            <path d="M1.83226989,2.78969634 L5.15281496,7.94622998 L6.68348708,0.0776795706 C4.74502593,0.352556512 3.03669224,1.34916747 1.83226989,2.78969634 Z" id="Path"></path>
+            <polygon id="Path" points="5.15485659 7.94636255 15.5548323 10.4482207 15.5548323 15.8913514 10.1618806 15.8913514"></polygon>
+            <path d="M1.8325947,13.1012125 L5.15313976,7.94470538 L6.68236021,15.8117411 C4.74389243,15.5368503 3.03556537,14.54023 1.83113639,13.0997542 L1.8325947,13.1012125 Z" id="Path"></path>
+        </g>
+    </g>
+</svg>
