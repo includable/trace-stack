@@ -42,7 +42,11 @@ export const InvocationsTable = ({ region, name }) => {
 
   const column = {
     getFilterValue: () => resultSummaryFilters,
-    setFilterValue: setResultSummaryFilters,
+    setFilterValue: (value) => {
+      setResultSummaryFilters(value);
+      setStartKey("");
+      setPreviousKeys([]);
+    },
   };
 
   const options = resultSummaryFilterOptions?.map((value) => ({
