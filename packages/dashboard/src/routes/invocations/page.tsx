@@ -1,35 +1,13 @@
+import { Suspense } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
-import { DataTable } from "@/components/tables/data-table";
-import { StatsChart } from "@/components/stats/stats-chart";
 import FunctionSummary from "@/components/stats/function-summary";
-import { columns } from "./columns";
-import { useData } from "@/lib/api";
-import { useState } from "react";
+import { StatsChart } from "@/components/stats/stats-chart";
+import { InvocationsTable } from "@/routes/invocations/table";
 
 const Invocations = () => {
   const { region, name } = useParams();
-  const [startKey, setStartKey] = useState("");
-  const [previousKeys, setPreviousKeys] = useState<string[]>([]);
-
-  const {
-    data: { invocations, nextStartKey },
-  } = useData(
-    `functions/${region}/${name}/invocations?startKey=${encodeURIComponent(startKey)}`,
-    {
-      suspense: true,
-    },
-  );
-
-  const goBack = () => {
-    setStartKey(previousKeys.pop());
-    setPreviousKeys(previousKeys);
-  };
-  const goNext = () => {
-    setPreviousKeys([...previousKeys, startKey]);
-    setStartKey(nextStartKey);
-  };
 
   return (
     <div>
@@ -65,36 +43,9 @@ const Invocations = () => {
           />
         </div>
       </div>
-      <DataTable
-        id="invocations"
-        pageSize={50}
-        columns={columns}
-        data={invocations}
-        defaultSorting={[{ id: "started", desc: true }]}
-      />
-      <div className="flex items-center justify-between">
-        <div className="text-xs text-muted-foreground">
-          Page {previousKeys.length + 1} ({invocations.length} items)
-        </div>
-        <div className="flex items-center justify-end space-x-2 py-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => goBack()}
-            disabled={!previousKeys.length}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => goNext()}
-            disabled={!nextStartKey}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
+      <Suspense fallback={<p>Loading...</p>}>
+        <InvocationsTable region={region} name={name} />
+      </Suspense>
     </div>
   );
 };

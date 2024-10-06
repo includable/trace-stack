@@ -59,6 +59,37 @@ app.get("/functions/:region/:name", async (c) => {
   return c.json(Items?.[0]);
 });
 
+app.get("/functions/:region/:name/invocation-summaries", async (c) => {
+  const [start, end] = getDates(c);
+  const startTs = start.getTime();
+  const endTs = end.getTime();
+
+  const params = {
+    KeyConditionExpression: "#pk = :pk AND #sk BETWEEN :skStart AND :skEnd",
+    ExpressionAttributeNames: {
+      "#pk": "pk",
+      "#sk": "sk",
+      "#resultSummary": "resultSummary",
+    },
+    ExpressionAttributeValues: {
+      ":pk": `function#${c.req.param("region")}#${c.req.param("name")}`,
+      ":skStart": `invocation#${startTs}`,
+      ":skEnd": `invocation#${endTs}`,
+    },
+    ProjectionExpression: "#resultSummary",
+    Limit: 10000,
+    ScanIndexForward: false,
+  };
+
+  const { Items } = await query(params);
+
+  return c.json(
+    Array.from(new Set(Items.map((item) => item.resultSummary))).filter(
+      Boolean,
+    ),
+  );
+});
+
 app.get("/functions/:region/:name/invocations", async (c) => {
   const [start, end] = getDates(c);
   const startTs = start.getTime();
@@ -91,7 +122,8 @@ app.get("/functions/:region/:name/invocations", async (c) => {
     ScanIndexForward: false,
   };
 
-  const resultSummaryFilters = c.req.query("resultSummaryFilters")?.split(',') || [];
+  const resultSummaryFilters =
+    c.req.query("resultSummaryFilters")?.split(",") || [];
   if (resultSummaryFilters.length) {
     const filterExpression = [];
     for (const filter of resultSummaryFilters) {
