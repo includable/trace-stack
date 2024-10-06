@@ -22,11 +22,26 @@ const getStatusCodeFromSpan = (span) => {
   return null;
 };
 
+const getResultSummaryFromSpan = (span) => {
+  let mainStatus = "Successful";
+  if (span.error) {
+    mainStatus = span.error?.type || "Invocation failed";
+  }
+
+  const statusCode = getStatusCodeFromSpan(span);
+  if (statusCode) {
+    mainStatus += ` (${statusCode})`;
+  }
+
+  return mainStatus;
+};
+
 export const saveInvocation = async (span) => {
-  await put(
+  return put(
     {
       ...span,
       statusCode: getStatusCodeFromSpan(span),
+      resultSummary: getResultSummaryFromSpan(span),
       pk: `function#${span.region}#${span.name}`,
       sk: `invocation#${span.started}#${span.id}`,
       type: "invocation",

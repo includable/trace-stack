@@ -65,7 +65,8 @@ app.get("/functions/:region/:name/invocations", async (c) => {
   const endTs = end.getTime();
 
   const startKey = c.req.query("startKey");
-  const { Items, LastEvaluatedKey } = await query({
+
+  const params = {
     KeyConditionExpression: "#pk = :pk AND #sk BETWEEN :skStart AND :skEnd",
     ExclusiveStartKey: startKey ? JSON.parse(startKey) : undefined,
     ExpressionAttributeNames: {
@@ -77,6 +78,7 @@ app.get("/functions/:region/:name/invocations", async (c) => {
       "#region": "region",
       "#name": "name",
       "#statusCode": "statusCode",
+      "#resultSummary": "resultSummary",
     },
     ExpressionAttributeValues: {
       ":pk": `function#${c.req.param("region")}#${c.req.param("name")}`,
@@ -84,10 +86,23 @@ app.get("/functions/:region/:name/invocations", async (c) => {
       ":skEnd": `invocation#${endTs}`,
     },
     ProjectionExpression:
-      "#pk, #sk, #type, #error, #id, #region, #name, #statusCode, transactionId, started, ended, readiness, memoryAllocated",
+      "#pk, #sk, #type, #error, #id, #region, #name, #statusCode, #resultSummary, transactionId, started, ended, readiness, memoryAllocated",
     Limit: 50,
     ScanIndexForward: false,
-  });
+  };
+
+  const resultSummaryFilters = c.req.query("resultSummaryFilters")?.split(',') || [];
+  if (resultSummaryFilters.length) {
+    const filterExpression = [];
+    for (const filter of resultSummaryFilters) {
+      const variableName = `:f${filterExpression.length}`;
+      filterExpression.push(`#resultSummary = ${variableName}`);
+      params.ExpressionAttributeValues[variableName] = filter;
+    }
+    params.FilterExpression = filterExpression.join(" OR ");
+  }
+
+  const { Items, LastEvaluatedKey } = await query(params);
 
   return c.json({
     invocations: Items,
