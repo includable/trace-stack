@@ -7,7 +7,7 @@ import {
   ApiGatewayV2Client,
   GetApisCommand,
 } from "@aws-sdk/client-apigatewayv2";
-import { checkHasUsers, createAdminUser } from "./users";
+import { checkHasUsers, createAdminUser } from "./users.js";
 
 const exec = (command, options = {}) => {
   const child = child_process.exec(command, {
