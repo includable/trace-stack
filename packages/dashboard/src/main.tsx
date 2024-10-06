@@ -18,6 +18,7 @@ import Users from "@/routes/users/page";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { DateRangeProvider } from "@/components/layout/date-picker";
 import { PrivateRoutes } from "@/components/auth/private-routes";
+import { Toaster } from "@/components/ui/toaster";
 
 const router = createBrowserRouter([
   {
@@ -59,5 +60,6 @@ createRoot(document.getElementById("root")).render(
         <RouterProvider router={router} />
       </PrivateRoutes>
     </DateRangeProvider>
+    <Toaster />
   </ThemeProvider>,
 );

@@ -33,6 +33,7 @@ app.post("/login", async (c) => {
   await put(
     {
       pk: `access-token#${id}`,
+      type: 'access-token',
       sk: user.pk,
       accessTokenType: "dashboard",
     },

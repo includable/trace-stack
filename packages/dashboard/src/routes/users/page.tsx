@@ -1,9 +1,10 @@
 import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./columns";
 import { useData } from "@/lib/api";
+import { CreateUser } from "@/components/dialogs/create-user";
 
 const Users = () => {
-  const { data } = useData(`../users`, { suspense: true });
+  const { data, mutate } = useData(`../users`, { suspense: true });
 
   return (
     <div>
@@ -11,6 +12,7 @@ const Users = () => {
       <p className="prose prose-sm mb-4">
         Manage who has access to the TraceStack dashboard.
       </p>
+      <CreateUser mutate={mutate} />
       <DataTable
         id="users"
         filterPlaceholder="Filter users..."

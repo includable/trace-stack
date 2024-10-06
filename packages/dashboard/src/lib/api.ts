@@ -8,10 +8,17 @@ const BASE_URL = window.location.href.includes("localhost:")
 export const API_URL = `${BASE_URL}/api/explore`;
 export const API_AUTH_URL = `${BASE_URL}/api/auth/login`;
 
-export const authenticatedFetch = async (url: string, options: RequestInit = {}) => {
+export const authenticatedFetch = async (
+  url: string,
+  options: RequestInit = {},
+) => {
   const token = localStorage.getItem("token");
   if (!token) {
     throw new Error("Unauthorized");
+  }
+
+  if (url.startsWith("/")) {
+    url = `${BASE_URL}/api` + url;
   }
 
   const res = await fetch(url, {
@@ -22,9 +29,19 @@ export const authenticatedFetch = async (url: string, options: RequestInit = {})
     },
   });
 
-  if(res.status === 401) {
+  if (res.status === 401) {
     localStorage.removeItem("token");
     throw new Error("Unauthorized");
+  }
+
+  if (res.status === 400 || res.status === 500 || res.status === 404) {
+    let json;
+    try {
+      json = await res.json();
+    } catch (e) {
+      return res;
+    }
+    if (json.error) throw new Error(json.error);
   }
 
   return res;
