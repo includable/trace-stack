@@ -4,6 +4,7 @@ import DatePicker from "@/components/layout/date-picker";
 import { MenuLink } from "@/components/layout/menu-link";
 import { ModeToggle } from "@/components/layout/mode-toggle";
 import { UserMenu } from "@/components/layout/user-menu";
+import { SearchMenu } from "@/components/layout/search-menu";
 
 export const Menu = ({ guest = false }) => {
   return (
@@ -33,8 +34,9 @@ export const Menu = ({ guest = false }) => {
             </>
           )}
         </nav>
-        <div className="ml-auto flex items-center space-x-4">
+        <div className="ml-auto flex items-center space-x-2">
           {!guest && <DatePicker />}
+          {!guest && <SearchMenu />}
           {!guest ? <UserMenu /> : <ModeToggle />}
         </div>
       </div>

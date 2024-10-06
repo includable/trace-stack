@@ -1,4 +1,4 @@
-import { Moon, Sun, User } from "lucide-react";
+import { User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuCheckboxItem
+  DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/components/layout/theme-provider";
 import { removeToken } from "@/lib/auth";
@@ -36,13 +36,22 @@ export function UserMenu() {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuLabel>Theme</DropdownMenuLabel>
-        <DropdownMenuCheckboxItem checked={theme === 'system'} onClick={() => setTheme("system")}>
+        <DropdownMenuCheckboxItem
+          checked={theme === "system"}
+          onClick={() => setTheme("system")}
+        >
           System
         </DropdownMenuCheckboxItem>
-        <DropdownMenuCheckboxItem checked={theme === 'light'} onClick={() => setTheme("light")}>
+        <DropdownMenuCheckboxItem
+          checked={theme === "light"}
+          onClick={() => setTheme("light")}
+        >
           Light
         </DropdownMenuCheckboxItem>
-        <DropdownMenuCheckboxItem checked={theme === 'dark'} onClick={() => setTheme("dark")}>
+        <DropdownMenuCheckboxItem
+          checked={theme === "dark"}
+          onClick={() => setTheme("dark")}
+        >
           Dark
         </DropdownMenuCheckboxItem>
       </DropdownMenuContent>
