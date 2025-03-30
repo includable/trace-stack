@@ -8,8 +8,9 @@ on:
     branches:
       - main
     paths:
-      - 'packages/deploy-script/**'
-      - '.github/workflows/push.yml'
+      - "packages/deploy-script/**"
+      - ".github/workflows/push.yml"
+  workflow_dispatch:
 
 jobs:
   release:
