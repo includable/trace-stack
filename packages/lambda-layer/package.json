@@ -12,14 +12,14 @@
     "nodejs/dist/index.js"
   ],
   "devDependencies": {
-    "@types/jest": "^29.5.12",
-    "esbuild": "^0.23.1",
-    "jest": "^24.9.0"
+    "@types/jest": "^29.5.14",
+    "esbuild": "^0.25.1",
+    "jest": "^29.7.0"
   },
   "dependencies": {
-    "@lumigo/tracer": "^1.99.3",
-    "axios": "^1.7.6",
-    "node-fetch": "^2"
+    "@lumigo/tracer": "^1.107.1",
+    "axios": "^1.8.4",
+    "node-fetch": "^3.3.2"
   },
   "installConfig": {
     "hoistingLimits": "workspaces"

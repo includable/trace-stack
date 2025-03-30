@@ -11,7 +11,7 @@ import { acquireLock, releaseLock } from "../lib/locks";
 import Logger from "../lib/logger";
 import { put } from "../lib/database";
 
-const supportedRuntimes = ["nodejs16.x", "nodejs18.x", "nodejs20.x"];
+const supportedRuntimes = ["nodejs16.x", "nodejs18.x", "nodejs20.x", "nodejs22.x"];
 const lambdaExecWrapper = "/opt/nodejs/tracer_wrapper";
 
 const logger = new Logger("auto-trace");
