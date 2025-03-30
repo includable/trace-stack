@@ -31,7 +31,7 @@ export const authenticatedFetch = async (
 
   if (res.status === 401) {
     localStorage.removeItem("token");
-    throw new Error("Unauthorized");
+    location.reload();
   }
 
   if (res.status === 400 || res.status === 500 || res.status === 404) {
