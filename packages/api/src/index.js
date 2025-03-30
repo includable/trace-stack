@@ -4,7 +4,6 @@ import { handle } from "hono/aws-lambda";
 import { secureHeaders } from "hono/secure-headers";
 import { serveStatic } from "@hono/node-server/serve-static";
 
-import collectorRoute from "./routes/collector";
 import exploreRoute from "./routes/explore";
 import autoTraceRoute from "./routes/auto-trace";
 import authRoute from "./routes/auth";
@@ -17,7 +16,6 @@ const app = new Hono();
 app.use(secureHeaders());
 
 app.route("/api/auth", authRoute);
-app.route("/api/spans", collectorRoute);
 app.route("/api/auto-trace", autoTraceRoute);
 
 app.use("/api/explore/*", auth);

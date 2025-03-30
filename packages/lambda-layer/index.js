@@ -4,13 +4,12 @@ try {
 } catch (e) {
   config = {
     token: "t_0000000000000000",
-    edgeHost: process.env.AUTO_TRACE_HOST,
   };
 }
 
 const tracer = require("@lumigo/tracer")({
   token: config.token,
-  edgeHost: process.env.AUTO_TRACE_HOST || config.edgeHost,
+  edgeHost: "localhost",
 });
 
 const verbose = process.env.TRACER_LOG_VERBOSE;

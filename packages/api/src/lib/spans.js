@@ -41,17 +41,11 @@ const removeGroupingKeys = (spans) => {
 const simplifySpans = (spans) => {
   return spans.map((span) => {
     const {
-      info,
-      vendor,
-      version,
-      runtime,
       token,
       region,
       type,
       transactionId,
       isMetadata,
-      memoryAllocated,
-      readiness,
       messageVersion,
       account,
       invokedArn,
@@ -59,15 +53,8 @@ const simplifySpans = (spans) => {
       lumigo_execution_tags_no_scrub,
       ...rest
     } = span;
-    const { traceId, tracer, logGroupName, logStreamName, ...restInfo } =
-      info || {};
-    return {
-      ...rest,
-      info: {
-        traceId: traceId?.Root,
-        ...restInfo,
-      },
-    };
+
+    return { ...rest };
   });
 };
 
@@ -80,12 +67,10 @@ export const groupSpans = (spans) => {
   for (const span of spans) {
     const latestSpan = groupedSpans[groupedSpans.length - 1] || {};
     const similarSpans = groupedSpans.filter(
-      (s) => s.groupingKey === span.groupingKey,
+      (s) => s.extendedGroupingKey === span.extendedGroupingKey,
     );
 
-    if (span.extendedGroupingKey === latestSpan.extendedGroupingKey) {
-      latestSpan.instances++;
-    } else if (similarSpans.length >= 25) {
+    if (similarSpans.length >= 20) {
       similarSpans[similarSpans.length - 1].instances++;
     } else {
       groupedSpans.push(span);

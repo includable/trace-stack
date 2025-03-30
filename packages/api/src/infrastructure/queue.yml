@@ -1,0 +1,23 @@
+Resources:
+  Queue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: ${self:service}-queue-${sls:stage}
+      VisibilityTimeout: 300
+      MessageRetentionPeriod: 1209600
+  QueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref Queue
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: "*"
+            Action: sqs:SendMessage
+            Resource: !GetAtt Queue.Arn
+            Condition:
+              StringEquals:
+                aws:PrincipalAccount: ${aws:accountId}

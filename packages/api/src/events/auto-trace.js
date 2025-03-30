@@ -1,6 +1,5 @@
 import {
   GetFunctionCommand,
-  GetFunctionUrlConfigCommand,
   LambdaClient,
   ListFunctionsCommand,
   UpdateFunctionConfigurationCommand,
@@ -11,7 +10,12 @@ import { acquireLock, releaseLock } from "../lib/locks";
 import Logger from "../lib/logger";
 import { put } from "../lib/database";
 
-const supportedRuntimes = ["nodejs16.x", "nodejs18.x", "nodejs20.x", "nodejs22.x"];
+const supportedRuntimes = [
+  "nodejs16.x",
+  "nodejs18.x",
+  "nodejs20.x",
+  "nodejs22.x",
+];
 const lambdaExecWrapper = "/opt/nodejs/tracer_wrapper";
 
 const logger = new Logger("auto-trace");
@@ -36,28 +40,7 @@ const getAccountLambdas = async () => {
   return lambdas;
 };
 
-const getEdgeEndpoint = async (lambdas) => {
-  const lambdaName = `${process.env.SERVICE}-${process.env.STAGE}-main`;
-
-  try {
-    const command = new GetFunctionUrlConfigCommand({
-      FunctionName: lambdaName,
-    });
-
-    const res = await new LambdaClient().send(command);
-
-    return res.FunctionUrl?.replace("https://", "").replace("/", "");
-  } catch (e) {
-    if (e.name === "ResourceNotFoundException") {
-      throw new Error(
-        `Lambda ${lambdaName} not found - could not determine edge endpoint.`,
-      );
-    }
-    throw e;
-  }
-};
-
-const updateLambda = async (lambda, arnBase, edgeEndpoint) => {
+const updateLambda = async (lambda, arnBase, queue, queueRegion) => {
   const command = new UpdateFunctionConfigurationCommand({
     FunctionName: lambda.FunctionName,
     Layers: [
@@ -70,7 +53,8 @@ const updateLambda = async (lambda, arnBase, edgeEndpoint) => {
       ...(lambda.Environment || {}),
       Variables: {
         ...(lambda.Environment?.Variables || {}),
-        AUTO_TRACE_HOST: edgeEndpoint,
+        AUTO_TRACE_QUEUE_URL: queue,
+        AUTO_TRACE_QUEUE_REGION: queueRegion,
         AWS_LAMBDA_EXEC_WRAPPER: lambdaExecWrapper,
       },
     },
@@ -127,7 +111,11 @@ export const autoTrace = async () => {
   }
 
   // Get our Lambda URL endpoint for the collector
-  const edgeEndpoint = await getEdgeEndpoint();
+  const queue = process.env.QUEUE_URL;
+  const queueRegion = process.env.QUEUE_REGION || "eu-west-1";
+  if (!queue) {
+    throw new Error("QUEUE_URL is not defined");
+  }
 
   // Make sure we lock so that only one process is updating lambdas
   const lockAcquired = await acquireLock("auto-trace");
@@ -137,7 +125,7 @@ export const autoTrace = async () => {
   }
 
   // List all the lambda functions in the AWS account
-  const lambdas = await getAccountLambdas();
+  let lambdas = await getAccountLambdas();
   logger.info(`Found ${lambdas.length} lambdas in the account`);
 
   // Update qualifying lambdas
@@ -151,7 +139,7 @@ export const autoTrace = async () => {
         const isTraceStack = envVars.LAMBDA_LAYER_ARN === arn;
         const isUpdating = lambda.LastUpdateStatus === "InProgress";
         const hasDisableEnvVar = envVars.AUTO_TRACE_EXCLUDE;
-        const hasWrongEndpoint = envVars.AUTO_TRACE_HOST !== edgeEndpoint;
+        const hasWrongEndpoint = envVars.AUTO_TRACE_QUEUE_URL !== queue;
         const hasOtherWrapper =
           envVars.AWS_LAMBDA_EXEC_WRAPPER &&
           envVars.AWS_LAMBDA_EXEC_WRAPPER !== lambdaExecWrapper;
@@ -192,7 +180,7 @@ export const autoTrace = async () => {
         }
 
         try {
-          await updateLambda(lambda, arnBase, edgeEndpoint);
+          await updateLambda(lambda, arnBase, queue, queueRegion);
 
           logger.info(`✓ Updated ${lambda.FunctionName}`);
           await saveFunctionInfo(lambda, "enabled");

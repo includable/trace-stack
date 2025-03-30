@@ -54,6 +54,8 @@ provider:
     LAMBDA_LAYER_ARN: !Ref TracerLambdaLayer
     AUTO_TRACE_EXCLUDE: 1
     STORAGE_BUCKET_NAME: ${self:custom.bucketName}
+    QUEUE_URL: !Ref Queue
+    QUEUE_REGION: ${aws:region}
   httpApi:
     payload: "2.0"
     cors: true
@@ -93,7 +95,6 @@ provider:
           Action:
             - s3:GetObject
             - s3:PutObject
-            - s3:DeleteObject
             - s3:ListBucket
           Resource:
             - arn:aws:s3:::${self:custom.bucketName}
@@ -111,12 +112,21 @@ layers:
       - nodejs22.x
 
 functions:
+  collector:
+    handler: src/events/collector.handler
+    timeout: 300
+    memorySize: 2048
+    reservedConcurrency: 1
+    events:
+      - sqs:
+          arn: !GetAtt Queue.Arn
+          batchSize: 100
+          maximumBatchingWindow: 30
+
   main:
     handler: src/index.handler
     timeout: 900
     memorySize: 1024
-    reservedConcurrency: 1
-    url: true
     events:
       - httpApi:
           path: /{proxy+}
@@ -127,5 +137,6 @@ functions:
             action: auto-trace
 
 resources:
-  - ${file(./src/infrastructure/database/table.yml)}
+  - ${file(./src/infrastructure/table.yml)}
   - ${file(./src/infrastructure/bucket.yml)}
+  - ${file(./src/infrastructure/queue.yml)}

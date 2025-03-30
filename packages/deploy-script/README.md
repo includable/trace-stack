@@ -34,7 +34,7 @@ Once you're done, it will display the URL for your new dashboard.
 ### Auto-tracing
 
 Once installed, all Lambda functions in your AWS account will automatically be traced,
-by adding a Lambda layer to them. You'll also notice a new environment variable called `AUTO_TRACE_HOST`.
+by adding a Lambda layer to them. You'll also notice a new environment variable called `AUTO_TRACE_QUEUE_URL`.
 
 If you wish to disable tracing for a specific function, you can add the environment variable `AUTO_TRACE_EXCLUDE`
 with a value of `1`. This will keep the Lambda layer from being added.

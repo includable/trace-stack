@@ -1,12 +1,9 @@
-import { Hono } from "hono";
 import { defULID } from "@thi.ng/ksuid";
 
-import { saveHourlyStat } from "../../lib/stats";
-import { getErrorKey } from "../../lib/errors";
-import { saveInvocation } from "../../lib/invocations";
-import { store } from "../../lib/storage";
-
-const app = new Hono();
+import { saveHourlyStat } from "../lib/stats";
+import { getErrorKey } from "../lib/errors";
+import { saveInvocation } from "../lib/invocations";
+import { store } from "../lib/storage";
 
 const id = defULID();
 const getId = () => {
@@ -17,19 +14,22 @@ const getId = () => {
 // This is used to avoid sending the transaction to the database before we know the invocation ID
 const transactionCache = {};
 
-app.post("/", async (c) => {
-  const body = await c.req.json();
+export const handler = async ({ Records }) => {
+  // Read all of the messages off the queue
+  for (const record of Records) {
+    const body = JSON.parse(JSON.parse(record.body));
 
-  for (const span of body) {
-    if (process.env.TRACER_TOKEN && span.token !== process.env.TRACER_TOKEN) {
-      console.log(`Invalid token: ${span.token}`);
-      continue;
+    for (const span of body) {
+      if (process.env.TRACER_TOKEN && span.token !== process.env.TRACER_TOKEN) {
+        console.log(`Invalid token: ${span.token}`);
+        continue;
+      }
+
+      const groupKey = span.transactionId || span.transaction_id;
+      if (!transactionCache[groupKey]) transactionCache[groupKey] = [];
+
+      transactionCache[groupKey].push(span);
     }
-
-    const groupKey = span.transactionId || span.transaction_id;
-    if (!transactionCache[groupKey]) transactionCache[groupKey] = [];
-
-    transactionCache[groupKey].push(span);
   }
 
   // Check transactions cache to see if there's any transactions we can flush
@@ -108,8 +108,4 @@ app.post("/", async (c) => {
     // Delete the transaction from the cache
     delete transactionCache[transactionId];
   }
-
-  return c.json({ success: true });
-});
-
-export default app;
+};
