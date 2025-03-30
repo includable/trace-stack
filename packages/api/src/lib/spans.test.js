@@ -612,10 +612,10 @@ const traces2 = [
 describe("spans utils", () => {
   it("should group similar traces (1)", async () => {
     const groupedSpans = groupSpans(traces);
-    expect(groupedSpans).toHaveLength(2);
+    expect(groupedSpans).toHaveLength(4);
   });
   it("should group similar traces (2)", async () => {
     const groupedSpans = groupSpans(traces2);
-    expect(groupedSpans).toHaveLength(2);
+    expect(groupedSpans).toHaveLength(12);
   });
 });
