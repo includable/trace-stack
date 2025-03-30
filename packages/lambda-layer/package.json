@@ -20,6 +20,7 @@
   "dependencies": {
     "@aws-sdk/client-sqs": "^3.777.0",
     "@lumigo/tracer": "^1.107.1",
+    "@smithy/fetch-http-handler": "^5.0.2",
     "axios": "^1.8.4",
     "node-fetch": "^3.3.2"
   },

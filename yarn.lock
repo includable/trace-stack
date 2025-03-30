@@ -9520,6 +9520,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-sqs": "npm:^3.777.0"
     "@lumigo/tracer": "npm:^1.107.1"
+    "@smithy/fetch-http-handler": "npm:^5.0.2"
     "@types/jest": "npm:^29.5.14"
     axios: "npm:^1.8.4"
     esbuild: "npm:^0.25.1"
