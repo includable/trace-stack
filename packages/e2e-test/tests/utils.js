@@ -12,7 +12,7 @@ export const invoke = async (lambda = "main", action = "") => {
   } catch (error) {}
 };
 
-const Bucket = `trace-stack-traces-devtest1234567890`;
+const Bucket = `trace-stack-traces-devaedeaeb5ce5f55f43c9c032eff16f778`;
 
 export const truncate = () => {
   const s3 = new S3Client();

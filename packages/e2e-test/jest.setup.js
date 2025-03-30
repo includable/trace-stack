@@ -6,7 +6,7 @@ import deployTraceStack from "../deploy-script/src/deploy.js";
 const setup = async () => {
   await deploy("testing");
   await deployTraceStack({
-    tracerToken: `t_test1234567890`,
+    tracerToken: `t_aedeaeb5ce5f55f43c9c032eff16f778`,
   });
 };
 
