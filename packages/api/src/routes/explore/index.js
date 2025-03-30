@@ -1,7 +1,9 @@
 import { Hono } from "hono";
 
 import { query, queryAll } from "../../lib/database";
-import { getDates } from "./utils";
+import { get, listAndRead } from "../../lib/storage";
+import { filterByDates, getDates } from "./utils";
+import { getErrorKey } from "../../lib/errors";
 
 import statsRoute from "./stats";
 import logsRoute from "./logs";
@@ -61,30 +63,17 @@ app.get("/functions/:region/:name", async (c) => {
 
 app.get("/functions/:region/:name/invocation-summaries", async (c) => {
   const [start, end] = getDates(c);
-  const startTs = start.getTime();
-  const endTs = end.getTime();
+  const region = c.req.param("region");
+  const name = c.req.param("name");
 
-  const params = {
-    KeyConditionExpression: "#pk = :pk AND #sk BETWEEN :skStart AND :skEnd",
-    ExpressionAttributeNames: {
-      "#pk": "pk",
-      "#sk": "sk",
-      "#resultSummary": "resultSummary",
-    },
-    ExpressionAttributeValues: {
-      ":pk": `function#${c.req.param("region")}#${c.req.param("name")}`,
-      ":skStart": `invocation#${startTs}`,
-      ":skEnd": `invocation#${endTs}`,
-    },
-    ProjectionExpression: "#resultSummary",
-    Limit: 10000,
-    ScanIndexForward: false,
-  };
-
-  const { Items } = await query(params);
+  const result = await listAndRead(
+    start,
+    end,
+    `invocations/${region}/${name}/`,
+  );
 
   return c.json(
-    Array.from(new Set(Items.map((item) => item.resultSummary))).filter(
+    Array.from(new Set(result.map((item) => item.resultSummary))).filter(
       Boolean,
     ),
   );
@@ -92,115 +81,66 @@ app.get("/functions/:region/:name/invocation-summaries", async (c) => {
 
 app.get("/functions/:region/:name/invocations", async (c) => {
   const [start, end] = getDates(c);
-  const startTs = start.getTime();
-  const endTs = end.getTime();
+  const startKey = Number(c.req.query("startKey") || 0) || 0;
+  const region = c.req.param("region");
+  const name = c.req.param("name");
 
-  const startKey = c.req.query("startKey");
+  let result = await listAndRead(start, end, `invocations/${region}/${name}/`);
+  result = filterByDates(start, end, result, "started");
 
-  const params = {
-    KeyConditionExpression: "#pk = :pk AND #sk BETWEEN :skStart AND :skEnd",
-    ExclusiveStartKey: startKey ? JSON.parse(startKey) : undefined,
-    ExpressionAttributeNames: {
-      "#pk": "pk",
-      "#sk": "sk",
-      "#type": "type",
-      "#error": "error",
-      "#id": "id",
-      "#region": "region",
-      "#name": "name",
-      "#statusCode": "statusCode",
-      "#resultSummary": "resultSummary",
-    },
-    ExpressionAttributeValues: {
-      ":pk": `function#${c.req.param("region")}#${c.req.param("name")}`,
-      ":skStart": `invocation#${startTs}`,
-      ":skEnd": `invocation#${endTs}`,
-    },
-    ProjectionExpression:
-      "#pk, #sk, #type, #error, #id, #region, #name, #statusCode, #resultSummary, transactionId, started, ended, readiness, memoryAllocated",
-    Limit: 50,
-    ScanIndexForward: false,
-  };
+  const resultSummaryFilters = c.req.query("resultSummaryFilters")?.split(",");
 
-  const resultSummaryFilters =
-    c.req.query("resultSummaryFilters")?.split(",") || [];
-  if (resultSummaryFilters.length) {
-    const filterExpression = [];
-    for (const filter of resultSummaryFilters) {
-      const variableName = `:f${filterExpression.length}`;
-      filterExpression.push(`#resultSummary = ${variableName}`);
-      params.ExpressionAttributeValues[variableName] = filter;
-    }
-    params.FilterExpression = filterExpression.join(" OR ");
-  }
-
-  const { Items, LastEvaluatedKey } = await query(params);
+  const output = result
+    .map((item) => {
+      const { spans, envs, info, event, return_value, ...result } = item; // we don't need the full spans in the response
+      return result;
+    })
+    .filter(
+      (item) =>
+        !resultSummaryFilters?.length ||
+        resultSummaryFilters.includes(item.resultSummary),
+    );
 
   return c.json({
-    invocations: Items,
-    nextStartKey: LastEvaluatedKey ? JSON.stringify(LastEvaluatedKey) : false,
+    invocations: output.slice(startKey, startKey + 100),
+    nextStartKey: output.length > startKey + 100 ? startKey + 100 : false,
   });
 });
 
 app.get("/functions/:region/:name/invocations/:ts/:id", async (c) => {
-  const { Items } = await query({
-    KeyConditionExpression: "#pk = :pk AND #sk = :sk",
-    ExpressionAttributeNames: {
-      "#pk": "pk",
-      "#sk": "sk",
-    },
-    ExpressionAttributeValues: {
-      ":pk": `function#${c.req.param("region")}#${c.req.param("name")}`,
-      ":sk": `invocation#${c.req.param("ts")}#${c.req.param("id")}`,
-    },
-  });
+  const region = c.req.param("region");
+  const name = c.req.param("name");
+  const ts = c.req.param("ts");
+  const id = c.req.param("id");
 
-  return c.json(Items?.[0]);
+  const date = new Date(Number(ts)).toISOString().split("T")[0];
+  const item = await get(`${date}/invocations/${region}/${name}/${ts}/${id}`);
+
+  return c.json(item);
 });
 
 app.get("/errors", async (c) => {
   const [start, end] = getDates(c);
-  const startTs = start.toISOString();
-  const endTs = end.toISOString();
+  const startKey = Number(c.req.query("startKey") || 0) || 0;
 
-  const startKey = c.req.query("startKey");
+  let result = await listAndRead(start, end, `errors/`);
+  result = filterByDates(start, end, result, "lastSeen");
 
-  const { Items, LastEvaluatedKey } = await query({
-    KeyConditionExpression:
-      "#type = :type AND #lastSeen BETWEEN :skStart AND :skEnd",
-    ExclusiveStartKey: startKey ? JSON.parse(startKey) : undefined,
-    ExpressionAttributeNames: {
-      "#type": "type",
-      "#lastSeen": "lastSeen",
-    },
-    ExpressionAttributeValues: {
-      ":type": "error",
-      ":skStart": startTs,
-      ":skEnd": endTs,
-    },
-    IndexName: "type-lastSeen",
-    Limit: 50,
-    ScanIndexForward: false,
-  });
+  const output = Object.values(
+    result
+      .sort((a, b) => b.lastSeen.localeCompare(a.lastSeen))
+      .reduce((acc, item) => {
+        const id = getErrorKey(item.error);
+        if (!acc[id]) acc[id] = { id, occurrences: 0, ...item };
+        acc[id].occurrences += 1;
+        return acc;
+      }, {}),
+  );
 
   return c.json({
-    errors: Items,
-    nextStartKey: LastEvaluatedKey ? JSON.stringify(LastEvaluatedKey) : false,
+    errors: output.slice(startKey, startKey + 100),
+    nextStartKey: output.length > startKey + 100 ? startKey + 100 : false,
   });
-});
-
-app.get("/transactions/:id", async (c) => {
-  const items = await queryAll({
-    KeyConditionExpression: "#pk = :pk",
-    ExpressionAttributeNames: {
-      "#pk": "pk",
-    },
-    ExpressionAttributeValues: {
-      ":pk": `transaction#${c.req.param("id")}`,
-    },
-  });
-
-  return c.json(items);
 });
 
 export default app;

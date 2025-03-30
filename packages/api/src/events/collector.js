@@ -33,6 +33,7 @@ export const handler = async ({ Records }) => {
   }
 
   // Check transactions cache to see if there's any transactions we can flush
+  const hourlyStats = [];
   for (const [transactionId, spans] of Object.entries(transactionCache)) {
     const invocationEndedSpan = spans.find(
       (span) =>
@@ -40,43 +41,27 @@ export const handler = async ({ Records }) => {
     );
 
     if (!invocationEndedSpan) {
-      console.log(
-        `No invocation ended span found for transaction ${spans[0].transactionId}`,
-      );
-
       // TODO: if we are close to running out of time, we should flush the transaction cache anyway
-
       continue;
-    } else {
-      console.log(
-        "Flushing transaction cache for",
-        invocationEndedSpan.transactionId,
-      );
     }
 
     // save function invocation details
     await saveInvocation(invocationEndedSpan, spans);
 
-    // const duration = invocationEndedSpan.ended - invocationEndedSpan.started;
-    await saveHourlyStat(
+    const duration = invocationEndedSpan.ended - invocationEndedSpan.started;
+    hourlyStats.push(["global", "invocations", 1, "sum"]);
+    hourlyStats.push([
       invocationEndedSpan.region,
       invocationEndedSpan.name + ".invocations",
       1,
-    );
-    // await saveHourlyStat(
-    //   invocationEndedSpan.region,
-    //   invocationEndedSpan.name + ".duration",
-    //   duration,
-    // );
-    await saveHourlyStat("global", "invocations", 1);
-    if (invocationEndedSpan.error) {
-      await saveHourlyStat(
-        invocationEndedSpan.region,
-        invocationEndedSpan.name + ".errors",
-        1,
-      );
-      await saveHourlyStat("global", "errors", 1);
-    }
+      "sum",
+    ]);
+    hourlyStats.push([
+      invocationEndedSpan.region,
+      invocationEndedSpan.name + ".duration",
+      duration,
+      "avg",
+    ]);
 
     // save error
     if (invocationEndedSpan.error) {
@@ -98,14 +83,45 @@ export const handler = async ({ Records }) => {
           region: invocationEndedSpan.region,
         },
       );
-      await saveHourlyStat(
+
+      hourlyStats.push([
+        invocationEndedSpan.region,
+        invocationEndedSpan.name + ".errors",
+        1,
+        "sum",
+      ]);
+
+      hourlyStats.push(["global", "errors", 1, "sum"]);
+      hourlyStats.push([
         invocationEndedSpan.region,
         invocationEndedSpan.name + ".error." + errorKey,
         1,
-      );
+        "sum",
+      ]);
     }
 
     // Delete the transaction from the cache
     delete transactionCache[transactionId];
+  }
+
+  // Save hourly stats
+  const statsToSave = hourlyStats.reduce((acc, [region, name, value, type]) => {
+    const key = `${region}#${name}`;
+    if (!acc[key]) {
+      acc[key] = [region, name, value, 0];
+    } else if (type === "sum") {
+      acc[key][2] += value;
+    } else if (type === "avg") {
+      acc[key][2] += value;
+      acc[key][3] += 1;
+    }
+    return acc;
+  }, []);
+  for (const [region, name, value, count] of statsToSave) {
+    await saveHourlyStat({
+      region,
+      name,
+      value: count > 0 ? value / count : value,
+    });
   }
 };

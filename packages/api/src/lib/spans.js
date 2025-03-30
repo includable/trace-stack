@@ -1,6 +1,6 @@
 const getGroupingKey = (span, extended = false) => {
   const items = [
-    span.spanType,
+    span.type,
     span.service,
 
     span.info?.resourceName,

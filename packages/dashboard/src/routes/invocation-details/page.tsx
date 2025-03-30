@@ -44,6 +44,7 @@ const Invocations = () => {
           >
             <TransactionGraph
               id={invocation.transactionId}
+              spans={invocation.spans}
               requestId={id}
               requestOnly={requestOnly}
               setRequestOnly={setRequestOnly}
@@ -129,7 +130,7 @@ const Invocations = () => {
                 }
               >
                 <TransactionDetails
-                  id={invocation.transactionId}
+                  spans={invocation.spans}
                   requestId={id}
                   requestOnly={requestOnly}
                   setRequestOnly={setRequestOnly}

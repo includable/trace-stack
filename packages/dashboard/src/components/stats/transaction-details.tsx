@@ -35,7 +35,7 @@ const TransactionTitle = ({ transaction }) => {
       </>
     );
   }
-  if (transaction.spanType === "http" && transaction.info?.httpInfo?.request) {
+  if (transaction.type === "http" && transaction.info?.httpInfo?.request) {
     const statusCode = transaction.info.httpInfo.response?.statusCode;
     return (
       <>
@@ -66,7 +66,7 @@ const TransactionTitle = ({ transaction }) => {
 
   return (
     <>
-      {transaction.spanType || transaction.type} {transaction.id}
+      {transaction.type || transaction.type} {transaction.id}
     </>
   );
 };
@@ -136,7 +136,7 @@ const SpanDetails = ({ span }) => {
     );
   }
 
-  if (span.spanType === "http" && span.info?.httpInfo) {
+  if (span.type === "http" && span.info?.httpInfo) {
     return (
       <div className="flex flex-col gap-4">
         <PayloadPreview title="Request" value={span.info.httpInfo.request} />
@@ -170,7 +170,7 @@ const SpanItem = ({ spans, nested = false }) => {
     [spans],
   );
 
-  const hasDuration = duration !== null && transaction.spanType !== "function";
+  const hasDuration = duration !== null && transaction.type !== "function";
   const count = spans?.reduce((acc, span) => acc + (span.instances || 1), 0);
 
   return (
@@ -218,20 +218,23 @@ const SpanItem = ({ spans, nested = false }) => {
   );
 };
 
-const TransactionDetails = ({ id, requestId, requestOnly, setRequestOnly }) => {
-  const { data } = useTransaction(id, { suspense: true });
-
+const TransactionDetails = ({
+  spans,
+  requestId,
+  requestOnly,
+  setRequestOnly,
+}) => {
   const grouped = useMemo(() => {
-    let spans = data?.spans;
+    let newSpans = [...spans];
     if (requestOnly) {
-      spans = spans.filter(
+      newSpans = newSpans.filter(
         (span) =>
           span.reporterAwsRequestId === requestId || span.id === requestId,
       );
     }
 
-    return groupSpans(spans);
-  }, [data, requestOnly]);
+    return groupSpans(newSpans);
+  }, [spans, requestOnly]);
 
   return (
     <>

@@ -61,8 +61,8 @@ export const columns: ColumnDef<FunctionItem>[] = [
             region={row.original.region}
             name={
               row.original.name +
-              "." +
-              row.original.sk.replace("error#", "error.")
+              ".error." +
+              row.original.id
             }
           />
         </div>

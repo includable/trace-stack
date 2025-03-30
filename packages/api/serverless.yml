@@ -22,7 +22,7 @@ custom:
     endpointType: regional
     apiType: http
   logRetentionInDays: 14
-  bucketName: ${self:service}-storage-${sls:stage} # TODO: make this a unique name
+  bucketName: ${self:service}-traces-${sls:stage}${param:TRACER_TOKEN}
 
 package:
   individually: true
@@ -120,7 +120,7 @@ functions:
     events:
       - sqs:
           arn: !GetAtt Queue.Arn
-          batchSize: 100
+          batchSize: 300
           maximumBatchingWindow: 30
 
   main:

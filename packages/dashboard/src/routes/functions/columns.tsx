@@ -82,17 +82,6 @@ export const columns: ColumnDef<FunctionItem>[] = [
     },
   },
   {
-    accessorKey: "lastInvocation",
-    header: "Last invoked",
-    cell: ({ row }) => {
-      const lastInvocation = row.getValue("lastInvocation");
-      if (!lastInvocation || lastInvocation === '0') return <span>-</span>;
-      return (
-        <span>{formatRelative(new Date(lastInvocation), new Date())}</span>
-      );
-    },
-  },
-  {
     accessorKey: "tags",
     header: "Tags",
     cell: ({ row }) => {

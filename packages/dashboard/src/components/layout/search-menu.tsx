@@ -48,7 +48,6 @@ export function SearchMenu() {
     return functions
       ?.map((func: any) => ({
         ...func,
-        lastInvocation: func.lastInvocation || "0",
         tags: [
           `Region: ${func.region}`,
           ...Object.entries(func.tags || {})
@@ -59,7 +58,7 @@ export function SearchMenu() {
             }),
         ],
       }))
-      .sort((a, b) => (a.lastInvocation > b.lastInvocation ? -1 : 1));
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [functions]);
 
   const go = (url: To) => {

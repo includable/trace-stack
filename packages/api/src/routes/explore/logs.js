@@ -5,6 +5,7 @@ import {
 } from "@aws-sdk/client-cloudwatch-logs";
 
 import { query } from "../../lib/database";
+import { get } from "../../lib/storage";
 
 const app = new Hono();
 const client = new CloudWatchLogsClient();
@@ -13,21 +14,13 @@ const TIMESTAMP_REGEX =
   "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,5})?Z";
 
 app.get("/:region/:name/invocations/:ts/:id", async (c) => {
-  const { Items } = await query({
-    KeyConditionExpression: "#pk = :pk AND #sk = :sk",
-    ExpressionAttributeNames: {
-      "#pk": "pk",
-      "#sk": "sk",
-    },
-    ExpressionAttributeValues: {
-      ":pk": `function#${c.req.param("region")}#${c.req.param("name")}`,
-      ":sk": `invocation#${c.req.param("ts")}#${c.req.param("id")}`,
-    },
-  });
+  const { region, name, ts, id } = c.req.param();
+  const date = new Date(Number(ts)).toISOString().split("T")[0];
 
-  if (!Items?.length) return c.json([]);
+  const item = await get(`${date}/invocations/${region}/${name}/${ts}/${id}`);
+  if (!item) return c.json([]);
 
-  const { info, started, ended, id } = Items?.[0];
+  const { info, started, ended, id: requestId } = item;
   const { logGroupName, logStreamName } = info;
 
   const command = new GetLogEventsCommand({
@@ -42,9 +35,9 @@ app.get("/:region/:name/invocations/:ts/:id", async (c) => {
 
   return c.json(
     response.events
-      ?.filter(({ message }) => message?.includes(id))
+      ?.filter(({ message }) => message?.includes(requestId))
       .map(({ message, timestamp, eventId }) => {
-        const regex = new RegExp(`^(${TIMESTAMP_REGEX})\\t${id}\\t`);
+        const regex = new RegExp(`^(${TIMESTAMP_REGEX})\\t${requestId}\\t`);
         const match = message.match(regex);
         if (match) {
           return {

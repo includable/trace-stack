@@ -60,7 +60,7 @@ export const columns: ColumnDef<InvocationItem>[] = [
       const duration = row.original.ended - row.original.started;
       return (
         <div className="flex items-center gap-2">
-          <span>{duration} ms</span>
+          <span>{duration.toLocaleString()} ms</span>
           {row.original.readiness === "cold" && (
             <Tooltipped title="Cold start">
               <SnowflakeIcon className="size-3.5 text-blue-400" />

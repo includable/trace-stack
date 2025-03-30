@@ -102,7 +102,7 @@ const buildTransactionGraph = (transaction) => {
   for (const item of transaction) {
     if (
       item.id?.endsWith("_started") ||
-      item.spanType === "enrichment" ||
+      item.type === "enrichment" ||
       item.type === "log"
     )
       continue;
@@ -130,7 +130,7 @@ const buildTransactionGraph = (transaction) => {
             service: trigger.triggeredBy || "trigger",
           }),
           groupingKey: trigger.triggeredBy,
-          service: trigger.triggeredBy || item.service || item.spanType,
+          service: trigger.triggeredBy || item.service || item.type,
           transaction: item,
           instances: 1,
         });
@@ -172,19 +172,18 @@ const getLayoutElements = (nodes, edges, options) => {
   };
 };
 
-const TransactionGraph = ({ id, onNodeClick, requestId, requestOnly }) => {
+const TransactionGraph = ({ spans, onNodeClick, requestId, requestOnly }) => {
   const { fitView } = useReactFlow();
-  const { data } = useTransaction(id, { suspense: true });
   const grouped = useMemo(() => {
-    let spans = data?.spans;
+    let newSpans = [...spans];
     if (requestOnly) {
-      spans = spans.filter(
+      newSpans = newSpans.filter(
         (span) =>
           span.reporterAwsRequestId === requestId || span.id === requestId,
       );
     }
-    return spans;
-  }, [data, requestOnly]);
+    return newSpans;
+  }, [spans, requestOnly]);
 
   const { initialNodes, initialEdges } = buildTransactionGraph(grouped);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
