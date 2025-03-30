@@ -1,3 +1,4 @@
+import { eachDayOfInterval, parseISO, format } from "date-fns";
 import {
   GetObjectCommand,
   ListObjectsV2Command,
@@ -46,14 +47,11 @@ export const listByPrefix = async (prefix) => {
 
 export const list = async (startDate, endDate, prefix) => {
   // Get a list of all days between startDate and endDate
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-  const dateList = [];
-  const currentDate = new Date(start);
-  while (currentDate <= end) {
-    dateList.push(currentDate.toISOString().split("T")[0]);
-    currentDate.setDate(currentDate.getDate() + 1);
-  }
+  const start = typeof startDate === "string" ? parseISO(startDate) : startDate;
+  const end = typeof endDate === "string" ? parseISO(endDate) : endDate;
+  const dateList = eachDayOfInterval({ start, end }).map((date) =>
+    format(date, "yyyy-MM-dd"),
+  );
 
   // Get all keys for each date, and flatten the array
   const allKeys = await Promise.all(

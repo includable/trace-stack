@@ -18,6 +18,7 @@ import {
   getTransactionService,
   useTransaction,
 } from "@/lib/transaction";
+import { isTracerSendSpan } from "@/lib/utils";
 
 const GraphNode = ({ data, isConnectable }) => {
   return (
@@ -103,7 +104,8 @@ const buildTransactionGraph = (transaction) => {
     if (
       item.id?.endsWith("_started") ||
       item.type === "enrichment" ||
-      item.type === "log"
+      item.type === "log" || 
+      isTracerSendSpan(item)
     )
       continue;
 

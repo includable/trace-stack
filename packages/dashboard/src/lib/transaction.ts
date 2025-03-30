@@ -1,4 +1,5 @@
 import { API_URL, authenticatedFetch } from "@/lib/api";
+import { isTracerSendSpan } from "@/lib/utils";
 import useSWR from "swr";
 
 export const getGroupingKey = (transaction: any, extended = false) => {
@@ -46,16 +47,19 @@ export const getTransactionService = (transaction: any) => {
   ) {
     return "eventBridge";
   }
-  if (transaction.info?.httpInfo?.host === "hooks.slack.com" || transaction.info?.httpInfo?.host === "slack.com") {
+  if (
+    transaction.info?.httpInfo?.host === "hooks.slack.com" ||
+    transaction.info?.httpInfo?.host === "slack.com"
+  ) {
     return "slack";
   }
-  if (transaction.info?.httpInfo?.host?.endsWith('.chargebee.com')) {
+  if (transaction.info?.httpInfo?.host?.endsWith(".chargebee.com")) {
     return "chargebee";
   }
-  if (transaction.info?.httpInfo?.host?.endsWith('.myshopify.com')) {
+  if (transaction.info?.httpInfo?.host?.endsWith(".myshopify.com")) {
     return "shopify";
   }
-  if (transaction.info?.httpInfo?.host === 'api.todoist.com') {
+  if (transaction.info?.httpInfo?.host === "api.todoist.com") {
     return "todoist";
   }
 
@@ -87,16 +91,19 @@ export const getTransactionLabel = (transaction: any) => {
     return "CloudFront";
   }
 
-  if (transaction.info?.httpInfo?.host === "hooks.slack.com" || transaction.info?.httpInfo?.host === "slack.com") {
+  if (
+    transaction.info?.httpInfo?.host === "hooks.slack.com" ||
+    transaction.info?.httpInfo?.host === "slack.com"
+  ) {
     return "Slack";
   }
-  if (transaction.info?.httpInfo?.host?.endsWith('.chargebee.com')) {
+  if (transaction.info?.httpInfo?.host?.endsWith(".chargebee.com")) {
     return "Chargebee";
   }
-  if (transaction.info?.httpInfo?.host?.endsWith('.myshopify.com')) {
+  if (transaction.info?.httpInfo?.host?.endsWith(".myshopify.com")) {
     return "Shopify";
   }
-  if (transaction.info?.httpInfo?.host === 'api.todoist.com') {
+  if (transaction.info?.httpInfo?.host === "api.todoist.com") {
     return "Todoist";
   }
 
@@ -127,7 +134,11 @@ export const getTransactionLabel = (transaction: any) => {
 export const groupSpans = (spans?: any[]) => {
   const grouped: { groupingKey: any; spans: any[] }[] = [];
   for (const span of spans || []) {
-    if (span.id?.endsWith("_started") || span.spanType === "enrichment")
+    if (
+      span.id?.endsWith("_started") ||
+      span.spanType === "enrichment" ||
+      isTracerSendSpan(span)
+    )
       continue;
 
     span.groupingKey = getGroupingKey(span, true);

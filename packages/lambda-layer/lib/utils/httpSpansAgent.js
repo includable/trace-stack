@@ -27,12 +27,16 @@ exports.HttpSpansAgent = (() => {
     }
 
     try {
-      const params = {
+      const command = new SendMessageCommand({
         QueueUrl: process.env.AUTO_TRACE_QUEUE_URL,
+        MessageAttributes: {
+          __TRACE_TOKEN__: {
+            DataType: "String",
+            StringValue: process.env.TRACER_TOKEN || "",
+          },
+        },
         MessageBody: JSON.stringify(requestBody),
-      };
-
-      const command = new SendMessageCommand(params);
+      });
       await sqsClient.send(command);
     } catch (error) {
       console.warn("Error sending trace spans:", error);
