@@ -8,7 +8,7 @@ plugins:
 
 params:
   default:
-    DATA_RETENTION_DAYS: ${env:DATA_RETENTION_DAYS, 30}
+    DATA_RETENTION_DAYS: ${env:DATA_RETENTION_DAYS, 14}
     CUSTOM_DOMAIN: ${env:CUSTOM_DOMAIN, ""}
     HAS_CUSTOM_DOMAIN: ${strToBool(${env:HAS_CUSTOM_DOMAIN, "false"})}
     TRACER_TOKEN: ${env:TRACER_TOKEN, ""}
@@ -22,6 +22,7 @@ custom:
     endpointType: regional
     apiType: http
   logRetentionInDays: 14
+  bucketName: ${self:service}-storage-${sls:stage} # TODO: make this a unique name
 
 package:
   individually: true
@@ -52,21 +53,10 @@ provider:
     TRACER_TOKEN: ${param:TRACER_TOKEN}
     LAMBDA_LAYER_ARN: !Ref TracerLambdaLayer
     AUTO_TRACE_EXCLUDE: 1
+    STORAGE_BUCKET_NAME: ${self:custom.bucketName}
   httpApi:
     payload: "2.0"
     cors: true
-    # authorizers:
-    #   WebAuthorizer:
-    #     identitySource: $request.header.Authorization
-    #     issuerUrl:
-    #       Fn::Join:
-    #         - ""
-    #         - - "https://cognito-idp."
-    #           - "${opt:region, self:provider.region}"
-    #           - ".amazonaws.com/"
-    #           - Ref: CognitoUserPool
-    #     audience:
-    #       Ref: CognitoUserPoolClient
   lambdaHashingVersion: 20201221
   iam:
     role:
@@ -99,6 +89,15 @@ provider:
             - apigateway:GET
           Resource:
             - "arn:aws:apigateway:${aws:region}::/apis"
+        - Effect: Allow
+          Action:
+            - s3:GetObject
+            - s3:PutObject
+            - s3:DeleteObject
+            - s3:ListBucket
+          Resource:
+            - arn:aws:s3:::${self:custom.bucketName}
+            - arn:aws:s3:::${self:custom.bucketName}/*
 
 layers:
   tracer:
@@ -109,12 +108,14 @@ layers:
       - nodejs16.x
       - nodejs18.x
       - nodejs20.x
+      - nodejs22.x
 
 functions:
   main:
     handler: src/index.handler
     timeout: 900
-    memorySize: 2048
+    memorySize: 1024
+    reservedConcurrency: 1
     url: true
     events:
       - httpApi:
@@ -127,3 +128,4 @@ functions:
 
 resources:
   - ${file(./src/infrastructure/database/table.yml)}
+  - ${file(./src/infrastructure/bucket.yml)}

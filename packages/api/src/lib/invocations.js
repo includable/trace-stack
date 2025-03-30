@@ -1,4 +1,4 @@
-import { put } from "./database";
+import { store } from "./storage";
 
 const getStatusCodeFromSpan = (span) => {
   if (!span.return_value) return null;
@@ -36,16 +36,11 @@ const getResultSummaryFromSpan = (span) => {
   return mainStatus;
 };
 
-export const saveInvocation = async (span) => {
-  return put(
-    {
-      ...span,
-      statusCode: getStatusCodeFromSpan(span),
-      resultSummary: getResultSummaryFromSpan(span),
-      pk: `function#${span.region}#${span.name}`,
-      sk: `invocation#${span.started}#${span.id}`,
-      type: "invocation",
-    },
-    true,
-  );
+export const saveInvocation = async (span, allSpans) => {
+  return store(["invocations", span.region, span.name, span.started, span.id], {
+    ...span,
+    statusCode: getStatusCodeFromSpan(span),
+    resultSummary: getResultSummaryFromSpan(span),
+    spans: allSpans,
+  });
 };

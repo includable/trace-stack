@@ -1,0 +1,10 @@
+Resources:
+  StorageBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ${self:custom.bucketName}
+      LifecycleConfiguration:
+        Rules:
+          - Id: ExpireObjectsRule
+            Status: Enabled
+            ExpirationInDays: ${param:DATA_RETENTION_DAYS}

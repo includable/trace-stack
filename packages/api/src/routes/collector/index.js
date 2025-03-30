@@ -1,17 +1,24 @@
 import { Hono } from "hono";
+import { defULID } from "@thi.ng/ksuid";
 
-import { getExpiryTime, put, update } from "../../lib/database";
 import { saveHourlyStat } from "../../lib/stats";
 import { getErrorKey } from "../../lib/errors";
-import { groupSpans } from "../../lib/spans";
 import { saveInvocation } from "../../lib/invocations";
+import { store } from "../../lib/storage";
 
 const app = new Hono();
 
+const id = defULID();
+const getId = () => {
+  return id.next();
+};
+
+// Holds transactions for which we don't know the invocation ID yet
+// This is used to avoid sending the transaction to the database before we know the invocation ID
+const transactionCache = {};
+
 app.post("/", async (c) => {
   const body = await c.req.json();
-
-  const groupedItems = {};
 
   for (const span of body) {
     if (process.env.TRACER_TOKEN && span.token !== process.env.TRACER_TOKEN) {
@@ -19,121 +26,88 @@ app.post("/", async (c) => {
       continue;
     }
 
-    const pk = `transaction#${span.transactionId || span.transaction_id}`;
-    if (!groupedItems[pk]) groupedItems[pk] = [];
+    const groupKey = span.transactionId || span.transaction_id;
+    if (!transactionCache[groupKey]) transactionCache[groupKey] = [];
 
-    if (span.type === "log") {
-      // save log span
-      groupedItems[pk].push({
-        ...span,
-        transactionId: span.transactionId || span.transaction_id,
-        type: "log",
-      });
-      continue;
-    }
-
-    // ignore started spans and enrichments
-    if (span.id.endsWith("_started") || span.type === "enrichment") {
-      continue;
-    }
-
-    // save transaction span
-    groupedItems[pk].push({
-      ...span,
-      type: "span",
-      spanType: span.type,
-    });
-
-    if (
-      span.type === "function" &&
-      span.ended &&
-      !span.id.includes("_started")
-    ) {
-      // save function invocation details
-      await saveInvocation(span);
-
-      // save error
-      if (span.error) {
-        const errorKey = getErrorKey(span.error);
-        await update({
-          Key: {
-            pk: `function#${span.region}#${span.name}`,
-            sk: `error#${errorKey}`,
-          },
-          UpdateExpression: `SET #error = :error, #lastInvocation = :lastInvocation, #lastSeen = :lastSeen, #expires = :expires, #type = :type, #name = :name, #region = :region`,
-          ExpressionAttributeValues: {
-            ":error": span.error,
-            ":lastInvocation": `${span.started}/${span.id}`,
-            ":lastSeen": new Date(span.ended).toISOString(),
-            ":expires": getExpiryTime(),
-            ":type": "error",
-            ":name": span.name,
-            ":region": span.region,
-          },
-          ExpressionAttributeNames: {
-            "#error": "error",
-            "#lastInvocation": "lastInvocation",
-            "#lastSeen": "lastSeen",
-            "#expires": "_expires",
-            "#type": "type",
-            "#name": "name",
-            "#region": "region",
-          },
-        });
-        await saveHourlyStat(span.region, span.name + ".error." + errorKey, 1);
-      }
-
-      // save function meta data
-      try {
-        await update({
-          Key: {
-            pk: `function#${span.region}#${span.name}`,
-            sk: `function#${span.region}`,
-          },
-          UpdateExpression: `SET lastInvocation = :lastInvocation, memoryAllocated = :memoryAllocated, #timeout = :timeout, traceStatus = :traceStatus, #expires = :expires`,
-          ExpressionAttributeValues: {
-            ":lastInvocation": span.started,
-            ":memoryAllocated": span.memoryAllocated,
-            ":timeout": span.maxFinishTime - span.started,
-            ":traceStatus": "enabled",
-            ":expires": getExpiryTime(),
-          },
-          ExpressionAttributeNames: {
-            "#timeout": "timeout",
-            "#expires": "_expires",
-          },
-        });
-      } catch (e) {
-        console.log(e);
-      }
-
-      // save stats
-      const duration = span.ended - span.started;
-      await saveHourlyStat(span.region, span.name + ".invocations", 1);
-      await saveHourlyStat(span.region, span.name + ".duration", duration);
-      await saveHourlyStat("global", "invocations", 1);
-      if (span.error) {
-        await saveHourlyStat(span.region, span.name + ".errors", 1);
-        await saveHourlyStat("global", "errors", 1);
-      }
-    }
+    transactionCache[groupKey].push(span);
   }
 
-  const itemsToSave = [];
-  for (let [pk, items] of Object.entries(groupedItems)) {
-    items = groupSpans(items);
-    while (items.length) {
-      const chunk = items.splice(0, 100);
-      itemsToSave.push({
-        pk,
-        sk: `spans#${chunk[0].started || chunk[0].sending_time}#${chunk[0].id}`,
-        type: "spans",
-        spans: chunk,
-      });
-    }
-  }
+  // Check transactions cache to see if there's any transactions we can flush
+  for (const [transactionId, spans] of Object.entries(transactionCache)) {
+    const invocationEndedSpan = spans.find(
+      (span) =>
+        span.type === "function" && span.ended && !span.id.includes("_started"),
+    );
 
-  await Promise.all(itemsToSave.map((item) => put(item), true));
+    if (!invocationEndedSpan) {
+      console.log(
+        `No invocation ended span found for transaction ${spans[0].transactionId}`,
+      );
+
+      // TODO: if we are close to running out of time, we should flush the transaction cache anyway
+
+      continue;
+    } else {
+      console.log(
+        "Flushing transaction cache for",
+        invocationEndedSpan.transactionId,
+      );
+    }
+
+    // save function invocation details
+    await saveInvocation(invocationEndedSpan, spans);
+
+    // const duration = invocationEndedSpan.ended - invocationEndedSpan.started;
+    await saveHourlyStat(
+      invocationEndedSpan.region,
+      invocationEndedSpan.name + ".invocations",
+      1,
+    );
+    // await saveHourlyStat(
+    //   invocationEndedSpan.region,
+    //   invocationEndedSpan.name + ".duration",
+    //   duration,
+    // );
+    await saveHourlyStat("global", "invocations", 1);
+    if (invocationEndedSpan.error) {
+      await saveHourlyStat(
+        invocationEndedSpan.region,
+        invocationEndedSpan.name + ".errors",
+        1,
+      );
+      await saveHourlyStat("global", "errors", 1);
+    }
+
+    // save error
+    if (invocationEndedSpan.error) {
+      const errorKey = getErrorKey(invocationEndedSpan.error);
+      await store(
+        [
+          "errors",
+          invocationEndedSpan.region,
+          invocationEndedSpan.name,
+          errorKey,
+          getId(),
+        ],
+        {
+          error: invocationEndedSpan.error,
+          lastInvocation: `${invocationEndedSpan.started}/${invocationEndedSpan.id}`,
+          lastSeen: new Date(invocationEndedSpan.ended).toISOString(),
+          type: "error",
+          name: invocationEndedSpan.name,
+          region: invocationEndedSpan.region,
+        },
+      );
+      await saveHourlyStat(
+        invocationEndedSpan.region,
+        invocationEndedSpan.name + ".error." + errorKey,
+        1,
+      );
+    }
+
+    // Delete the transaction from the cache
+    delete transactionCache[transactionId];
+  }
 
   return c.json({ success: true });
 });
