@@ -36,7 +36,7 @@ const listByPrefix = async (prefix) => {
 
   do {
     const params = {
-      Bucket: process.env.STORAGE_BUCKET_NAME,
+      Bucket,
       Prefix: prefix,
       ContinuationToken: pageToken,
     };

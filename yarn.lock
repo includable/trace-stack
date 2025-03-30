@@ -9445,7 +9445,7 @@ __metadata:
     jest: "npm:^29.7.0"
     jest-esbuild: "npm:^0.3.0"
     p-limit: "npm:^6.1.0"
-    serverless: "npm:^3.38.0"
+    serverless: "npm:^3.40.0"
     serverless-domain-manager: "npm:^7.3.6"
     serverless-esbuild: "npm:^1.51.0"
     serverless-offline: "npm:^13.3.3"
@@ -9509,7 +9509,7 @@ __metadata:
     "@laconia/test": "npm:^1.14.0"
     aws-testing-library: "npm:^4.0.6"
     jest: "npm:^29.7.0"
-    serverless: "npm:^3"
+    serverless: "npm:^3.40.0"
     serverless-plugin-log-retention: "npm:^2.0.0"
   languageName: unknown
   linkType: soft
@@ -18706,9 +18706,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"serverless@npm:^3, serverless@npm:^3.38.0":
-  version: 3.39.0
-  resolution: "serverless@npm:3.39.0"
+"serverless@npm:^3.40.0":
+  version: 3.40.0
+  resolution: "serverless@npm:3.40.0"
   dependencies:
     "@aws-sdk/client-api-gateway": "npm:^3.588.0"
     "@aws-sdk/client-cognito-identity-provider": "npm:^3.588.0"
@@ -18775,7 +18775,7 @@ __metadata:
   bin:
     serverless: bin/serverless.js
     sls: bin/serverless.js
-  checksum: 10c0/10ae61c0d0c8b0b348d08b46bf1a35902eac82383713da45e1210c0dd3e51d9508f75c2fd73f55bb9c06c7d862cce6bfab158a961a87383c03912f40b190945e
+  checksum: 10c0/4310d754610bc9a808ef5c92f2e8d9818e2af369228c9250568081b0a795d088b94d28debf5d1ca6e082417ab17b528d163b0b5e312f362c3c8b45aff339ca94
   languageName: node
   linkType: hard
 

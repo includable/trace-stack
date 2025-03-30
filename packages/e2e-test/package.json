@@ -11,7 +11,7 @@
     "@laconia/test": "^1.14.0",
     "aws-testing-library": "^4.0.6",
     "jest": "^29.7.0",
-    "serverless": "^3",
+    "serverless": "^3.40.0",
     "serverless-plugin-log-retention": "^2.0.0"
   }
 }
