@@ -38,7 +38,7 @@ const questions = [
     type: "input",
     name: "RETENTION_DAYS",
     message: "How many days do you want to retain data for?",
-    default: previousConfig.retentionDays || 30,
+    default: previousConfig.retentionDays || 14,
     validate: (value) => {
       const valid = !Number.isNaN(Number.parseFloat(value));
       return valid || "Please enter a number";

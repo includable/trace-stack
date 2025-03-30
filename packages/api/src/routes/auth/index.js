@@ -30,15 +30,12 @@ app.post("/login", async (c) => {
 
   const id = `${uuid()}.${new Date().valueOf()}`;
 
-  await put(
-    {
-      pk: `access-token#${id}`,
-      type: 'access-token',
-      sk: user.pk,
-      accessTokenType: "dashboard",
-    },
-    true,
-  );
+  await put({
+    pk: `access-token#${id}`,
+    type: "access-token",
+    sk: user.pk,
+    accessTokenType: "dashboard",
+  });
 
   await update({
     Key: {

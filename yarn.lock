@@ -595,58 +595,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-dynamodb@npm:^3.658.1":
-  version: 3.658.1
-  resolution: "@aws-sdk/client-dynamodb@npm:3.658.1"
-  dependencies:
-    "@aws-crypto/sha256-browser": "npm:5.2.0"
-    "@aws-crypto/sha256-js": "npm:5.2.0"
-    "@aws-sdk/client-sso-oidc": "npm:3.658.1"
-    "@aws-sdk/client-sts": "npm:3.658.1"
-    "@aws-sdk/core": "npm:3.658.1"
-    "@aws-sdk/credential-provider-node": "npm:3.658.1"
-    "@aws-sdk/middleware-endpoint-discovery": "npm:3.654.0"
-    "@aws-sdk/middleware-host-header": "npm:3.654.0"
-    "@aws-sdk/middleware-logger": "npm:3.654.0"
-    "@aws-sdk/middleware-recursion-detection": "npm:3.654.0"
-    "@aws-sdk/middleware-user-agent": "npm:3.654.0"
-    "@aws-sdk/region-config-resolver": "npm:3.654.0"
-    "@aws-sdk/types": "npm:3.654.0"
-    "@aws-sdk/util-endpoints": "npm:3.654.0"
-    "@aws-sdk/util-user-agent-browser": "npm:3.654.0"
-    "@aws-sdk/util-user-agent-node": "npm:3.654.0"
-    "@smithy/config-resolver": "npm:^3.0.8"
-    "@smithy/core": "npm:^2.4.6"
-    "@smithy/fetch-http-handler": "npm:^3.2.8"
-    "@smithy/hash-node": "npm:^3.0.6"
-    "@smithy/invalid-dependency": "npm:^3.0.6"
-    "@smithy/middleware-content-length": "npm:^3.0.8"
-    "@smithy/middleware-endpoint": "npm:^3.1.3"
-    "@smithy/middleware-retry": "npm:^3.0.21"
-    "@smithy/middleware-serde": "npm:^3.0.6"
-    "@smithy/middleware-stack": "npm:^3.0.6"
-    "@smithy/node-config-provider": "npm:^3.1.7"
-    "@smithy/node-http-handler": "npm:^3.2.3"
-    "@smithy/protocol-http": "npm:^4.1.3"
-    "@smithy/smithy-client": "npm:^3.3.5"
-    "@smithy/types": "npm:^3.4.2"
-    "@smithy/url-parser": "npm:^3.0.6"
-    "@smithy/util-base64": "npm:^3.0.0"
-    "@smithy/util-body-length-browser": "npm:^3.0.0"
-    "@smithy/util-body-length-node": "npm:^3.0.0"
-    "@smithy/util-defaults-mode-browser": "npm:^3.0.21"
-    "@smithy/util-defaults-mode-node": "npm:^3.0.21"
-    "@smithy/util-endpoints": "npm:^2.1.2"
-    "@smithy/util-middleware": "npm:^3.0.6"
-    "@smithy/util-retry": "npm:^3.0.6"
-    "@smithy/util-utf8": "npm:^3.0.0"
-    "@smithy/util-waiter": "npm:^3.1.5"
-    tslib: "npm:^2.6.2"
-    uuid: "npm:^9.0.1"
-  checksum: 10c0/42a0190abed8b512cbc4c87572161dc11863d89e958a2ffdc8e8b4891252799fd558bd0d693d5513f1fee7b4a2f7b2004f8c5bf6e80eb6fbffeeb93310dcd600
-  languageName: node
-  linkType: hard
-
 "@aws-sdk/client-dynamodb@npm:^3.665.0":
   version: 3.665.0
   resolution: "@aws-sdk/client-dynamodb@npm:3.665.0"
@@ -2346,21 +2294,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/lib-dynamodb@npm:^3.658.1":
-  version: 3.658.1
-  resolution: "@aws-sdk/lib-dynamodb@npm:3.658.1"
-  dependencies:
-    "@aws-sdk/util-dynamodb": "npm:3.658.1"
-    "@smithy/core": "npm:^2.4.6"
-    "@smithy/smithy-client": "npm:^3.3.5"
-    "@smithy/types": "npm:^3.4.2"
-    tslib: "npm:^2.6.2"
-  peerDependencies:
-    "@aws-sdk/client-dynamodb": ^3.658.1
-  checksum: 10c0/5708711fa26ef7d0ced3bf079535a66a19c3e87ce8e16480fab84a12ba9e745e5cfef99673cb64dac9b2ddea31af125319d3e401a03890d675998c2339cb73da
-  languageName: node
-  linkType: hard
-
 "@aws-sdk/lib-dynamodb@npm:^3.665.0":
   version: 3.665.0
   resolution: "@aws-sdk/lib-dynamodb@npm:3.665.0"
@@ -2417,20 +2350,6 @@ __metadata:
     "@smithy/types": "npm:^3.3.0"
     tslib: "npm:^2.6.2"
   checksum: 10c0/d8d9ce567c16ec836b16459711fa54cf29f585eae3ebdb9b7f60381ed0500fcf10b3d495f42cf8808186d7dce90862113f8ec88bb25a2efa592ac72d9ef13500
-  languageName: node
-  linkType: hard
-
-"@aws-sdk/middleware-endpoint-discovery@npm:3.654.0":
-  version: 3.654.0
-  resolution: "@aws-sdk/middleware-endpoint-discovery@npm:3.654.0"
-  dependencies:
-    "@aws-sdk/endpoint-cache": "npm:3.572.0"
-    "@aws-sdk/types": "npm:3.654.0"
-    "@smithy/node-config-provider": "npm:^3.1.7"
-    "@smithy/protocol-http": "npm:^4.1.3"
-    "@smithy/types": "npm:^3.4.2"
-    tslib: "npm:^2.6.2"
-  checksum: 10c0/1954765fca395258f9e47e8def56f554f8d91e056627cb2929d17f9a6791a46035ff54cbbc29984d6c0e847e363a7cc5dcb3a4bb959fe13adddd61d6bc5629f6
   languageName: node
   linkType: hard
 
@@ -3097,17 +3016,6 @@ __metadata:
   peerDependencies:
     "@aws-sdk/client-dynamodb": ^3.637.0
   checksum: 10c0/8add3aee9a20db9c7fff8d091b6e4d95db334d7e50555f9c29c9bf1328f17031549d4b95d6ac583a3e4910619841fb0a4b049b6e466936a5c6383174514dec8e
-  languageName: node
-  linkType: hard
-
-"@aws-sdk/util-dynamodb@npm:3.658.1":
-  version: 3.658.1
-  resolution: "@aws-sdk/util-dynamodb@npm:3.658.1"
-  dependencies:
-    tslib: "npm:^2.6.2"
-  peerDependencies:
-    "@aws-sdk/client-dynamodb": ^3.658.1
-  checksum: 10c0/521fc08497671444b6e0501df2f1a6657f5b221ab5deda404f881e911e29547e73d0a1ee9aa21651aa61fd3022f3c01060289e5b9b2933f805db41e70bf330ef
   languageName: node
   linkType: hard
 
@@ -9364,17 +9272,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@smithy/util-waiter@npm:^3.1.5":
-  version: 3.1.5
-  resolution: "@smithy/util-waiter@npm:3.1.5"
-  dependencies:
-    "@smithy/abort-controller": "npm:^3.1.4"
-    "@smithy/types": "npm:^3.4.2"
-    tslib: "npm:^2.6.2"
-  checksum: 10c0/d72733480f08a570a08eb1c4e57ac5779d2f41598d9608d62419e9adfccb86295b8c60103c51b3338167bb2f9179483db24c3dc9585da867419c5abf9efcad98
-  languageName: node
-  linkType: hard
-
 "@smithy/util-waiter@npm:^3.1.6":
   version: 3.1.6
   resolution: "@smithy/util-waiter@npm:3.1.6"
@@ -9607,8 +9504,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@trace-stack/e2e-test@workspace:packages/e2e-test"
   dependencies:
-    "@aws-sdk/client-dynamodb": "npm:^3.658.1"
-    "@aws-sdk/lib-dynamodb": "npm:^3.658.1"
+    "@aws-sdk/client-s3": "npm:^3.777.0"
     "@laconia/invoker": "npm:^1.14.0"
     "@laconia/test": "npm:^1.14.0"
     aws-testing-library: "npm:^4.0.6"

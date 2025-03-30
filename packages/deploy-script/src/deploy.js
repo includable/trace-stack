@@ -78,6 +78,7 @@ const deploy = async (answers) => {
     `RETENTION_DAYS=${answers.RETENTION_DAYS}\n` +
       `CUSTOM_DOMAIN=${answers.CUSTOM_DOMAIN}\n` +
       `TRACER_TOKEN=${answers.tracerToken}\n` +
+      `BUCKET_SUFFIX=${answers.tracerToken.replace("t_", "")}\n` +
       `HAS_CUSTOM_DOMAIN=${answers.CUSTOM_DOMAIN ? "true" : "false"}\n`,
   );
 

@@ -1,22 +1,10 @@
 import invoker from "@laconia/test";
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
-  DeleteCommand,
-  DynamoDBDocumentClient,
-  ScanCommand,
-  QueryCommand,
-} from "@aws-sdk/lib-dynamodb";
-
-const translateConfig = {
-  marshallOptions: {
-    convertEmptyValues: false,
-  },
-};
-
-export const dynamo = DynamoDBDocumentClient.from(
-  new DynamoDBClient(),
-  translateConfig,
-);
+  DeleteObjectsCommand,
+  GetObjectCommand,
+  ListObjectsV2Command,
+  S3Client,
+} from "@aws-sdk/client-s3";
 
 export const invoke = async (lambda = "main", action = "") => {
   try {
@@ -24,55 +12,64 @@ export const invoke = async (lambda = "main", action = "") => {
   } catch (error) {}
 };
 
+const Bucket = `trace-stack-traces-devtest1234567890`;
+
 export const truncate = () => {
-  return dynamo
-    .send(
-      new ScanCommand({
-        TableName: "trace-stack-dev",
-      }),
-    )
-    .then(async ({ Items, LastEvaluatedKey }) => {
-      for (const item of Items || []) {
-        await dynamo.send(
-          new DeleteCommand({
-            TableName: "trace-stack-dev",
-            Key: {
-              pk: item.pk,
-              sk: item.sk,
-            },
-          }),
-        );
-      }
-      if (LastEvaluatedKey) {
-        await truncate();
-      }
-    });
+  const s3 = new S3Client();
+  const params = { Bucket };
+  return s3.send(new ListObjectsV2Command(params)).then(({ Contents }) => {
+    if (!Contents) return;
+    const deleteParams = {
+      Bucket,
+      Delete: {
+        Objects: Contents.map((item) => ({ Key: item.Key })),
+      },
+    };
+    return s3.send(new DeleteObjectsCommand(deleteParams));
+  });
 };
 
-export const query = async (
-  /** @type {Omit<import("@aws-sdk/lib-dynamodb").QueryCommandInput, "TableName">} */ params,
-) => {
-  return await dynamo.send(
-    new QueryCommand({
-      TableName: "trace-stack-dev",
-      ...params,
-    }),
-  );
+const listByPrefix = async (prefix) => {
+  const s3 = new S3Client();
+  const output = [];
+  let pageToken = undefined;
+
+  do {
+    const params = {
+      Bucket: process.env.STORAGE_BUCKET_NAME,
+      Prefix: prefix,
+      ContinuationToken: pageToken,
+    };
+
+    const command = new ListObjectsV2Command(params);
+    const { Contents, NextContinuationToken } = await s3.send(command);
+
+    output.push(...(Contents?.map((item) => item.Key) || []));
+    pageToken = NextContinuationToken;
+  } while (pageToken && output.length < 10000);
+
+  return output;
+};
+
+export const get = async (key) => {
+  const s3 = new S3Client();
+  const params = {
+    Bucket,
+    Key: key,
+  };
+
+  const { Body } = await s3.send(new GetObjectCommand(params));
+  const string = await Body?.transformToString();
+  return string && JSON.parse(string);
+};
+
+const listAndRead = async (prefix) => {
+  const keys = await listByPrefix(prefix);
+  const data = await Promise.all(keys.map(async (key) => get(key)));
+
+  return data;
 };
 
 export const getErrors = async () => {
-  const { Items } = await query({
-    KeyConditionExpression: "#type = :type",
-    ExpressionAttributeNames: {
-      "#type": "type",
-    },
-    ExpressionAttributeValues: {
-      ":type": "error",
-    },
-    IndexName: "type-lastSeen",
-    Limit: 50,
-    ScanIndexForward: false,
-  });
-
-  return Items;
+  return listAndRead("errors/");
 };
