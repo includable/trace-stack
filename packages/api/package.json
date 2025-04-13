@@ -7,6 +7,7 @@
     "dev": "serverless offline start",
     "deploy": "serverless deploy --verbose",
     "auto-trace": "serverless invoke local -f main -d '{\"action\": \"auto-trace\"}'",
+    "un-trace": "serverless invoke local -f main -d '{\"action\": \"un-trace\"}'",
     "test": "jest"
   },
   "dependencies": {

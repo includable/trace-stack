@@ -1,5 +1,5 @@
 const { SQSClient, SendMessageCommand } = require("@aws-sdk/client-sqs");
-const { FetchHttpHandler } = require("@smithy/fetch-http-handler");
+// const { FetchHttpHandler } = require("@smithy/fetch-http-handler");
 
 /*
  * This module handles sending spans to an SQS queue.
@@ -16,7 +16,7 @@ exports.HttpSpansAgent = (() => {
     try {
       sqsClient = new SQSClient({
         region: process.env.AUTO_TRACE_QUEUE_REGION || "eu-west-1",
-        requestHandler: new FetchHttpHandler({}),
+        // requestHandler: new FetchHttpHandler({}),
       });
     } catch (error) {
       console.warn("Error initializing SQS client:", error);
@@ -46,15 +46,15 @@ exports.HttpSpansAgent = (() => {
 
       // This is a workaround to avoid the fetch function being overridden
       // @ts-ignore
-      if (fetch && fetch.__originalFetch) {
-        const wrappedFetch = fetch;
-        // @ts-ignore
-        fetch = wrappedFetch.__originalFetch;
-        setTimeout(() => {
-          // @ts-ignore
-          fetch = wrappedFetch;
-        }, 1);
-      }
+      // if (fetch && fetch.__originalFetch) {
+      //   const wrappedFetch = fetch;
+      //   // @ts-ignore
+      //   fetch = wrappedFetch.__originalFetch;
+      //   setTimeout(() => {
+      //     // @ts-ignore
+      //     fetch = wrappedFetch;
+      //   }, 1);
+      // }
 
       await sqsClient.send(command);
     } catch (error) {

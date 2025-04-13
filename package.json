@@ -11,6 +11,7 @@
   "scripts": {
     "deploy": "yarn build && yarn turbo deploy --env-mode=loose --color",
     "auto-trace": "cd packages/api && yarn auto-trace",
+    "un-trace": "cd packages/api && yarn un-trace",
     "build": "yarn turbo build --env-mode=loose --color",
     "test": "yarn turbo test --env-mode=loose --color",
     "start": "turbo dev --env-mode=loose --color",

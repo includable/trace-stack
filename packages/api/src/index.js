@@ -10,6 +10,7 @@ import authRoute from "./routes/auth";
 import usersRoute from "./routes/users";
 
 import { autoTrace } from "./events/auto-trace";
+import {unTrace} from "./events/un-trace";
 import { auth } from "./routes/auth/middleware";
 
 const app = new Hono();
@@ -37,6 +38,9 @@ export const httpApp = handle(app);
 export const handler = (event, context) => {
   if (event.action === "auto-trace") {
     return autoTrace();
+  }
+  if (event.action === "un-trace") {
+    return unTrace();
   }
 
   return httpApp(event, context);
