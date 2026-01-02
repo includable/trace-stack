@@ -6,6 +6,11 @@ Deploy a CloudFormation stack to your own AWS account for instant Lambda tracing
 Complete with a self-hosted UI, so you stay in full control of your data, and you
 only pay for AWS usage related to tracing and storage.
 
+> [!NOTE]
+> This project has been put on pause by the core maintainer. 
+> [Read about why here](https://schof.co/tracestack-open-source-observability/). 
+> Let me know if you want to continue working on this!
+
 ![Screenshot](.github/docs/screenshot.jpg)
 
 ## Batteries included
